@@ -8,6 +8,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import javafx.scene.effect.DropShadow; // Pour l'ombre des boutons
+import javafx.scene.paint.Color; // Pour la couleur des effets
+
 
 public class ButtonFactory {
 
@@ -23,6 +26,27 @@ public class ButtonFactory {
         // Animation au clic
         button.setOnMousePressed(e -> animateButton(button, 1.1));
         button.setOnMouseReleased(e -> animateButton(button, 1.0));
+
+        return button;
+    }
+
+    public static Button createStyledButton(String text) {
+        Button button = new Button(text);
+        button.setFont(Font.font("Arial", 20));
+        button.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-background-radius: 15;");
+
+        // Effet d'ombre
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.GRAY);
+        button.setEffect(shadow);
+
+        // Style original
+        String defaultStyle = "-fx-background-color: black; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-background-radius: 15;";
+        String hoverStyle = "-fx-background-color: #333333; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-background-radius: 15;";
+
+        // Appliquer le style au survol
+        button.setOnMouseEntered(e -> button.setStyle(hoverStyle));
+        button.setOnMouseExited(e -> button.setStyle(defaultStyle));
 
         return button;
     }

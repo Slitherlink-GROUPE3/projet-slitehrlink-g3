@@ -1,10 +1,21 @@
 package com.menu;
+import com.menu.SettingScene;
 
+
+import javafx.scene.control.Label;  // Pour le titre "Mode aventure"
+import javafx.scene.text.Font;       // Pour changer la police du texte
+import javafx.scene.paint.Color;     // Pour changer la couleur du texte
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.Stack;
+import javafx.scene.control.Button;  // Pour les boutons
+import javafx.scene.layout.VBox;     // Pour organiser les boutons verticalement
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
+import javafx.geometry.Pos; // Pour aligner les boutons dans VBox
+
 
 public class Menu extends Application {
     private static final Stack<Scene> sceneHistory = new Stack<>(); // Stocke l'historique des scènes
@@ -14,24 +25,51 @@ public class Menu extends Application {
         show(primaryStage);
     }
 
-    public static void show(Stage primaryStage) {
-        TitleComponent titleComponent = new TitleComponent();
-        MenuBoxComponent menuBoxComponent = new MenuBoxComponent();
-        GridComponent gridComponent = new GridComponent();
+      public static void show(Stage primaryStage) {
+        // --- Barre verte en haut ---
+        Label title = new Label("Slither Link");
+        title.setFont(Font.font("Arial", 28));
+        title.setTextFill(Color.BLACK);
+        title.setStyle("-fx-font-weight: bold;");
 
-        HBox root = new HBox(20, menuBoxComponent.getMenuBox(), gridComponent.getGridPane());
-        root.setStyle("-fx-background-color: #B0C4DE; -fx-padding: 20;");
-        root.setAlignment(javafx.geometry.Pos.CENTER);
+        StackPane topBar = new StackPane(title);
+        topBar.setStyle("-fx-background-color: #A5B8A5; -fx-padding: 20px;");
+        topBar.setPrefHeight(80);
 
-        VBox mainLayout = new VBox(10, titleComponent.getTitle(), root);
-        mainLayout.setAlignment(javafx.geometry.Pos.CENTER);
+        // --- Création des boutons ---
+        Button adventureButton = ButtonFactory.createStyledButton("Mode Aventure");
+        Button freeModeButton = ButtonFactory.createStyledButton("Mode Libre");
+        Button settingsButton = ButtonFactory.createStyledButton("Settings");
+        Button tutorialButton = ButtonFactory.createStyledButton("Tutorial");
+        Button exitButton = ButtonFactory.createStyledButton("Exit");
 
-        Scene scene = new Scene(mainLayout, 800, 600);
-        
+        // Actions des boutons
+        adventureButton.setOnAction(e -> GameScene.show(primaryStage));
+        settingsButton.setOnAction(e -> SettingScene.show(primaryStage)); 
+        tutorialButton.setOnAction(e -> TechniquesScene.show(primaryStage));
+        exitButton.setOnAction(e -> primaryStage.close());
+
+        // --- Organisation des boutons dans une VBox ---
+        VBox menuBox = new VBox(15, adventureButton, freeModeButton, settingsButton, tutorialButton, exitButton);
+        menuBox.setAlignment(Pos.CENTER);
+        menuBox.setStyle("-fx-padding: 20px;");
+
+        StackPane centerPane = new StackPane(menuBox);
+        centerPane.setStyle("-fx-background-color: #E5D5B0; -fx-padding: 20px;");
+        centerPane.setPrefSize(800, 500);
+
+        // --- Layout principal ---
+        BorderPane root = new BorderPane();
+        root.setTop(topBar);
+        root.setCenter(centerPane);
+
+        // --- Création de la scène ---
+        Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Slither Link Menu");
         primaryStage.show();
     }
+
 
     // Permet de changer de scène en gardant un historique
     public static void changeScene(Stage primaryStage, Scene newScene) {
