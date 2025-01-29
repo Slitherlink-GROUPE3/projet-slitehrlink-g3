@@ -40,17 +40,17 @@ public class Menu extends Application {
         Button adventureButton = ButtonFactory.createStyledButton("Mode Aventure");
         Button freeModeButton = ButtonFactory.createStyledButton("Mode Libre");
         Button settingsButton = ButtonFactory.createStyledButton("Settings");
-        Button tutorialButton = ButtonFactory.createStyledButton("Tutorial");
+        Button hintButton = ButtonFactory.createStyledButton("Indice");
         Button exitButton = ButtonFactory.createStyledButton("Exit");
 
         // Actions des boutons
         adventureButton.setOnAction(e -> GameScene.show(primaryStage));
         settingsButton.setOnAction(e -> SettingScene.show(primaryStage)); 
-        tutorialButton.setOnAction(e -> hintScene.show(primaryStage));
+        hintButton.setOnAction(e -> hintScene.show(primaryStage));
         exitButton.setOnAction(e -> primaryStage.close());
 
         // --- Organisation des boutons dans une VBox ---
-        VBox menuBox = new VBox(15, adventureButton, freeModeButton, settingsButton, tutorialButton, exitButton);
+        VBox menuBox = new VBox(15, adventureButton, freeModeButton, settingsButton, hintButton, exitButton);
         menuBox.setAlignment(Pos.CENTER);
         menuBox.setStyle("-fx-padding: 20px;");
 
@@ -64,7 +64,7 @@ public class Menu extends Application {
         root.setCenter(centerPane);
 
         // --- Création de la scène ---
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1200, 600);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Slither Link Menu");
         primaryStage.show();
