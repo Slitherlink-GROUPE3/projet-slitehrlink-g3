@@ -1,7 +1,10 @@
 package com.menu;
 
+import com.menu.javafx.hintScene;
+
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class MenuBoxComponent {
 
@@ -13,6 +16,25 @@ public class MenuBoxComponent {
         for (String item : menuItems) {
             Button button = ButtonFactory.createAnimatedButton(item);
             button.setPrefWidth(200);
+
+            button.setOnAction(e -> {
+                Stage stage = (Stage) button.getScene().getWindow(); // Récupère la fenêtre
+
+                switch (item) {
+                    case "CLASSIQUE":
+                        GameScene.show(stage);
+                        break;
+                    case "PARAMETRES":
+                        SettingScene.show(stage);
+                        break;
+                    case "TECHNIQUES":
+                        hintScene.show(stage);
+                        break;
+                    default:
+                        System.out.println("Aucune scène assignée pour " + item);
+                }
+            });
+
             menuBox.getChildren().add(button);
         }
 
