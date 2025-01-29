@@ -1,18 +1,22 @@
 package com.menu;
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import javafx.scene.input.MouseEvent;
-import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
+
+
 
 public class GameScene {
     private static final int GRID_SIZE = 10; // Nombre de cellules
@@ -20,6 +24,7 @@ public class GameScene {
     private static double CELL_SIZE;
     private static StackPane gridContainer;
     private static HBox root;
+    private static int checkCounter = 0; 
 
     public static void show(Stage primaryStage) {
         // Création du conteneur principal avec redimensionnement automatique
@@ -28,11 +33,45 @@ public class GameScene {
         gridContainer = new StackPane(slitherlinkGrid);
         Pane emptyPane = new Pane(); // Partie vide de droite
 
+        // Ajout de la barre latérale pour les boutons 
+        VBox buttonBox = new VBox(15);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        buttonBox.setStyle("-fx-background-color: #E5D5B0; -fx-padding: 20;");
+
+        Button helpButton = createStyledButton("   AIDE   ?  ");
+        Button checkButton = createStyledButton("Check");
+        checkButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;-fx-padding: 10px 20px; -fx-background-radius: 10;");
+        
+       
+
+        // Ajout du compteur (Texte à côté de "Check")
+        Text checkCount = new Text(String.valueOf(checkCounter));
+        checkCount.setFont(Font.font("Arial", 20));
+        checkCount.setFill(Color.BLACK);
+
+        checkButton.setOnAction(e -> {
+            checkCounter++; // Incrémente le cmptr
+            checkCount.setText(String.valueOf(checkCounter)); // Maj  l'affichage
+        });
+        // Conteneur pour "Check" + compteur
+        HBox checkContainer = new HBox(15, checkButton, checkCount);
+        checkContainer.setAlignment(Pos.CENTER);
+
+
+        Button hypothesisButton = createStyledButton("Hypothèse");  // Bouton Hypothèse
+
+        
+       
+
+
         // Lier les largeurs des panneaux pour maintenir 50/50 lors du redimensionnement
         gridContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.5));
         emptyPane.prefWidthProperty().bind(root.widthProperty().multiply(0.5));
 
-        root.getChildren().addAll(gridContainer, emptyPane);
+        buttonBox.getChildren().addAll(helpButton, checkContainer, hypothesisButton);
+
+        //root.getChildren().addAll(gridContainer, emptyPane);
+        root.getChildren().addAll(gridContainer, buttonBox);
 
         // Définition de la scène avec un fond beige
         Scene scene = new Scene(root, Screen.getPrimary().getVisualBounds().getWidth(), Screen.getPrimary().getVisualBounds().getHeight());
@@ -113,4 +152,15 @@ public class GameScene {
             line.setStroke(Color.WHITE); // Désactive la barre
         }
     }
+
+     // Fonction pour créer des boutons stylisés
+     private static Button createStyledButton(String text) {
+        Button button = new Button(text);
+        button.setFont(Font.font("Arial", 18));
+        button.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-background-radius: 10;");
+       
+        return button;
+    }
+
+   
 }
