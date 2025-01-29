@@ -1,22 +1,22 @@
-package com.menu;
+package com.menu.javafx;
 
+import com.menu.Menu;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.paint.Color;
-import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-public class TechniquesScene {
+public class hintScene {
     public static void show(Stage primaryStage) {
         VBox root = new VBox(20); // 20px d'espacement entre les éléments
         root.setAlignment(javafx.geometry.Pos.TOP_CENTER); // Aligner en haut au centre
         root.setStyle("-fx-padding: 20;"); // Ajouter un peu d'espace en haut
 
         // Texte
-        Text label = new Text("Techniques Scene");
+        Text label = new Text("indices");
         label.setFont(Font.font("Arial", 24));
         label.setFill(Color.DARKBLUE);
         label.setStyle("-fx-font-weight: bold;");

@@ -1,5 +1,7 @@
 package com.menu;
 
+import com.menu.javafx.hintScene;
+
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -26,7 +28,7 @@ public class MenuBoxComponent {
                         SettingScene.show(stage);
                         break;
                     case "TECHNIQUES":
-                        TechniquesScene.show(stage);
+                        hintScene.show(stage);
                         break;
                     default:
                         System.out.println("Aucune scène assignée pour " + item);
