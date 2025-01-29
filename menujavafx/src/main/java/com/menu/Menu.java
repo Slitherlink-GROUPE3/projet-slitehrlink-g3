@@ -1,6 +1,6 @@
 package com.menu;
 import com.menu.SettingScene;
-
+import com.menu.javafx.hintScene;
 
 import javafx.scene.control.Label;  // Pour le titre "Mode aventure"
 import javafx.scene.text.Font;       // Pour changer la police du texte
@@ -46,7 +46,7 @@ public class Menu extends Application {
         // Actions des boutons
         adventureButton.setOnAction(e -> GameScene.show(primaryStage));
         settingsButton.setOnAction(e -> SettingScene.show(primaryStage)); 
-        tutorialButton.setOnAction(e -> TechniquesScene.show(primaryStage));
+        tutorialButton.setOnAction(e -> hintScene.show(primaryStage));
         exitButton.setOnAction(e -> primaryStage.close());
 
         // --- Organisation des boutons dans une VBox ---
