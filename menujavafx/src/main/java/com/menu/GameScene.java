@@ -24,7 +24,7 @@ public class GameScene {
     private static double CELL_SIZE;
     private static StackPane gridContainer;
     private static HBox root;
-    private static int checkCounter = 0; 
+    private static int checkCounter = 3; 
 
     public static void show(Stage primaryStage) {
         // Création du conteneur principal avec redimensionnement automatique
@@ -50,9 +50,17 @@ public class GameScene {
         checkCount.setFill(Color.BLACK);
 
         checkButton.setOnAction(e -> {
-            checkCounter++; // Incrémente le cmptr
-            checkCount.setText(String.valueOf(checkCounter)); // Maj  l'affichage
+            if (checkCounter > 0) {  // Vérifie si checkCounter est encore positif
+                checkCounter--; 
+                checkCount.setText(String.valueOf(checkCounter));
+
+                if (checkCounter == 0) {  // Désactive le bouton quand il atteint 0
+                    checkButton.setDisable(true);
+                }
+            }
         });
+        
+
         // Conteneur pour "Check" + compteur
         HBox checkContainer = new HBox(15, checkButton, checkCount);
         checkContainer.setAlignment(Pos.CENTER);
