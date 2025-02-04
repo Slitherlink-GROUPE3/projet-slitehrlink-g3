@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
@@ -35,7 +36,9 @@ public class GameScene {
 
         // Ajout de la barre latérale pour les boutons 
         VBox buttonBox = new VBox(15);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setTranslateX(200); // Ajuste la valeur pour déplacer plus ou moins
+
         buttonBox.setStyle("-fx-background-color: #E5D5B0; -fx-padding: 20;");
 
         Button helpButton = createStyledButton("   AIDE   ?  ");
@@ -99,11 +102,13 @@ public class GameScene {
     }
 
     private static void updateGrid(double width, double height) {
-        slitherlinkGrid.getChildren().clear(); // Réinitialise la grille
-        CELL_SIZE = Math.min(width / 2, height * 0.8) / (GRID_SIZE + 1); // Ajuste la taille des cellules et laisse une marge en haut
-        double marginTop = height * 0.1; // Définit un espace entre le haut de la fenêtre et la grille
+        slitherlinkGrid.getChildren().clear(); 
+        CELL_SIZE = Math.min(width / 2, height * 0.8) / (GRID_SIZE + 1);
 
-        // Ajout des indices pour le jeu (simulation)
+        double marginTop = height * 0.15; // Marge en haut
+        double offsetX = width * 0.1; // Décalage vers la droite
+
+        // Exemple d'indices de jeu
         int[][] numbers = {
             {3, 3, -1, -1, -1, -1, -1, -1, -1, 0},
             {-1, -1, 1, 2, -1, -1, -1, -1, -1, 1},
@@ -111,55 +116,89 @@ public class GameScene {
             {-1, 1, -1, -1, 1, 1, -1, -1, -1, -1},
             {-1, 2, -1, -1, -1, -1, -1, -1, -1, -1},
         };
-        
+
+        // Ajout des chiffres (indices)
         for (int i = 0; i < numbers.length; i++) {
             for (int j = 0; j < numbers[i].length; j++) {
                 if (numbers[i][j] != -1) {
-                    Text numberText = new Text(j * CELL_SIZE + CELL_SIZE / 3, i * CELL_SIZE + CELL_SIZE / 1.5 + marginTop, String.valueOf(numbers[i][j]));
-                    numberText.setFont(Font.font(18));
+                    Text numberText = new Text(String.valueOf(numbers[i][j]));
+                    numberText.setFont(Font.font(28)); // Augmente la taille
+                    numberText.setFill(Color.BLACK);
+
+                    // Centrage dans la cellule
+                    double textX = (j + 0.50) * CELL_SIZE + offsetX;
+                    double textY = (i + 0.55) * CELL_SIZE + marginTop;
+                    numberText.setX(textX - numberText.getLayoutBounds().getWidth() / 2);
+                    numberText.setY(textY + numberText.getLayoutBounds().getHeight() / 4);
+
                     slitherlinkGrid.getChildren().add(numberText);
                 }
             }
         }
 
-        // Ajout des lignes interactives
+        // Ajout des lignes interactives avec une zone cliquable agrandie
         for (int i = 0; i <= GRID_SIZE; i++) {
             for (int j = 0; j <= GRID_SIZE; j++) {
                 if (j < GRID_SIZE) {
-                    Line horizontalLine = new Line(j * CELL_SIZE, i * CELL_SIZE + marginTop, (j + 1) * CELL_SIZE, i * CELL_SIZE + marginTop);
+                    // Ligne horizontale
+                    Line horizontalLine = new Line(
+                        j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop,
+                        (j + 1) * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop
+                    );
                     horizontalLine.setStroke(Color.WHITE);
                     horizontalLine.setStrokeWidth(5);
-                    horizontalLine.setOnMouseClicked(GameScene::toggleLine);
-                    slitherlinkGrid.getChildren().add(horizontalLine);
+
+                    // Zone cliquable élargie (Rectangle transparent)
+                    Rectangle hitbox = new Rectangle(
+                        j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop - 10,
+                        CELL_SIZE, 20
+                    );
+                    hitbox.setFill(Color.TRANSPARENT);
+                    hitbox.setOnMouseClicked(e -> toggleLine(horizontalLine));
+
+                    slitherlinkGrid.getChildren().addAll(horizontalLine, hitbox);
                 }
+
                 if (i < GRID_SIZE) {
-                    Line verticalLine = new Line(j * CELL_SIZE, i * CELL_SIZE + marginTop, j * CELL_SIZE, (i + 1) * CELL_SIZE + marginTop);
+                    // Ligne verticale
+                    Line verticalLine = new Line(
+                        j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop,
+                        j * CELL_SIZE + offsetX, (i + 1) * CELL_SIZE + marginTop
+                    );
                     verticalLine.setStroke(Color.WHITE);
                     verticalLine.setStrokeWidth(5);
-                    verticalLine.setOnMouseClicked(GameScene::toggleLine);
-                    slitherlinkGrid.getChildren().add(verticalLine);
+
+                    // Zone cliquable élargie (Rectangle transparent)
+                    Rectangle hitbox = new Rectangle(
+                        j * CELL_SIZE + offsetX - 10, i * CELL_SIZE + marginTop,
+                        20, CELL_SIZE
+                    );
+                    hitbox.setFill(Color.TRANSPARENT);
+                    hitbox.setOnMouseClicked(e -> toggleLine(verticalLine));
+
+                    slitherlinkGrid.getChildren().addAll(verticalLine, hitbox);
                 }
             }
         }
 
-        // Ajout des points après les lignes
+        // Ajout des points aux intersections
         for (int i = 0; i <= GRID_SIZE; i++) {
             for (int j = 0; j <= GRID_SIZE; j++) {
-                Circle dot = new Circle(j * CELL_SIZE, i * CELL_SIZE + marginTop, 3, Color.BLACK);
+                Circle dot = new Circle(j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop, 3, Color.BLACK);
                 slitherlinkGrid.getChildren().add(dot);
             }
         }
     }
 
+
     // Fonction pour activer/désactiver une ligne
-    private static void toggleLine(MouseEvent e) {
-        Line line = (Line) e.getSource();
-        if (line.getStroke().equals(Color.WHITE)) {
-            line.setStroke(Color.BLACK); // Active la barre
-        } else {
-            line.setStroke(Color.WHITE); // Désactive la barre
-        }
+    private static void toggleLine(Line line) {
+    if (line.getStroke().equals(Color.WHITE)) {
+        line.setStroke(Color.BLACK);
+    } else {
+        line.setStroke(Color.WHITE);
     }
+}
 
      // Fonction pour créer des boutons stylisés
      private static Button createStyledButton(String text) {
