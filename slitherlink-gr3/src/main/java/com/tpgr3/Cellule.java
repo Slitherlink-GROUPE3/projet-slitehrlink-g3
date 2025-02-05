@@ -9,5 +9,7 @@ abstract class Cellule {
         this.y = y;
     }
 
+    public abstract void actionner();
+
     public abstract char afficher();
 }

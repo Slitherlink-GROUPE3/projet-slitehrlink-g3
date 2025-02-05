@@ -9,9 +9,14 @@ class Slot extends Cellule {
         this.marque = ' ';
     }
 
-    public void setMarque(char marque) {
-        if (marque == '-' || marque == 'X' || marque == ' ') {
-            this.marque = marque;
+    @Override
+    public void actionner() {
+        if (marque == '-') {
+            marque = 'X';
+        } else if (marque == 'X') {
+            marque = ' ';
+        } else {
+            marque = '-';
         }
     }
 

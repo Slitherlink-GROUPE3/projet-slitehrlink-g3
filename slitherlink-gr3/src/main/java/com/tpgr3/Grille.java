@@ -41,7 +41,7 @@ class Grille {
             for (int x = 0; x < largeur; x++) {
                 if (x % 2 == 1 && y % 2 == 1) { // Case contenant un chiffre
                     matrice[y][x] = new Case(x, y, valeurs[y / 2][x / 2]);
-                } else if (x % 2 == 0 || y % 2 == 0) { // Slot (emplacement pour des lignes)
+                } else if (x % 2 == 0 && y % 2 == 0) { // Slot (emplacement pour des lignes)
                     matrice[y][x] = new Slot(x, y);
                 }
             }
@@ -55,9 +55,21 @@ class Grille {
     public void afficher() {
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < largeur; x++) {
-                System.out.print(matrice[y][x] != null ? matrice[y][x].afficher() + " " : "  ");
+                if (matrice[y][x] != null) {
+                    System.out.print(String.format("%-2s", matrice[y][x].afficher()) + " ");
+                } else {
+                    System.out.print("   ");
+                }
             }
             System.out.println();
         }
+    }
+
+    /**
+     * Methode qui permet de poser un baton sur un {@link Slot} de la grille.
+     * Et impossible de le faire autre part que sur un {@link Slot}.
+     */
+    public void actionnerCelule(int x, int y){
+        matrice[x][y].actionner();
     }
 }
