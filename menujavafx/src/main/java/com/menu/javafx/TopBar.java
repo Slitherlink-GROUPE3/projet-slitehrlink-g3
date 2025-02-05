@@ -16,7 +16,7 @@ import javafx.geometry.Pos;
 import com.menu.ButtonFactory;
 
 
-
+// Classe TopBar
 public class TopBar {
     private Stage primaryStage;
     private String pseudoJoueur;
