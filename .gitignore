@@ -25,3 +25,5 @@ replay_pid*
 
 #ignore les target 
 menujavafx/target
+slitherlink-gr3/target
+/target
