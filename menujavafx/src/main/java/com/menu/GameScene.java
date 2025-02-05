@@ -142,13 +142,6 @@ public class GameScene {
                 if (j < GRID_SIZE) {
                     // Ligne horizontale
                     Line horizontalLine = new Line(
-<<<<<<< HEAD
-                        j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop,
-                        (j + 1) * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop
-                    );
-                    horizontalLine.setStroke(Color.WHITE);
-                    horizontalLine.setStrokeWidth(5);
-=======
                         j * CELL_SIZE + offsetX + CELL_SIZE * 0.1, // Décalage à droite
                         i * CELL_SIZE + marginTop,
                         (j + 1) * CELL_SIZE + offsetX - CELL_SIZE * 0.1, // Décalage à gauche
@@ -157,7 +150,6 @@ public class GameScene {
 
                     horizontalLine.setStroke(Color.TRANSPARENT);
                     horizontalLine.setStrokeWidth(10);
->>>>>>> Yacine
 
                     // Zone cliquable élargie (Rectangle transparent)
                     Rectangle hitbox = new Rectangle(
@@ -173,13 +165,6 @@ public class GameScene {
                 if (i < GRID_SIZE) {
                     // Ligne verticale
                     Line verticalLine = new Line(
-<<<<<<< HEAD
-                        j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop,
-                        j * CELL_SIZE + offsetX, (i + 1) * CELL_SIZE + marginTop
-                    );
-                    verticalLine.setStroke(Color.WHITE);
-                    verticalLine.setStrokeWidth(5);
-=======
                         j * CELL_SIZE + offsetX,
                         i * CELL_SIZE + marginTop + CELL_SIZE * 0.1, // Décalage vers le bas
                         j * CELL_SIZE + offsetX,
@@ -188,7 +173,6 @@ public class GameScene {
 
                     verticalLine.setStroke(Color.TRANSPARENT);
                     verticalLine.setStrokeWidth(10);
->>>>>>> Yacine
 
                     // Zone cliquable élargie (Rectangle transparent)
                     Rectangle hitbox = new Rectangle(
@@ -206,11 +190,7 @@ public class GameScene {
         // Ajout des points aux intersections
         for (int i = 0; i <= GRID_SIZE; i++) {
             for (int j = 0; j <= GRID_SIZE; j++) {
-<<<<<<< HEAD
-                Circle dot = new Circle(j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop, 3, Color.BLACK);
-=======
                 Circle dot = new Circle(j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop, 7, Color.BLACK);
->>>>>>> Yacine
                 slitherlinkGrid.getChildren().add(dot);
             }
         }
@@ -219,17 +199,10 @@ public class GameScene {
 
     // Fonction pour activer/désactiver une ligne
     private static void toggleLine(Line line) {
-<<<<<<< HEAD
-    if (line.getStroke().equals(Color.WHITE)) {
-        line.setStroke(Color.BLACK);
-    } else {
-        line.setStroke(Color.WHITE);
-=======
     if (line.getStroke().equals(Color.TRANSPARENT)) {
         line.setStroke(Color.BLACK);
     } else {
         line.setStroke(Color.TRANSPARENT);
->>>>>>> Yacine
     }
 }
 
@@ -243,8 +216,4 @@ public class GameScene {
     }
 
    
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> Yacine
