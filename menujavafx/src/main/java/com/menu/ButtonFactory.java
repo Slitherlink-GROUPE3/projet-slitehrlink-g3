@@ -2,14 +2,14 @@ package com.menu;
 
 import javafx.animation.ScaleTransition;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.util.Duration;
-import javafx.scene.effect.DropShadow; // Pour l'ombre des boutons
-import javafx.scene.paint.Color; // Pour la couleur des effets
+import javafx.scene.text.Text; // Pour l'ombre des boutons
+import javafx.util.Duration; // Pour la couleur des effets
 
 
 public class ButtonFactory {
@@ -50,6 +50,94 @@ public class ButtonFactory {
 
         return button;
     }
+
+    public static Button createImageButton(String imagePath) {
+        Image image = new Image(ButtonFactory.class.getResourceAsStream("/" + imagePath));
+    
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(50); // Ajuste la taille selon ton besoin
+        imageView.setFitHeight(50);
+    
+        Button button = new Button();
+        button.setGraphic(imageView);
+        
+        // Supprime l'arrière-plan, la bordure et le padding
+        button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-padding: 0;");
+        
+        // Effet au survol
+        button.setOnMouseEntered(e -> button.setOpacity(0.7));
+        button.setOnMouseExited(e -> button.setOpacity(1.0));
+        
+        // Effet de clic
+        button.setOnMousePressed(e -> animateButton(button, 1.1));
+        button.setOnMouseReleased(e -> animateButton(button, 1.0));
+    
+        return button;
+    }
+    
+    
+    
+    
+    
+    public static Button createHelpButton() {
+        Button button = new Button("AIDE ?");
+        button.setFont(Font.font("Arial", 18));
+        button.setPrefSize(190, 50);
+        button.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-padding: 15px 30px; -fx-background-radius: 10;");
+
+        // Effet d'ombre
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.GRAY);
+        button.setEffect(shadow);
+
+        // Animation au survol
+        button.setOnMouseEntered(e -> button.setStyle("-fx-background-color: #444444; -fx-text-fill: white;"));
+        button.setOnMouseExited(e -> button.setStyle("-fx-background-color: black; -fx-text-fill: white;"));
+
+        return button;
+    }
+
+    public static Button createCheckButton(Runnable onClick) {
+        Button button = new Button("Check");
+        button.setFont(Font.font("Arial", 18));
+        button.setPrefSize(140, 40);
+        button.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-background-radius: 10;");
+
+        // Effet d'ombre
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.DARKGREEN);
+        button.setEffect(shadow);
+
+        // Animation au survol
+        button.setOnMouseEntered(e -> button.setStyle("-fx-background-color: #388E3C; -fx-text-fill: white;"));
+        button.setOnMouseExited(e -> button.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;"));
+
+        // Animation au clic
+        button.setOnMousePressed(e -> animateButton(button, 1.1));
+        button.setOnMouseReleased(e -> animateButton(button, 1.0));
+
+        button.setOnAction(e -> onClick.run());
+        return button;
+    }
+    
+    public static Button createHypothesisButton() {
+        Button button = new Button("Hypothèse");
+        button.setFont(Font.font("Arial", 18));
+        button.setPrefSize(190, 50);
+        button.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-padding: 15px 30px; -fx-background-radius: 10;");
+
+        // Effet d'ombre
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.GRAY);
+        button.setEffect(shadow);
+
+        // Animation au survol
+        button.setOnMouseEntered(e -> button.setStyle("-fx-background-color: #444444; -fx-text-fill: white;"));
+        button.setOnMouseExited(e -> button.setStyle("-fx-background-color: black; -fx-text-fill: white;"));
+
+        return button;
+    }
+
 
     public static Button createSkullButton(String text, int difficulty, String imagePath) {
         Image skullImage = new Image(imagePath);

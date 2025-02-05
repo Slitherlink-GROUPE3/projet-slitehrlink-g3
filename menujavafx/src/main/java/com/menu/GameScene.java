@@ -3,7 +3,6 @@ package com.menu;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -16,6 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
 
 
 
@@ -41,35 +41,39 @@ public class GameScene {
 
         buttonBox.setStyle("-fx-background-color: #E5D5B0; -fx-padding: 20;");
 
-        Button helpButton = createStyledButton("   AIDE   ?  ");
-        Button checkButton = createStyledButton("Check");
-        checkButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;-fx-padding: 10px 20px; -fx-background-radius: 10;");
-        
+        Button helpButton = ButtonFactory.createHelpButton();
+        Button hypothesisButton = ButtonFactory.createHypothesisButton();
+        Button previousButton = ButtonFactory.createImageButton("previous.png");
+        Button nextButton = ButtonFactory.createImageButton("next.png");
        
-
-        // Ajout du compteur (Texte à côté de "Check")
+        // Gestion du compteur pour "Check"
         Text checkCount = new Text(String.valueOf(checkCounter));
         checkCount.setFont(Font.font("Arial", 20));
         checkCount.setFill(Color.BLACK);
 
-        checkButton.setOnAction(e -> {
-            if (checkCounter > 0) {  // Vérifie si checkCounter est encore positif
-                checkCounter--; 
-                checkCount.setText(String.valueOf(checkCounter));
+        Button[] checkButton = new Button[1]; //  Utilisation d'un tableau pour modifier la variable dans le Runnable
 
-                if (checkCounter == 0) {  // Désactive le bouton quand il atteint 0
-                    checkButton.setDisable(true);
+        checkButton[0] = ButtonFactory.createCheckButton(() -> {
+            if (checkCounter > 0) {
+                checkCounter--;
+                checkCount.setText(String.valueOf(checkCounter));
+                if (checkCounter == 0) {
+                    checkButton[0].setDisable(true); //checkButton[0] est bien initialisé
                 }
             }
         });
         
+        
+        previousButton.setOnAction(e -> System.out.println("Revenir en arrière"));
+        nextButton.setOnAction(e -> System.out.println("Aller vers l'avant"));
+        HBox navigationBox = new HBox(20, previousButton, nextButton);
+        navigationBox.setAlignment(Pos.CENTER);
+        
 
         // Conteneur pour "Check" + compteur
-        HBox checkContainer = new HBox(15, checkButton, checkCount);
+        HBox checkContainer = new HBox(15, checkButton[0], checkCount); 
         checkContainer.setAlignment(Pos.CENTER);
 
-
-        Button hypothesisButton = createStyledButton("Hypothèse");  // Bouton Hypothèse
 
         
        
@@ -80,7 +84,7 @@ public class GameScene {
         emptyPane.prefWidthProperty().bind(root.widthProperty().multiply(0.5));
 
         buttonBox.getChildren().addAll(helpButton, checkContainer, hypothesisButton);
-
+        buttonBox.getChildren().add(navigationBox);
         //root.getChildren().addAll(gridContainer, emptyPane);
         root.getChildren().addAll(gridContainer, buttonBox);
 
@@ -206,14 +210,6 @@ public class GameScene {
     }
 }
 
-     // Fonction pour créer des boutons stylisés
-     private static Button createStyledButton(String text) {
-        Button button = new Button(text);
-        button.setFont(Font.font("Arial", 18));
-        button.setStyle("-fx-background-color: black; -fx-text-fill: white; -fx-padding: 10px 20px; -fx-background-radius: 10;");
-       
-        return button;
-    }
 
    
 }
