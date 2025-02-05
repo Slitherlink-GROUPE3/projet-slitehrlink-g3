@@ -1,4 +1,4 @@
-package main.java.com.tpgr3;
+package com.tpgr3;
 
 // Les slots où l’on peut placer un trait ou une croix
 class Slot extends Cellule {

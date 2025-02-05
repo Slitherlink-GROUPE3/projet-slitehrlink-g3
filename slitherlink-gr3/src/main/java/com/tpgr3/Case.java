@@ -1,4 +1,4 @@
-package main.java.com.tpgr3;
+package com.tpgr3;
 
 // Les cases contenant un chiffre
 class Case extends Cellule {

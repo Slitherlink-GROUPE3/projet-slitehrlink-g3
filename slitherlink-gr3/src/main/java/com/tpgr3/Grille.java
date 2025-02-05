@@ -1,4 +1,4 @@
-package main.java.com.tpgr3;
+package com.tpgr3;
 
 class Grille {
     private Cellule[][] matrice;

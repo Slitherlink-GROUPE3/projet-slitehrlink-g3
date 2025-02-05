@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/This-is-a-test.iml" filepath="$PROJECT_DIR$/.idea/This-is-a-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/menujavafx/menujavafx.iml" filepath="$PROJECT_DIR$/menujavafx/menujavafx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/slitherlink-gr3/slitherlink-gr3.iml" filepath="$PROJECT_DIR$/slitherlink-gr3/slitherlink-gr3.iml" />
+    </modules>
+  </component>
+</project>
