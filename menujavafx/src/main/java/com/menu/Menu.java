@@ -1,12 +1,12 @@
 package com.menu;
 
-import com.menu.SettingScene;
+//import com.menu.SettingScene;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.*;
+//import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.Stack;
 import javafx.scene.control.Button;
