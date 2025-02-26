@@ -11,8 +11,8 @@ class Case extends Cellule {
 
     @Override
     public void actionner() {
-        // Ne fait rien
-        System.err.println("Impossible d'actionner une case");
+        System.out.println("Nous sommes dans la méthode actionner() de " + this.getClass().getSimpleName());
+        System.out.println(afficher());
     }
 
     @Override

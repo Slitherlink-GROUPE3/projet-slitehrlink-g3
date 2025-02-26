@@ -10,7 +10,7 @@ import com.tpgr3.Cellule;
 
 
 
-public class App 
+public class App extends MySleep
 {
     public static void main(String[] args) {
         int[][] valeurs = {
@@ -19,26 +19,19 @@ public class App
             {2, 1, 3}
         };
 
-        Grille grille = new Grille(7, 7, valeurs);
+        Grille grille = new Grille(valeurs);
         grille.afficher();
-        // Test de la méthode actionner() sur une case
-        // On va poser un baton 
-
-        for(int i = 0; i < 5; i++){
-
-            // Test de la méthode actionner() sur une case
-            // On va poser un baton 
-            System.out.println("Actionner la case (0, 5)");
-            // sleep 
-            try {
-                TimeUnit.SECONDS.sleep(2);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        // Test de la méthode actionner() sur toutes les cases
+        for(int y = 0; y < grille.getHauteur(); y++) {
+            for(int x = 0; x < grille.getLargeur(); x++) {                
+                grille.actionnerCelule(x, y);
+                grille.afficher();
+                sleep(1);
             }
-    
-            grille.actionnerCelule(1, 1);
-            grille.afficher();
         }
+        
     }
+
+
 }
+    
