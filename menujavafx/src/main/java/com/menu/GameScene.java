@@ -18,15 +18,57 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+// Importation local
+import com.menu.javafx.TopBar;
+
 public class GameScene {
     private static final int GRID_SIZE = 10;
     private static Pane slitherlinkGrid;
     private static double CELL_SIZE;
     private static StackPane gridContainer;
     private static HBox root;
+    private static VBox mainLayer;
     private static int checkCounter = 3;
 
     public static void show(Stage primaryStage) {
+        
+        mainLayer = new VBox();
+        mainLayer.setStyle("-fx-padding: 0; -fx-background-color: #E5D5B0;"); // Supprime le padding et définit la couleur de fond
+
+        //     TopBar(Stage primaryStage, String pseudoJoueur, String niveau, String difficulte) {
+
+
+        /**
+         * 
+         *  PARTIE LEO : TOPBAR
+         */
+
+
+        TopBar topBar = new TopBar(primaryStage, "Jacoboni", "5", "Facile");
+        // Créer un minuteur qui met à jour le chronomètre chaque seconde
+        java.util.Timer timer = new java.util.Timer();
+        final int[] secondsElapsed = {0};
+        timer.scheduleAtFixedRate(new java.util.TimerTask() {
+            @Override
+            public void run() {
+                secondsElapsed[0]++;
+                int minutes = secondsElapsed[0] / 60;
+                int seconds = secondsElapsed[0] % 60;
+                
+                // Mettre à jour l'interface utilisateur sur le thread JavaFX
+                javafx.application.Platform.runLater(() -> {
+                    topBar.updateChronometer(minutes, seconds);
+                });
+            }
+        }, 0, 1000); // Démarrer tout de suite, mettre à jour chaque seconde
+
+
+        /**
+         * 
+         *  FIN PARTIE LEO : TOPBAR
+         */
+
+
         root = new HBox();
         slitherlinkGrid = new Pane();
         gridContainer = new StackPane(slitherlinkGrid);
@@ -82,8 +124,13 @@ public class GameScene {
         buttonBox.getChildren().add(navigationBox);
         //root.getChildren().addAll(gridContainer, emptyPane);
         root.getChildren().addAll(gridContainer, buttonBox);
+        
 
-        Scene scene = new Scene(root, Screen.getPrimary().getVisualBounds().getWidth(), Screen.getPrimary().getVisualBounds().getHeight());
+        mainLayer.getChildren().add(root);
+        Scene scene = new Scene(mainLayer, Screen.getPrimary().getVisualBounds().getWidth(), Screen.getPrimary().getVisualBounds().getHeight());
+        HBox topBarComponent = topBar.createTopBar(scene);
+        mainLayer.getChildren().add(0, topBarComponent); // Ajout au début (index 0)
+
         root.setStyle("-fx-background-color: #E5D5B0;");
         primaryStage.setScene(scene);
         primaryStage.setTitle("Slitherlink Game");
