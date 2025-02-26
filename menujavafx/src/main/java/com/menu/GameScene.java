@@ -440,16 +440,6 @@ public class GameScene {
     }
     
     private static void toggleCross(Line line) {
-<<<<<<< HEAD
-    boolean hasCross = slitherlinkGrid.getChildren().stream()
-        .anyMatch(node -> node instanceof Line && node.getUserData() == line);
-
-    if (hasCross) {
-        // Supprimer la croix si elle existe
-        slitherlinkGrid.getChildren().removeIf(node -> node instanceof Line && node.getUserData() == line);
-        slitherlinkGrid.getChildren().removeIf(node -> node instanceof Rectangle && node.getUserData() == line);
-    } else {
-=======
         boolean hasCross = slitherlinkGrid.getChildren().stream()
             .anyMatch(node -> node instanceof Line && node.getUserData() == line);
 
@@ -463,56 +453,11 @@ public class GameScene {
     }
     
     private static void createCross(Line line, boolean isHypothesis) {
->>>>>>> Yacine
         // Création des croix selon l'orientation de la ligne
         Line cross1, cross2;
         double padding = 20; // Ajouter un espacement pour la zone cliquable autour de la croix
 
         if (line.getStartX() == line.getEndX()) { // Ligne verticale
-<<<<<<< HEAD
-                cross1 = new Line(
-                    line.getStartX() - 10, line.getStartY() + 20,
-                    line.getEndX() + 10, line.getEndY() - 20
-                );
-                cross2 = new Line(
-                    line.getStartX() - 10, line.getEndY() - 20,
-                    line.getEndX() + 10, line.getStartY() + 20
-                );
-            } else { // Ligne horizontale
-                cross1 = new Line(
-                    line.getStartX() + 20, line.getStartY() - 10,
-                    line.getEndX() - 20, line.getEndY() + 10
-                );
-                cross2 = new Line(
-                    line.getStartX() + 20, line.getEndY() + 10,
-                    line.getEndX() - 20, line.getStartY() - 10
-                );
-            }
-        cross1.setStroke(Color.RED);
-        cross1.setStrokeWidth(2);
-        cross1.setUserData(line);
-        
-        cross2.setStroke(Color.RED);
-        cross2.setStrokeWidth(2);
-        cross2.setUserData(line);
-        
-        // Ajouter une grande hitbox autour de la croix pour la rendre plus facile à cliquer
-        Rectangle hitbox = new Rectangle(
-            Math.min(cross1.getStartX(), cross2.getStartX()) - padding, 
-            Math.min(cross1.getStartY(), cross2.getStartY()) - padding, 
-            Math.abs(cross1.getEndX() - cross1.getStartX()) + 2 * padding, 
-            Math.abs(cross1.getEndY() - cross1.getStartY()) + 2 * padding
-        );
-        hitbox.setFill(Color.TRANSPARENT);
-        hitbox.setUserData(line); // Lier la hitbox à la ligne de la croix
-        hitbox.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.SECONDARY) {
-                toggleCross(line); // Si on clique sur la hitbox, on supprime la croix
-            }
-        });
-        
-        slitherlinkGrid.getChildren().addAll(cross1, cross2, hitbox);
-=======
             cross1 = new Line(
                 line.getStartX() - 10, line.getStartY() + 20,
                 line.getEndX() + 10, line.getEndY() - 20
@@ -576,9 +521,8 @@ public class GameScene {
             cross1.setStroke(Color.RED);
             cross2.setStroke(Color.RED);
         }
->>>>>>> Yacine
     }
-}
+
 
 
     private static Button createStyledButton(String text) {
