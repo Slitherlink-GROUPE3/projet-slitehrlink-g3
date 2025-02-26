@@ -37,50 +37,33 @@ public class GameScene {
         buttonBox.setTranslateX(200);
         buttonBox.setStyle("-fx-background-color: #E5D5B0; -fx-padding: 20;");
 
-        Button helpButton = ButtonFactory.createHelpButton();
-        Button hypothesisButton = ButtonFactory.createHypothesisButton();
-        Button previousButton = ButtonFactory.createImageButton("previous.png");
-        Button nextButton = ButtonFactory.createImageButton("next.png");
-       
-        // Gestion du compteur pour "Check"
+        Button helpButton = createStyledButton("   AIDE   ?  ");
+        Button checkButton = createStyledButton("Check");
+        checkButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;-fx-padding: 10px 20px; -fx-background-radius: 10;");
+
         Text checkCount = new Text(String.valueOf(checkCounter));
         checkCount.setFont(Font.font("Arial", 20));
         checkCount.setFill(Color.BLACK);
 
-        Button[] checkButton = new Button[1]; //  Utilisation d'un tableau pour modifier la variable dans le Runnable
-
-        checkButton[0] = ButtonFactory.createCheckButton(() -> {
+        checkButton.setOnAction(e -> {
             if (checkCounter > 0) {
                 checkCounter--;
                 checkCount.setText(String.valueOf(checkCounter));
                 if (checkCounter == 0) {
-                    checkButton[0].setDisable(true); //checkButton[0] est bien initialisé
+                    checkButton.setDisable(true);
                 }
             }
         });
-        
-        
-        previousButton.setOnAction(e -> System.out.println("Revenir en arrière"));
-        nextButton.setOnAction(e -> System.out.println("Aller vers l'avant"));
-        HBox navigationBox = new HBox(20, previousButton, nextButton);
-        navigationBox.setAlignment(Pos.CENTER);
-        
 
-        // Conteneur pour "Check" + compteur
-        HBox checkContainer = new HBox(15, checkButton[0], checkCount); 
+        HBox checkContainer = new HBox(15, checkButton, checkCount);
         checkContainer.setAlignment(Pos.CENTER);
 
-        
-       
+        Button hypothesisButton = createStyledButton("Hypothèse");
 
-
-        // Lier les largeurs des panneaux pour maintenir 50/50 lors du redimensionnement
         gridContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.5));
         emptyPane.prefWidthProperty().bind(root.widthProperty().multiply(0.5));
 
         buttonBox.getChildren().addAll(helpButton, checkContainer, hypothesisButton);
-        buttonBox.getChildren().add(navigationBox);
-        //root.getChildren().addAll(gridContainer, emptyPane);
         root.getChildren().addAll(gridContainer, buttonBox);
 
         Scene scene = new Scene(root, Screen.getPrimary().getVisualBounds().getWidth(), Screen.getPrimary().getVisualBounds().getHeight());
@@ -208,16 +191,19 @@ public class GameScene {
     }
 
     private static void toggleCross(Line line) {
-        boolean hasCross = slitherlinkGrid.getChildren().stream()
+    boolean hasCross = slitherlinkGrid.getChildren().stream()
         .anyMatch(node -> node instanceof Line && node.getUserData() == line);
 
-        if (hasCross) {
-            slitherlinkGrid.getChildren().removeIf(node -> node instanceof Line && node.getUserData() == line);
-        } else {
-            // Création des croix selon l'orientation de la ligne
-            Line cross1, cross2;
+    if (hasCross) {
+        // Supprimer la croix si elle existe
+        slitherlinkGrid.getChildren().removeIf(node -> node instanceof Line && node.getUserData() == line);
+        slitherlinkGrid.getChildren().removeIf(node -> node instanceof Rectangle && node.getUserData() == line);
+    } else {
+        // Création des croix selon l'orientation de la ligne
+        Line cross1, cross2;
+        double padding = 20; // Ajouter un espacement pour la zone cliquable autour de la croix
 
-            if (line.getStartX() == line.getEndX()) { // Ligne verticale
+        if (line.getStartX() == line.getEndX()) { // Ligne verticale
                 cross1 = new Line(
                     line.getStartX() - 10, line.getStartY() + 20,
                     line.getEndX() + 10, line.getEndY() - 20
@@ -236,17 +222,33 @@ public class GameScene {
                     line.getEndX() - 20, line.getStartY() - 10
                 );
             }
-            cross1.setStroke(Color.RED);
-            cross1.setStrokeWidth(2);
-            cross1.setUserData(line);
-            
-            cross2.setStroke(Color.RED);
-            cross2.setStrokeWidth(2);
-            cross2.setUserData(line);
-            
-            slitherlinkGrid.getChildren().addAll(cross1, cross2);
-        }
+        cross1.setStroke(Color.RED);
+        cross1.setStrokeWidth(2);
+        cross1.setUserData(line);
+        
+        cross2.setStroke(Color.RED);
+        cross2.setStrokeWidth(2);
+        cross2.setUserData(line);
+        
+        // Ajouter une grande hitbox autour de la croix pour la rendre plus facile à cliquer
+        Rectangle hitbox = new Rectangle(
+            Math.min(cross1.getStartX(), cross2.getStartX()) - padding, 
+            Math.min(cross1.getStartY(), cross2.getStartY()) - padding, 
+            Math.abs(cross1.getEndX() - cross1.getStartX()) + 2 * padding, 
+            Math.abs(cross1.getEndY() - cross1.getStartY()) + 2 * padding
+        );
+        hitbox.setFill(Color.TRANSPARENT);
+        hitbox.setUserData(line); // Lier la hitbox à la ligne de la croix
+        hitbox.setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                toggleCross(line); // Si on clique sur la hitbox, on supprime la croix
+            }
+        });
+        
+        slitherlinkGrid.getChildren().addAll(cross1, cross2, hitbox);
     }
+}
+
 
     private static Button createStyledButton(String text) {
         Button button = new Button(text);
