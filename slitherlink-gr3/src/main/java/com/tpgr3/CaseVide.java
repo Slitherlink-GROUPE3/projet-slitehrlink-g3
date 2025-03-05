@@ -7,6 +7,7 @@ public class CaseVide extends Cellule {
 
     @Override
     public void actionner() {
+        super.actionner();
         System.out.println("Case vide, on ne peut pas actionner");
     }
 

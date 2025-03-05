@@ -14,8 +14,8 @@ class Slot extends Cellule {
      */
     @Override
     public void actionner() {
-        debug();// appel à la methode de debug
-        System.out.println("Nous sommes dans la méthode actionner() de " + this.getClass().getName());
+        super.actionner();
+        // debug();// appel à la methode de debug
         if (marque == '-') {
             marque = 'X';
         } else if (marque == 'X') {
@@ -25,15 +25,18 @@ class Slot extends Cellule {
         }
     }
 
+
+    public void clearConsole(){
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
     /*
      * Methode de débug pour afficher les coordonnées du slot et clear la console 
      */
     public void debug() {
-        // clear la console
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        clearConsole();
         System.out.println("Slot (" + x + ", " + y + ")");
-
     }
 
     @Override

@@ -35,22 +35,37 @@ class Grille {
      * @param valeurs Tableau 2D contenant les valeurs des cases numériques.
      */
     private void initialiserGrille(int[][] valeurs) {
+        int nbSlot = 0;
+        int nbCase = 0 ;
+        int nbVide = 0 ;
+
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < largeur; x++) {
-                matrice[y][x] = new CaseVide(x, y);
-                if (x % 2 == 1 && y % 2 == 1) { // Case contenant un chiffre
-                    matrice[y][x] = new Case(x, y, valeurs[y / 2][x / 2]);
-                    System.out.println("Case créée en (" + x + ", " + y + ")");
-                } else if (x % 2 == 0 && y % 2 == 1) { // Slot (emplacement pour des batons et croix)
+
+                /*Ajouter une Case si x et y sont impairs*/
+                if (x % 2 == 1 && y % 2 == 1) {
+                    matrice[y][x] = new Case(x, y, valeurs[y / 2][x / 2]) ;
+                    nbCase ++;
+                    //System.out.println("Case créée en (" + x + ", " + y + ")");
+                
+                /*Ajouter un Slot si x est pair et y est impair ou x est impair et y est pair*/
+                }  if ((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) {
                     matrice[y][x] = new Slot(x, y);
-                    System.out.println("Slot créé en (" + x + ", " + y + ")");
+                    //System.out.println("Slot créé en (" + x + ", " + y + ")");
+                    nbSlot ++;
                 }
-                else if (x % 2 == 1 && y % 2 == 0) { // Slot (emplacement pour des batons et croix)
-                    matrice[y][x] = new Slot(x, y);
-                    System.out.println("Slot créé en (" + x + ", " + y + ")");
+                /* Ajouter une CaseVide si x et y sont pairs */
+                if (x % 2 == 0 && y % 2 == 0) {
+                    matrice[y][x] = new CaseVide(x, y);
+                    //System.out.println("Case vide créé en (" + x + ", " + y + ")");
+                    nbVide++;
                 }
             }
         }
+        System.out.println("Grille initialisée");
+        System.out.println("Nombre de cases créées: " + nbCase);
+        System.out.println("Nombre de slots créés: " + nbSlot);
+        System.out.println("Nombre de cases créées: " + nbVide);
     }
 
     /**
@@ -76,13 +91,26 @@ class Grille {
      * Et impossible de le faire autre part que sur un {@link Slot}.
      */
     public void actionnerCelule(int x, int y){
-        matrice[x][y].actionner(); //comportement différent selon le type de cellule
+        matrice[x][y].actionner();
     }
 
     public int getHauteur() {
         return hauteur;
     }
+
     public int getLargeur() {
         return largeur;
+    }
+
+
+    /**
+     * Vérifie si les indices (x, y) sont valides dans la grille.
+     *
+     * @param x Indice x à vérifier.
+     * @param y Indice y à vérifier.
+     * @return true si les indices sont valides, false sinon.
+     */
+    public boolean estValide(int x, int y) {
+        return x >= 0 && x < largeur && y >= 0 && y < hauteur;
     }
 }

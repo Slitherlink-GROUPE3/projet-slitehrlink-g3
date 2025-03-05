@@ -9,7 +9,10 @@ abstract class Cellule {
         this.y = y;
     }
 
-    public abstract void actionner();
+    public void actionner(){
+        System.out.println("Nous sommes dans la méthode actionner de " + this.getClass().getSimpleName());
+    };
 
     public abstract char afficher();
+    
 }
