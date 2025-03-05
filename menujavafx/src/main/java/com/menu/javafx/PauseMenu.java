@@ -46,7 +46,7 @@ public class PauseMenu {
         });
 
         // Ajouter tous les boutons au menu de pause
-        pauseMenu.getChildren().addAll(resumeButton,tutorialButton, settingsButton, quitButton);
+        pauseMenu.getChildren().addAll(resumeButton, settingsButton, quitButton);
 
         // Créer une scène pour le menu de pause
         Scene pauseScene = new Scene(pauseMenu, 400, 400);
