@@ -1,7 +1,7 @@
 package com.tpgr3;
 
 // Les cases contenant un *chiffre*
-class Case extends Cellule {
+public class Case extends Cellule {
     private int valeur;
 
     public Case(int x, int y, int valeur) {

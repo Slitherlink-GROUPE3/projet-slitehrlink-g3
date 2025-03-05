@@ -4,7 +4,7 @@ package com.tpgr3;
  * Représente une grille de jeu contenant des cellules de type {@link Case} et {@link Slot}.
  * La grille est initialisée avec une matrice de valeurs et organise les cellules en conséquence.
  */
-class Grille {
+public class Grille {
 
     /** Matrice contenant les {@link Case} de la grille. */
     private Cellule[][] matrice;
@@ -112,5 +112,32 @@ class Grille {
      */
     public boolean estValide(int x, int y) {
         return x >= 0 && x < largeur && y >= 0 && y < hauteur;
+    }
+
+    /**
+ * Renvoie le caractère affiché par la cellule à la position (x, y)
+ * @param x Position x de la cellule
+ * @param y Position y de la cellule
+ * @return Le caractère affiché par la cellule, ou ' ' si la cellule n'existe pas
+ */
+    public char afficherCellule(int x, int y) {
+        if (estValide(x, y) && matrice[y][x] != null) {
+            return matrice[y][x].afficher();
+        }
+        return ' ';
+    }
+
+    /**
+     * Renvoie la cellule située aux coordonnées spécifiées.
+     *
+     * @param x Coordonnée x de la cellule
+     * @param y Coordonnée y de la cellule
+     * @return La cellule à la position (x, y), ou null si les coordonnées sont invalides
+     */
+    public Cellule getCellule(int x, int y) {
+        if (estValide(x, y)) {
+            return matrice[y][x];
+        }
+        return null;
     }
 }

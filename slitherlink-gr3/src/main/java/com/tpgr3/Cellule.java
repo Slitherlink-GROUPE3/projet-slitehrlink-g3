@@ -14,5 +14,9 @@ abstract class Cellule {
     };
 
     public abstract char afficher();
+
+    public int getValeur() {
+        return 0;
+    }
     
 }
