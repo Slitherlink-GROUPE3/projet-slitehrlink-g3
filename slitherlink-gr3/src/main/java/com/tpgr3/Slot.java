@@ -6,7 +6,7 @@ class Slot extends Cellule {
 
     public Slot(int x, int y) {
         super(x, y);
-        this.marque = ' ';
+        this.marque =' ';
     }
 
     /*

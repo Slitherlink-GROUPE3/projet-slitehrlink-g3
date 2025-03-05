@@ -49,13 +49,13 @@ public class Grille {
                     //System.out.println("Case créée en (" + x + ", " + y + ")");
                 
                 /*Ajouter un Slot si x est pair et y est impair ou x est impair et y est pair*/
-                }  if ((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) {
+                }  else if ((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) {
                     matrice[y][x] = new Slot(x, y);
                     //System.out.println("Slot créé en (" + x + ", " + y + ")");
                     nbSlot ++;
                 }
                 /* Ajouter une CaseVide si x et y sont pairs */
-                if (x % 2 == 0 && y % 2 == 0) {
+                else if (x % 2 == 0 && y % 2 == 0) {
                     matrice[y][x] = new CaseVide(x, y);
                     //System.out.println("Case vide créé en (" + x + ", " + y + ")");
                     nbVide++;
@@ -100,6 +100,28 @@ public class Grille {
 
     public int getLargeur() {
         return largeur;
+    }
+
+    
+    
+    public Cellule[][] getMatrice() {
+        return matrice;
+    }
+
+    
+    
+    /**
+     * Retourne la cellule à la position spécifiée.
+     *
+     * @param x Indice x de la cellule.
+     * @param y Indice y de la cellule.
+     * @return La cellule à la position spécifiée.
+     */
+    public Cellule getCellule(int x, int y) {
+        if (estValide(x, y)) {
+            return matrice[y][x];
+        }
+        return null;
     }
 
 
