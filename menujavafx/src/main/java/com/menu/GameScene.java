@@ -1,9 +1,19 @@
 package com.menu;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -25,11 +35,9 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-// Importation local
 import com.menu.javafx.TopBar;
 
 public class GameScene {
-    private static final int GRID_SIZE = 10;
     private static Pane slitherlinkGrid;
     private static double CELL_SIZE;
     private static StackPane gridContainer;
@@ -45,6 +53,11 @@ public class GameScene {
     private static Button prevButton;
     private static Button nextButton;
     
+    // Grid numbers from JSON
+    private static int[][] gridNumbers;
+    private static int gridRows; // Added to store grid dimensions
+    private static int gridCols;
+
     // Classe pour représenter un mouvement
     private static class Move {
         private final Line line;
@@ -65,27 +78,146 @@ public class GameScene {
             return action;
         }
         
-        public Color getColor() {
-            return color;
+    }
+
+    // Méthode pour charger la grille depuis un fichier JSON
+    private static int[][] loadGridFromJson(String filePath) {
+        JSONParser parser = new JSONParser();
+        int maxRow = 0;
+        int maxCol = 0;
+        
+        try (InputStream inputStream = GameScene.class.getClassLoader().getResourceAsStream(filePath)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + filePath);
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String jsonContent = reader.lines().collect(Collectors.joining("\n"));
+                JSONObject jsonObject = (JSONObject) parser.parse(jsonContent);
+                JSONArray numbersArray = (JSONArray) jsonObject.get("numbers");
+    
+                // Déterminer la taille de la grille en fonction des coordonnées max
+                for (Object numberObj : numbersArray) {
+                    JSONObject number = (JSONObject) numberObj;
+                    int row = ((Long) number.get("row")).intValue();
+                    int col = ((Long) number.get("col")).intValue();
+                    
+                    if (row > maxRow) maxRow = row;
+                    if (col > maxCol) maxCol = col;
+                }
+    
+                // Création dynamique de la grille avec la bonne taille
+                gridRows = maxRow + 1; // +1 car index 0-based
+                gridCols = maxCol + 1;
+                int[][] numbers = new int[gridRows][gridCols];
+                for (int[] row : numbers) {
+                    java.util.Arrays.fill(row, -1); // Initialisation à -1
+                }
+    
+                // Remplissage des valeurs
+                for (Object numberObj : numbersArray) {
+                    JSONObject number = (JSONObject) numberObj;
+                    int row = ((Long) number.get("row")).intValue();
+                    int col = ((Long) number.get("col")).intValue();
+                    int value = ((Long) number.get("value")).intValue();
+                    numbers[row][col] = value;
+                }
+    
+                return numbers;
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+            System.err.println("Failed to load grid from JSON. Using empty grid.");
+        }
+    
+        return new int[0][0]; // Retourne une grille vide en cas d'erreur
+    }
+    
+    // History navigation methods
+    private static void navigateHistory(int direction) {
+        if (direction < 0 && currentMoveIndex > -1) {
+            // Undo move
+            Move moveToUndo = moveHistory.get(currentMoveIndex);
+            undoMove(moveToUndo);
+            currentMoveIndex--;
+        } else if (direction > 0 && currentMoveIndex < moveHistory.size() - 1) {
+            // Redo move
+            currentMoveIndex++;
+            Move moveToRedo = moveHistory.get(currentMoveIndex);
+            redoMove(moveToRedo);
+        }
+        
+        updateHistoryButtons();
+    }
+
+    private static void undoMove(Move move) {
+        if (move == null) return;
+
+        switch (move.getAction().toString()) {
+            case "line":
+                if (move.getLine() != null) {
+                    move.getLine().setStroke(Color.TRANSPARENT);
+                }
+                break;
+            case "cross":
+                // Remove the cross if it was added
+                slitherlinkGrid.getChildren().removeIf(node -> 
+                    node instanceof Line && node.getUserData() == move.getLine()
+                );
+                break;
+            case "remove_cross":
+                // Recreate the cross
+                createCross(move.getLine(), false);
+                break;
+            case "hypothesis_confirm":
+                // Revert hypothesis changes
+                for (Map.Entry<Line, Color> entry : originalLineStates.entrySet()) {
+                    entry.getKey().setStroke(entry.getValue());
+                }
+                slitherlinkGrid.getChildren().removeIf(node -> 
+                    node instanceof Line && "hypothesis".equals(((Line) node).getUserData())
+                );
+                break;
         }
     }
 
+    private static void redoMove(Move move) {
+        if (move == null) return;
+
+        switch (move.getAction().toString()) {
+            case "line":
+                if (move.getLine() != null) {
+                    move.getLine().setStroke(Color.BLACK);
+                }
+                break;
+            case "cross":
+                createCross(move.getLine(), false);
+                break;
+            case "remove_cross":
+                slitherlinkGrid.getChildren().removeIf(node -> 
+                    node instanceof Line && node.getUserData() == move.getLine()
+                );
+                break;
+            case "hypothesis_confirm":
+                // Same as hypothesis exit, no specific redo action needed
+                break;
+        }
+    }
+
+    private static void updateHistoryButtons() {
+        prevButton.setDisable(currentMoveIndex == -1);
+        nextButton.setDisable(currentMoveIndex >= moveHistory.size() - 1);
+    }
+
     public static void show(Stage primaryStage) {
+        // Charger la grille depuis le fichier JSON
+        gridNumbers = loadGridFromJson("grid.json");
         
         mainLayer = new VBox();
-        mainLayer.setStyle("-fx-padding: 0; -fx-background-color: #E5D5B0;"); // Supprime le padding et définit la couleur de fond
-
-        //     TopBar(Stage primaryStage, String pseudoJoueur, String niveau, String difficulte) {
-
-
-        /**
-         * 
-         *  PARTIE LEO : TOPBAR
-         */
-
+        mainLayer.setStyle("-fx-padding: 0; -fx-background-color: #E5D5B0;");
 
         TopBar topBar = new TopBar(primaryStage, "Jacoboni", "5", "Facile");
-        // Créer un minuteur qui met à jour le chronomètre chaque seconde
+        
+        // Minuteur (code précédent inchangé)
         java.util.Timer timer = new java.util.Timer();
         final int[] secondsElapsed = {0};
         timer.scheduleAtFixedRate(new java.util.TimerTask() {
@@ -95,19 +227,11 @@ public class GameScene {
                 int minutes = secondsElapsed[0] / 60;
                 int seconds = secondsElapsed[0] % 60;
                 
-                // Mettre à jour l'interface utilisateur sur le thread JavaFX
                 javafx.application.Platform.runLater(() -> {
                     topBar.updateChronometer(minutes, seconds);
                 });
             }
-        }, 0, 1000); // Démarrer tout de suite, mettre à jour chaque seconde
-
-
-        /**
-         * 
-         *  FIN PARTIE LEO : TOPBAR
-         */
-
+        }, 0, 1000);
 
         root = new HBox();
         slitherlinkGrid = new Pane();
@@ -119,6 +243,7 @@ public class GameScene {
         buttonBox.setTranslateX(200);
         buttonBox.setStyle("-fx-background-color: #E5D5B0; -fx-padding: 20;");
 
+        // Créer les boutons (code précédent inchangé)
         Button helpButton = createStyledButton("   AIDE   ?  ");
         Button checkButton = createStyledButton("Check");
         checkButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;-fx-padding: 10px 20px; -fx-background-radius: 10;");
@@ -140,15 +265,15 @@ public class GameScene {
         HBox checkContainer = new HBox(15, checkButton, checkCount);
         checkContainer.setAlignment(Pos.CENTER);
 
+        // Bouton Hypothèse (code précédent inchangé)
         Button hypothesisButton = createStyledButton("Hypothèse");
         hypothesisButton.setOnAction(e -> {
             if (!isHypothesisActive) {
-                // Sauvegarde l'état initial
                 originalLineStates.clear();
                 for (Node node : slitherlinkGrid.getChildren()) {
                     if (node instanceof Line) {
                         Line line = (Line) node;
-                        if (line.getUserData() == null) { // Ne sauvegarde que les lignes principales
+                        if (line.getUserData() == null) {
                             originalLineStates.put(line, (Color) line.getStroke());
                         }
                     }
@@ -157,7 +282,7 @@ public class GameScene {
                 isHypothesisActive = true;
                 hypothesisButton.setText("Terminer Hypothèse");
             } else {
-                // Affiche la boîte de dialogue de confirmation
+                // Code de la boîte de dialogue de confirmation (inchangé)
                 Stage dialog = new Stage();
                 VBox dialogVBox = new VBox(10);
                 dialogVBox.setAlignment(Pos.CENTER);
@@ -165,36 +290,32 @@ public class GameScene {
                 Button confirmButton = createStyledButton("Confirmer");
                 Button cancelButton = createStyledButton("Annuler");
                 
+                // ... (reste du code de la boîte de dialogue inchangé)
+                
                 confirmButton.setOnAction(event -> {
-                    // Enregistrer toutes les actions d'hypothèse comme un seul grand mouvement dans l'historique
                     boolean anyChanges = false;
                     
-                    // Traite les lignes
                     for (Line line : originalLineStates.keySet()) {
                         if (line.getStroke() == Color.BLUE) {
-                            line.setStroke(Color.BLACK); // Valide les modifications
+                            line.setStroke(Color.BLACK);
                             anyChanges = true;
                         }
                     }
                     
-                    // Traite les croix d'hypothèse
                     for (Node node : slitherlinkGrid.getChildren()) {
                         if (node instanceof Line && "hypothesis".equals(node.getUserData())) {
                             Line crossLine = (Line) node;
                             crossLine.setStroke(Color.RED);
-                            crossLine.setUserData(null); // Ou une autre valeur qui indique que ce n'est plus une hypothèse
+                            crossLine.setUserData(null);
                             anyChanges = true;
                         }
                     }
                     
-                    // Si des changements ont été effectués, on les ajoute à l'historique
                     if (anyChanges) {
-                        // Supprime les mouvements futurs si on était revenu en arrière
                         if (currentMoveIndex < moveHistory.size() - 1) {
                             moveHistory = new ArrayList<>(moveHistory.subList(0, currentMoveIndex + 1));
                         }
                         
-                        // Ajoute le mouvement d'hypothèse complète à l'historique
                         moveHistory.add(new Move(null, "hypothesis_confirm", null));
                         currentMoveIndex++;
                         updateHistoryButtons();
@@ -207,8 +328,9 @@ public class GameScene {
                 });
 
                 cancelButton.setOnAction(event -> {
+                    // ... (code d'annulation inchangé)
                     for (Map.Entry<Line, Color> entry : originalLineStates.entrySet()) {
-                        entry.getKey().setStroke(entry.getValue()); // Annule les modifications
+                        entry.getKey().setStroke(entry.getValue());
                     }
                     slitherlinkGrid.getChildren().removeIf(node -> 
                         node instanceof Line && "hypothesis".equals(((Line) node).getUserData())
@@ -227,7 +349,7 @@ public class GameScene {
             }
         });
         
-        // Boutons d'historique
+        // Boutons d'historique (code précédent inchangé)
         prevButton = createStyledButton("←");
         prevButton.setDisable(true);
         prevButton.setOnAction(e -> navigateHistory(-1));
@@ -245,11 +367,10 @@ public class GameScene {
         buttonBox.getChildren().addAll(helpButton, checkContainer, hypothesisButton, historyContainer);
         root.getChildren().addAll(gridContainer, buttonBox);
         
-
         mainLayer.getChildren().add(root);
         Scene scene = new Scene(mainLayer, Screen.getPrimary().getVisualBounds().getWidth(), Screen.getPrimary().getVisualBounds().getHeight());
         HBox topBarComponent = topBar.createTopBar(scene);
-        mainLayer.getChildren().add(0, topBarComponent); // Ajout au début (index 0)
+        mainLayer.getChildren().add(0, topBarComponent);
 
         root.setStyle("-fx-background-color: #E5D5B0;");
         primaryStage.setScene(scene);
@@ -265,95 +386,24 @@ public class GameScene {
         updateGrid(scene.getWidth(), scene.getHeight());
     }
     
-    // Méthode pour naviguer dans l'historique
-    private static void navigateHistory(int direction) {
-        // Désactive le mode hypothèse s'il est actif
-        if (isHypothesisActive) {
-            isHypothesisActive = false;
-            // Annule toutes les modifications d'hypothèse
-            for (Map.Entry<Line, Color> entry : originalLineStates.entrySet()) {
-                entry.getKey().setStroke(entry.getValue());
-            }
-            originalLineStates.clear();
-        }
-        
-        if (direction < 0) { // Précédent
-            if (currentMoveIndex >= 0) {
-                Move move = moveHistory.get(currentMoveIndex);
-                undoMove(move);
-                currentMoveIndex--;
-            }
-        } else { // Suivant
-            if (currentMoveIndex < moveHistory.size() - 1) {
-                currentMoveIndex++;
-                Move move = moveHistory.get(currentMoveIndex);
-                redoMove(move);
-            }
-        }
-        
-        updateHistoryButtons();
-    }
-    
-    // Méthode pour annuler un mouvement
-    private static void undoMove(Move move) {
-        if (move.getAction().equals("line")) {
-            move.getLine().setStroke(Color.TRANSPARENT);
-        } else if (move.getAction().equals("cross")) {
-            // Supprime la croix
-            slitherlinkGrid.getChildren().removeIf(node -> 
-                node instanceof Line && node.getUserData() == move.getLine()
-            );
-            slitherlinkGrid.getChildren().removeIf(node -> 
-                node instanceof Rectangle && node.getUserData() == move.getLine()
-            );
-        } else if (move.getAction().equals("remove_cross")) {
-            // Recrée la croix
-            createCross(move.getLine(), false);
-        } else if (move.getAction().equals("hypothesis_confirm")) {
-            // Pour l'instant, on ne peut pas annuler une confirmation d'hypothèse
-            // C'est un cas complexe qui nécessiterait de stocker plus d'informations
-        }
-    }
-    
-    // Méthode pour refaire un mouvement
-    private static void redoMove(Move move) {
-        if (move.getAction().equals("line")) {
-            move.getLine().setStroke(move.getColor());
-        } else if (move.getAction().equals("cross")) {
-            createCross(move.getLine(), false);
-        } else if (move.getAction().equals("remove_cross")) {
-            // Ne rien faire, la croix est déjà supprimée
-        } else if (move.getAction().equals("hypothesis_confirm")) {
-            // Pour l'instant, rien de spécial à faire pour confirmer l'hypothèse
-            // Les changements ont déjà été appliqués
-        }
-    }
-    
-    // Méthode pour mettre à jour l'état des boutons d'historique
-    private static void updateHistoryButtons() {
-        prevButton.setDisable(currentMoveIndex < 0);
-        nextButton.setDisable(currentMoveIndex >= moveHistory.size() - 1);
-    }
-
     private static void updateGrid(double width, double height) {
         slitherlinkGrid.getChildren().clear();
-        CELL_SIZE = Math.min(width / 2, height * 0.8) / (GRID_SIZE + 1);
+        
+        // Calculate CELL_SIZE based on grid dimensions
+        double availableWidth = width / 2;
+        double availableHeight = height * 0.8;
+        double cellWidth = availableWidth / (gridCols + 1);
+        double cellHeight = availableHeight / (gridRows + 1);
+        CELL_SIZE = Math.min(cellWidth, cellHeight);
 
         double marginTop = height * 0.15;
         double offsetX = width * 0.1;
 
-        int[][] numbers = {
-            {3, 3, -1, -1, -1, -1, -1, -1, -1, 0},
-            {-1, -1, 1, 2, -1, -1, -1, -1, -1, 1},
-            {-1, -1, 2, 0, -1, -1, -1, -1, -1, -1},
-            {-1, 1, -1, -1, 1, 1, -1, -1, -1, -1},
-            {-1, 2, -1, -1, -1, -1, -1, -1, -1, -1},
-        };
-
-        for (int i = 0; i < numbers.length; i++) {
-            for (int j = 0; j < numbers[i].length; j++) {
-                if (numbers[i][j] != -1) {
-                    Text numberText = new Text(String.valueOf(numbers[i][j]));
+        // Draw numbers
+        for (int i = 0; i < gridRows; i++) {
+            for (int j = 0; j < gridCols; j++) {
+                if (gridNumbers[i][j] != -1) {
+                    Text numberText = new Text(String.valueOf(gridNumbers[i][j]));
                     numberText.setFont(Font.font(28));
                     numberText.setFill(Color.BLACK);
 
@@ -367,9 +417,10 @@ public class GameScene {
             }
         }
 
-        for (int i = 0; i <= GRID_SIZE; i++) {
-            for (int j = 0; j <= GRID_SIZE; j++) {
-                if (j < GRID_SIZE) {
+        // Draw horizontal and vertical lines
+        for (int i = 0; i <= gridRows; i++) {
+            for (int j = 0; j <= gridCols; j++) {
+                if (j < gridCols) { // Horizontal lines
                     Line horizontalLine = new Line(
                         j * CELL_SIZE + offsetX + CELL_SIZE * 0.1,
                         i * CELL_SIZE + marginTop,
@@ -389,7 +440,7 @@ public class GameScene {
                     slitherlinkGrid.getChildren().addAll(horizontalLine, hitbox);
                 }
 
-                if (i < GRID_SIZE) {
+                if (i < gridRows) { // Vertical lines
                     Line verticalLine = new Line(
                         j * CELL_SIZE + offsetX,
                         i * CELL_SIZE + marginTop + CELL_SIZE * 0.1,
@@ -411,8 +462,9 @@ public class GameScene {
             }
         }
 
-        for (int i = 0; i <= GRID_SIZE; i++) {
-            for (int j = 0; j <= GRID_SIZE; j++) {
+        // Draw dots
+        for (int i = 0; i <= gridRows; i++) {
+            for (int j = 0; j <= gridCols; j++) {
                 Circle dot = new Circle(j * CELL_SIZE + offsetX, i * CELL_SIZE + marginTop, 7, Color.BLACK);
                 slitherlinkGrid.getChildren().add(dot);
             }
@@ -569,8 +621,6 @@ public class GameScene {
             cross2.setStroke(Color.RED);
         }
     }
-
-
 
     private static Button createStyledButton(String text) {
         Button button = new Button(text);
