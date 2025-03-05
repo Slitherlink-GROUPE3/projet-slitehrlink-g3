@@ -2,6 +2,7 @@ com/menu/GridComponent.class
 com/menu/GameScene.class
 com/menu/SettingScene.class
 com/menu/TitleComponent.class
+com/menu/GameScene$1.class
 com/menu/ButtonFactory.class
 com/menu/TechniquesScene.class
 com/menu/Menu.class
