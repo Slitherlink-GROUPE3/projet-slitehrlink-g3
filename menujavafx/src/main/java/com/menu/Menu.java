@@ -135,6 +135,9 @@ public class Menu extends Application {
         Tooltip.install(tutorialButton,tooltipTutorialButton);
         
 
+
+
+        
         // Actions des boutons
         adventureButton.setOnAction(e -> {
             animateButtonClick(adventureButton);
