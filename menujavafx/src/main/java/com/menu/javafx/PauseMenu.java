@@ -6,10 +6,32 @@ import com.menu.Menu;
 import com.menu.SettingScene;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Button; 
+import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 public class PauseMenu {
+
+    // Variables statiques pour stocker l'état du jeu
+    private static Scene previousGameScene;
+    private static int currentMinutes;
+    private static int currentSeconds;
+    private static TopBar topBar;
+    private static boolean isGamePaused = false;
+
+    // Méthode pour sauvegarder l'état actuel
+    public static void saveGameState(Scene gameScene, int minutes, int seconds, TopBar gameTopBar) {
+        previousGameScene = gameScene;
+        currentMinutes = minutes;
+        currentSeconds = seconds;
+        topBar = gameTopBar;
+        isGamePaused = true; // Définir comme en pause quand on entre dans le menu
+    }
+
+    // Méthode pour vérifier si le jeu est en pause
+    public static boolean isGamePaused() {
+        return isGamePaused;
+    }
 
     public static void show(Stage primaryStage) {
         // Conteneur principal pour le menu de pause
@@ -20,8 +42,22 @@ public class PauseMenu {
         // Bouton "Reprendre"
         Button resumeButton = ButtonFactory.createStyledButton("Reprendre");
         resumeButton.setOnAction(e -> {
-            // Ferme le menu de pause et revient au jeu
-            GameScene.show(primaryStage);  
+            // Désactiver l'état de pause avant de revenir au jeu
+            isGamePaused = false;
+            
+            // Restaure la scène précédente au lieu d'en créer une nouvelle
+            if (previousGameScene != null) {
+                primaryStage.setScene(previousGameScene);
+                primaryStage.setTitle("Slitherlink");
+                
+                // Restaurer l'affichage du chronomètre si nécessaire
+                if (topBar != null) {
+                    topBar.updateChronometer(currentMinutes, currentSeconds);
+                }
+            } else {
+                // Si pas de scène sauvegardée (cas improbable), revenir à une nouvelle
+                GameScene.show(primaryStage);
+            }
         });
 
         // Bouton "Tutoriel"
@@ -36,13 +72,11 @@ public class PauseMenu {
             SettingScene.show(primaryStage); // Appelle la scène des paramètres
         });
 
-        
-
         // Bouton "Quitter la partie"
         Button quitButton = ButtonFactory.createStyledButton("Quitter la partie");
         quitButton.setOnAction(e -> {
             // Revient au menu principal sans fermer l'application
-            Menu.show(primaryStage); 
+            Menu.show(primaryStage);
         });
 
         // Ajouter tous les boutons au menu de pause

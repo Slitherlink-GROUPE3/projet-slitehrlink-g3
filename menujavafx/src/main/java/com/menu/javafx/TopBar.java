@@ -8,12 +8,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.animation.ScaleTransition;
+import javafx.util.Duration;
 import javafx.stage.Stage;
 
 /**
@@ -27,10 +33,16 @@ public class TopBar {
     private final String difficulte;
     private HBox topBarContainer;
     private Label chronoLabel;
+    private Runnable chronoResetCallback;
 
-    // Constante pour stylizé la barre
-    private static final String BACKGROUND_COLOR = "#4a90e2";
-    /* private static final String HOVER_COLOR = "#3a80d2"; */
+    // Constantes de couleurs du Menu (même palette que GameScene)
+    private static final String MAIN_COLOR = "#3A7D44"; // Vert principal
+    private static final String SECONDARY_COLOR = "#F2E8CF"; // Beige clair
+    private static final String ACCENT_COLOR = "#BC4749"; // Rouge-brique
+    private static final String DARK_COLOR = "#386641"; // Vert foncé
+    private static final String LIGHT_COLOR = "#A7C957"; // Vert clair
+    
+    // Constantes pour stylizé la barre
     private static final double BASE_FONT_SIZE = 14;
     private static final double MIN_FONT_SIZE = 12;
     private static final double MAX_FONT_SIZE = 20;
@@ -48,6 +60,11 @@ public class TopBar {
         this.pseudoJoueur = pseudoJoueur;
         this.niveau = niveau;
         this.difficulte = difficulte;
+    }
+
+    // Ajouter une méthode pour définir la fonction de réinitialisation
+    public void setChronoResetCallback(Runnable resetCallback) {
+        this.chronoResetCallback = resetCallback;
     }
 
     // Getters
@@ -76,9 +93,15 @@ public class TopBar {
     public HBox createTopBar(Scene scene) {
         // Main container
         topBarContainer = new HBox();
+        
+        // Utilisez un dégradé linéaire comme dans GameScene
+        String gradientStyle = "-fx-background-color: linear-gradient(to right, " + DARK_COLOR + ", " + MAIN_COLOR + ");";
+        
         topBarContainer.setStyle(
-                "-fx-background-color: " + BACKGROUND_COLOR + "; " +
-                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);");
+                gradientStyle + 
+                "-fx-background-radius: 0 0 15 15;" +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);");
+        
         topBarContainer.setPadding(new Insets(12, 20, 12, 20));
         topBarContainer.setSpacing(15);
         topBarContainer.setAlignment(Pos.CENTER_LEFT);
@@ -145,17 +168,41 @@ public class TopBar {
         controlsBox.setSpacing(20);
         controlsBox.setAlignment(Pos.CENTER_RIGHT);
 
-        // Timer
+        // Timer avec style amélioré
         chronoLabel = new Label("00:00");
-        chronoLabel.setFont(Font.font("Arial", FontWeight.BOLD, BASE_FONT_SIZE));
+        chronoLabel.setFont(Font.font("Montserrat", FontWeight.BOLD, 22));
         chronoLabel.setTextFill(Color.WHITE);
-        chronoLabel.setEffect(new DropShadow(5, Color.BLACK));
+        
+        // Ajoutez un effet plus visible pour le chronomètre
+        DropShadow chronoShadow = new DropShadow();
+        chronoShadow.setColor(Color.web("#000000", 0.5));
+        chronoShadow.setRadius(5);
+        chronoShadow.setOffsetY(2);
+        Glow glow = new Glow(0.3);
+        glow.setInput(chronoShadow);
+        chronoLabel.setEffect(glow);
+        
+        // Conteneur pour le chronomètre avec un style comme dans GameScene
+        HBox chronoContainer = new HBox(chronoLabel);
+        chronoContainer.setAlignment(Pos.CENTER);
+        chronoContainer.setPadding(new Insets(5, 15, 5, 15));
+        chronoContainer.setStyle(
+            "-fx-background-color: rgba(255, 255, 255, 0.2);" +
+            "-fx-background-radius: 15;" +
+            "-fx-border-color: rgba(255, 255, 255, 0.4);" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 15;"
+        );
 
-        // Create action buttons
+        // Create action buttons - même style que GameScene
         Button retryButton = createActionButton("Réessayer");
         Button pauseButton = createActionButton("Pause");
 
+        // Code du bouton Réessayer (même qu'avant)
         retryButton.setOnAction(e -> {
+            // Animation de clic
+            animateButtonClick(retryButton);
+            
             // Constants for dialog styling (match GameScene's style)
             String MAIN_COLOR = "#3A7D44"; // Vert principal
             String SECONDARY_COLOR = "#F2E8CF"; // Beige clair
@@ -172,7 +219,7 @@ public class TopBar {
             Label titleLabel = new Label("Recommencer le niveau");
             titleLabel.setFont(Font.font("Montserrat", FontWeight.BOLD, 20));
             titleLabel.setTextFill(Color.web(DARK_COLOR));
-            
+        
             // Add shadow effect to title
             javafx.scene.effect.DropShadow shadow = new javafx.scene.effect.DropShadow();
             shadow.setColor(Color.web("#000000", 0.3));
@@ -181,7 +228,8 @@ public class TopBar {
             titleLabel.setEffect(shadow);
         
             // Create message
-            Label messageLabel = new Label("Voulez-vous vraiment recommencer ce niveau?\nToute progression non sauvegardée sera perdue.");
+            Label messageLabel = new Label(
+                    "Voulez-vous vraiment recommencer ce niveau?\nToute progression non sauvegardée sera perdue.");
             messageLabel.setFont(Font.font("Calibri", 16));
             messageLabel.setTextFill(Color.web(DARK_COLOR));
             messageLabel.setAlignment(Pos.CENTER);
@@ -192,27 +240,25 @@ public class TopBar {
             yesButton.setFont(Font.font("Montserrat", FontWeight.BOLD, 16));
             yesButton.setTextFill(Color.WHITE);
             yesButton.setStyle(
-                "-fx-background-color: " + MAIN_COLOR + ";" +
-                "-fx-background-radius: 30;" +
-                "-fx-border-color: " + DARK_COLOR + ";" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 30;" +
-                "-fx-padding: 8 20;" +
-                "-fx-cursor: hand;"
-            );
-            
+                    "-fx-background-color: " + MAIN_COLOR + ";" +
+                            "-fx-background-radius: 30;" +
+                            "-fx-border-color: " + DARK_COLOR + ";" +
+                            "-fx-border-width: 2;" +
+                            "-fx-border-radius: 30;" +
+                            "-fx-padding: 8 20;" +
+                            "-fx-cursor: hand;");
+        
             Button noButton = new Button("Non");
             noButton.setFont(Font.font("Montserrat", FontWeight.BOLD, 16));
             noButton.setTextFill(Color.web(DARK_COLOR));
             noButton.setStyle(
-                "-fx-background-color: " + SECONDARY_COLOR + ";" +
-                "-fx-background-radius: 30;" +
-                "-fx-border-color: " + MAIN_COLOR + ";" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 30;" +
-                "-fx-padding: 8 20;" +
-                "-fx-cursor: hand;"
-            );
+                    "-fx-background-color: " + SECONDARY_COLOR + ";" +
+                            "-fx-background-radius: 30;" +
+                            "-fx-border-color: " + MAIN_COLOR + ";" +
+                            "-fx-border-width: 2;" +
+                            "-fx-border-radius: 30;" +
+                            "-fx-padding: 8 20;" +
+                            "-fx-cursor: hand;");
         
             // Add shadow effect to buttons
             javafx.scene.effect.DropShadow buttonShadow = new javafx.scene.effect.DropShadow();
@@ -221,40 +267,38 @@ public class TopBar {
             buttonShadow.setOffsetY(2);
             yesButton.setEffect(buttonShadow);
             noButton.setEffect(buttonShadow);
-            
+        
             // Add hover effects for buttons
             yesButton.setOnMouseEntered(ev -> {
                 yesButton.setStyle(
-                    "-fx-background-color: " + DARK_COLOR + ";" +
-                    "-fx-background-radius: 30;" +
-                    "-fx-border-color: " + MAIN_COLOR + ";" +
-                    "-fx-border-width: 2;" +
-                    "-fx-border-radius: 30;" +
-                    "-fx-padding: 8 20;" +
-                    "-fx-cursor: hand;"
-                );
-                
+                        "-fx-background-color: " + DARK_COLOR + ";" +
+                                "-fx-background-radius: 30;" +
+                                "-fx-border-color: " + MAIN_COLOR + ";" +
+                                "-fx-border-width: 2;" +
+                                "-fx-border-radius: 30;" +
+                                "-fx-padding: 8 20;" +
+                                "-fx-cursor: hand;");
+        
                 // Animation de mise à l'échelle
                 javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
-                    javafx.util.Duration.millis(200), yesButton);
+                        javafx.util.Duration.millis(200), yesButton);
                 scaleTransition.setToX(1.05);
                 scaleTransition.setToY(1.05);
                 scaleTransition.play();
             });
-            
+        
             yesButton.setOnMouseExited(ev -> {
                 yesButton.setStyle(
-                    "-fx-background-color: " + MAIN_COLOR + ";" +
-                    "-fx-background-radius: 30;" +
-                    "-fx-border-color: " + DARK_COLOR + ";" +
-                    "-fx-border-width: 2;" +
-                    "-fx-border-radius: 30;" +
-                    "-fx-padding: 8 20;" +
-                    "-fx-cursor: hand;"
-                );
+                        "-fx-background-color: " + MAIN_COLOR + ";" +
+                                "-fx-background-radius: 30;" +
+                                "-fx-border-color: " + DARK_COLOR + ";" +
+                                "-fx-border-width: 2;" +
+                                "-fx-border-radius: 30;" +
+                                "-fx-padding: 8 20;" +
+                                "-fx-cursor: hand;");
                 
                 javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
-                    javafx.util.Duration.millis(200), yesButton);
+                        javafx.util.Duration.millis(200), yesButton);
                 scaleTransition.setToX(1.0);
                 scaleTransition.setToY(1.0);
                 scaleTransition.play();
@@ -262,18 +306,17 @@ public class TopBar {
             
             noButton.setOnMouseEntered(ev -> {
                 noButton.setStyle(
-                    "-fx-background-color: " + MAIN_COLOR + ";" +
-                    "-fx-background-radius: 30;" +
-                    "-fx-border-color: " + DARK_COLOR + ";" +
-                    "-fx-border-width: 2;" +
-                    "-fx-border-radius: 30;" +
-                    "-fx-padding: 8 20;" +
-                    "-fx-cursor: hand;"
-                );
+                        "-fx-background-color: " + MAIN_COLOR + ";" +
+                                "-fx-background-radius: 30;" +
+                                "-fx-border-color: " + DARK_COLOR + ";" +
+                                "-fx-border-width: 2;" +
+                                "-fx-border-radius: 30;" +
+                                "-fx-padding: 8 20;" +
+                                "-fx-cursor: hand;");
                 noButton.setTextFill(Color.WHITE);
                 
                 javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
-                    javafx.util.Duration.millis(200), noButton);
+                        javafx.util.Duration.millis(200), noButton);
                 scaleTransition.setToX(1.05);
                 scaleTransition.setToY(1.05);
                 scaleTransition.play();
@@ -281,18 +324,17 @@ public class TopBar {
             
             noButton.setOnMouseExited(ev -> {
                 noButton.setStyle(
-                    "-fx-background-color: " + SECONDARY_COLOR + ";" +
-                    "-fx-background-radius: 30;" +
-                    "-fx-border-color: " + MAIN_COLOR + ";" +
-                    "-fx-border-width: 2;" +
-                    "-fx-border-radius: 30;" +
-                    "-fx-padding: 8 20;" +
-                    "-fx-cursor: hand;"
-                );
+                        "-fx-background-color: " + SECONDARY_COLOR + ";" +
+                                "-fx-background-radius: 30;" +
+                                "-fx-border-color: " + MAIN_COLOR + ";" +
+                                "-fx-border-width: 2;" +
+                                "-fx-border-radius: 30;" +
+                                "-fx-padding: 8 20;" +
+                                "-fx-cursor: hand;");
                 noButton.setTextFill(Color.web(DARK_COLOR));
                 
                 javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
-                    javafx.util.Duration.millis(200), noButton);
+                        javafx.util.Duration.millis(200), noButton);
                 scaleTransition.setToX(1.0);
                 scaleTransition.setToY(1.0);
                 scaleTransition.play();
@@ -308,12 +350,11 @@ public class TopBar {
             dialogVBox.setAlignment(Pos.CENTER);
             dialogVBox.setPadding(new Insets(25));
             dialogVBox.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, " + SECONDARY_COLOR + ", white);" +
-                "-fx-background-radius: 15;" +
-                "-fx-border-color: " + MAIN_COLOR + ";" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 15;"
-            );
+                    "-fx-background-color: linear-gradient(to bottom, " + SECONDARY_COLOR + ", white);" +
+                            "-fx-background-radius: 15;" +
+                            "-fx-border-color: " + MAIN_COLOR + ";" +
+                            "-fx-border-width: 2;" +
+                            "-fx-border-radius: 15;");
         
             // Create scene with the dialog layout
             Scene dialogScene = new Scene(dialogVBox, 400, 250);
@@ -323,12 +364,12 @@ public class TopBar {
             yesButton.setOnAction(event -> {
                 // Animation for button click
                 javafx.animation.ScaleTransition scaleDown = new javafx.animation.ScaleTransition(
-                    javafx.util.Duration.millis(100), yesButton);
+                        javafx.util.Duration.millis(100), yesButton);
                 scaleDown.setToX(0.95);
                 scaleDown.setToY(0.95);
                 
                 javafx.animation.ScaleTransition scaleUp = new javafx.animation.ScaleTransition(
-                    javafx.util.Duration.millis(100), yesButton);
+                        javafx.util.Duration.millis(100), yesButton);
                 scaleUp.setToX(1.0);
                 scaleUp.setToY(1.0);
                 
@@ -341,13 +382,14 @@ public class TopBar {
                     // Reset the timer to 00:00
                     updateChronometer(0, 0);
                     
-                    // TODO: Add code to reset the game grid/level
-                    // This should be implemented according to your game's architecture
-                    // For example: gameController.resetLevel();
+                    // Reset the chronometer logic if callback exists
+                    if (chronoResetCallback != null) {
+                        chronoResetCallback.run();
+                    }
                     
                     // Close with fade animation
                     javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
-                        javafx.util.Duration.millis(300), dialogVBox);
+                            javafx.util.Duration.millis(300), dialogVBox);
                     fadeOut.setFromValue(1);
                     fadeOut.setToValue(0);
                     fadeOut.setOnFinished(ev -> dialog.close());
@@ -359,12 +401,12 @@ public class TopBar {
             noButton.setOnAction(event -> {
                 // Animation for button click
                 javafx.animation.ScaleTransition scaleDown = new javafx.animation.ScaleTransition(
-                    javafx.util.Duration.millis(100), noButton);
+                        javafx.util.Duration.millis(100), noButton);
                 scaleDown.setToX(0.95);
                 scaleDown.setToY(0.95);
                 
                 javafx.animation.ScaleTransition scaleUp = new javafx.animation.ScaleTransition(
-                    javafx.util.Duration.millis(100), noButton);
+                        javafx.util.Duration.millis(100), noButton);
                 scaleUp.setToX(1.0);
                 scaleUp.setToY(1.0);
                 
@@ -373,7 +415,7 @@ public class TopBar {
                     
                     // Close with fade animation
                     javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
-                        javafx.util.Duration.millis(300), dialogVBox);
+                            javafx.util.Duration.millis(300), dialogVBox);
                     fadeOut.setFromValue(1);
                     fadeOut.setToValue(0);
                     fadeOut.setOnFinished(ev -> dialog.close());
@@ -385,7 +427,7 @@ public class TopBar {
             // Fade in animation when showing the dialog
             dialogVBox.setOpacity(0);
             javafx.animation.FadeTransition fadeIn = new javafx.animation.FadeTransition(
-                javafx.util.Duration.millis(300), dialogVBox);
+                    javafx.util.Duration.millis(300), dialogVBox);
             fadeIn.setFromValue(0);
             fadeIn.setToValue(1);
             fadeIn.play();
@@ -395,12 +437,23 @@ public class TopBar {
         });
 
         pauseButton.setOnAction(e -> {
-            // TODO: Implement pause logic
-            // System.out.println("Game pause requested");
+            // Animation de clic
+            animateButtonClick(pauseButton);
+            
+            // Extraire les minutes et secondes du chronoLabel (format "MM:SS")
+            String timeText = chronoLabel.getText();
+            String[] parts = timeText.split(":");
+            int minutes = Integer.parseInt(parts[0]);
+            int seconds = Integer.parseInt(parts[1]);
+
+            // Sauvegarder l'état du jeu avant de passer au menu pause
+            PauseMenu.saveGameState(primaryStage.getScene(), minutes, seconds, this);
+
+            // Afficher le menu pause
             PauseMenu.show(primaryStage);
         });
 
-        HBox chronoLabelContainer = new HBox(chronoLabel);
+        HBox chronoLabelContainer = new HBox(chronoContainer);
         HBox retryButtonContainer = new HBox(retryButton);
         HBox pauseButtonContainer = new HBox(pauseButton);
 
@@ -421,18 +474,31 @@ public class TopBar {
      * @return VBox containing the labeled field
      */
     private VBox createInfoLabel(String title, String value) {
-        VBox container = new VBox(3);
+        VBox container = new VBox(5);
         container.setAlignment(Pos.CENTER_LEFT);
+        container.setPadding(new Insets(5, 10, 5, 10));
+        container.setStyle(
+            "-fx-background-color: rgba(255, 255, 255, 0.15);" +
+            "-fx-background-radius: 10;" +
+            "-fx-border-color: rgba(255, 255, 255, 0.3);" +
+            "-fx-border-width: 1;" +
+            "-fx-border-radius: 10;"
+        );
 
         Label titleLabel = new Label(title);
-        titleLabel.setFont(Font.font("Arial", FontWeight.NORMAL, BASE_FONT_SIZE - 2));
-        titleLabel.setTextFill(Color.WHITE);
-        titleLabel.setEffect(new DropShadow(3, Color.BLACK));
+        titleLabel.setFont(Font.font("Montserrat", FontWeight.NORMAL, BASE_FONT_SIZE - 2));
+        titleLabel.setTextFill(Color.web(SECONDARY_COLOR));
 
         Label valueLabel = new Label(value);
-        valueLabel.setFont(Font.font("Arial", FontWeight.BOLD, BASE_FONT_SIZE));
+        valueLabel.setFont(Font.font("Montserrat", FontWeight.BOLD, BASE_FONT_SIZE + 2));
         valueLabel.setTextFill(Color.WHITE);
-        valueLabel.setEffect(new DropShadow(5, Color.BLACK));
+        
+        // Effet d'ombre sur le texte de valeur
+        DropShadow textShadow = new DropShadow();
+        textShadow.setColor(Color.web("#000000", 0.5));
+        textShadow.setRadius(2);
+        textShadow.setOffsetY(1);
+        valueLabel.setEffect(textShadow);
 
         container.getChildren().addAll(titleLabel, valueLabel);
         return container;
@@ -445,33 +511,81 @@ public class TopBar {
      * @return Styled Button
      */
     private Button createActionButton(String text) {
-        Button button = ButtonFactory.createAnimatedButton(text);
+        Button button = new Button(text);
+        button.setFont(Font.font("Montserrat", FontWeight.BOLD, BASE_FONT_SIZE + 2));
+        button.setTextFill(Color.web(DARK_COLOR));
 
+        // Style comme les boutons de GameScene
         button.setStyle(
-                "-fx-background-color: white; " +
-                        "-fx-text-fill: #303030; " +
-                        "-fx-font-size: " + BASE_FONT_SIZE + "px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-padding: 8px 12px; " +
-                        "-fx-background-radius: 5px;");
+                "-fx-background-color: " + SECONDARY_COLOR + ";" +
+                "-fx-background-radius: 20;" +
+                "-fx-border-color: " + MAIN_COLOR + ";" +
+                "-fx-border-width: 2;" +
+                "-fx-border-radius: 20;" +
+                "-fx-padding: 8 15;" +
+                "-fx-cursor: hand;");
+        
+        // Ajouter un effet d'ombre
+        DropShadow buttonShadow = new DropShadow();
+        buttonShadow.setColor(Color.web("#000000", 0.3));
+        buttonShadow.setRadius(4);
+        buttonShadow.setOffsetY(2);
+        button.setEffect(buttonShadow);
 
-        button.setOnMouseEntered(e -> button.setStyle(
-                "-fx-background-color: #f0f0f0; " +
-                        "-fx-text-fill: #303030; " +
-                        "-fx-font-size: " + BASE_FONT_SIZE + "px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-padding: 8px 12px; " +
-                        "-fx-background-radius: 5px;"));
+        // Hover effect
+        button.setOnMouseEntered(e -> {
+            button.setStyle(
+                "-fx-background-color: " + MAIN_COLOR + ";" +
+                "-fx-background-radius: 20;" +
+                "-fx-border-color: " + DARK_COLOR + ";" +
+                "-fx-border-width: 2;" +
+                "-fx-border-radius: 20;" +
+                "-fx-padding: 8 15;" +
+                "-fx-cursor: hand;");
+            button.setTextFill(Color.WHITE);
+            
+            // Animation d'échelle
+            ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), button);
+            scaleTransition.setToX(1.05);
+            scaleTransition.setToY(1.05);
+            scaleTransition.play();
+        });
 
-        button.setOnMouseExited(e -> button.setStyle(
-                "-fx-background-color: white; " +
-                        "-fx-text-fill: #303030; " +
-                        "-fx-font-size: " + BASE_FONT_SIZE + "px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-padding: 8px 12px; " +
-                        "-fx-background-radius: 5px;"));
+        button.setOnMouseExited(e -> {
+            button.setStyle(
+                "-fx-background-color: " + SECONDARY_COLOR + ";" +
+                "-fx-background-radius: 20;" +
+                "-fx-border-color: " + MAIN_COLOR + ";" +
+                "-fx-border-width: 2;" +
+                "-fx-border-radius: 20;" +
+                "-fx-padding: 8 15;" +
+                "-fx-cursor: hand;");
+            button.setTextFill(Color.web(DARK_COLOR));
+            
+            // Animation d'échelle inverse
+            ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), button);
+            scaleTransition.setToX(1.0);
+            scaleTransition.setToY(1.0);
+            scaleTransition.play();
+        });
 
         return button;
+    }
+    
+    /**
+     * Animation pour les clics de bouton
+     */
+    private void animateButtonClick(Button button) {
+        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), button);
+        scaleDown.setToX(0.95);
+        scaleDown.setToY(0.95);
+
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), button);
+        scaleUp.setToX(1.0);
+        scaleUp.setToY(1.0);
+
+        scaleDown.setOnFinished(e -> scaleUp.play());
+        scaleDown.play();
     }
 
     /**
