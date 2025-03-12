@@ -19,4 +19,9 @@ public class Case extends Cellule {
     public char afficher() {
         return (char) ('0' + valeur); // Affiche le chiffre
     }
+    
+    @Override
+    public int getValeur() {
+        return valeur;
+    }
 }
