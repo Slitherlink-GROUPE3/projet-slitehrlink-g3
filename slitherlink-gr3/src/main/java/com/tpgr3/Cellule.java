@@ -18,5 +18,13 @@ abstract class Cellule {
     public int getValeur() {
         return 0;
     }
+
+    /*getters */
+    public int getX() {
+        return x;
+    }
+    public int getY() {
+        return y;
+    }
     
 }
