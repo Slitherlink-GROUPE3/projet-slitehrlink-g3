@@ -1,17 +1,23 @@
 package com.tpgr3;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Représente une grille de jeu contenant des cellules de type {@link Case} et {@link Slot}.
+ * Représente une grille de jeu contenant des cellules de type {@link Case} et {@link Slot} {@link CaseVide}.
  * La grille est initialisée avec une matrice de valeurs et organise les cellules en conséquence.
  */
 public class Grille {
 
-    /** Matrice contenant les {@link Case} de la grille. */
+    /** Matrice contenant les {@link Cellule} de la grille. */
     private Cellule[][] matrice;
 
     /** Dimensions de la grille. */
     private int largeur;
     private int hauteur;
+
+    /* Sauvagarde des valeurs des cases donnés en parametre*/
+    private int[][] valeurs;
 
     /**
      * Constructeur de la classe Grille.
@@ -22,6 +28,7 @@ public class Grille {
         this.hauteur = valeurs.length * 2 + 1;
         this.largeur = valeurs[0].length * 2 + 1;
         this.matrice = new Cellule[hauteur][largeur];
+        this.valeurs = valeurs;
 
         initialiserGrille(valeurs);
     }
@@ -31,6 +38,7 @@ public class Grille {
      * en fonction de leur position dans la matrice.
      * Les {@link Cases} sont initialisées sur x et y impairs, 
      * Les {@link Slots} sur x et y pairs.
+     * Le reste c'est des {@link CaseVide}.
      *
      * @param valeurs Tableau 2D contenant les valeurs des cases numériques.
      */
@@ -67,6 +75,7 @@ public class Grille {
         System.out.println("Nombre de slots créés: " + nbSlot);
         System.out.println("Nombre de cases créées: " + nbVide);
     }
+
 
     /**
      * Affiche la grille dans la console.
@@ -165,5 +174,54 @@ public class Grille {
             }
         }
     }
+    /**
+     * Retourne une liste des cases adjacentes à la cellule spécifiée.
+     * Seules les cellules de type {@link Case} sont incluses.
+     *
+     * @param cellule La cellule dont on cherche les voisins.
+     * @return Une liste des cases adjacentes.
+     */
+    public List<Case> getVoisin(Cellule cellule) {
+        List<Case> voisins = new ArrayList<>();
+
+        // Récupérer les coordonnées de la cellule
+        int x = cellule.getX();
+        int y = cellule.getY();
+
+        // Parcours des 8 cases adjacentes dans un rayon de 2 cases
+        for (int dy = -2; dy <= 2; dy += 2) {
+            for (int dx = -2; dx <= 2; dx += 2) {
+                if (dx == 0 && dy == 0) continue; // Ignorer la cellule actuelle
+
+                int nx = x + dx;
+                int ny = y + dy;
+
+                // Vérifier si les coordonnées sont valides
+                if (estValide(nx, ny)) {
+                    Cellule celluleVoisine = matrice[ny][nx];
+                    // Vérifier si la cellule est de type Case
+                    if (celluleVoisine instanceof Case) {
+                        voisins.add((Case) celluleVoisine);
+                    }
+                }
+            }
+        }
+
+        return voisins;
+    }
+
+    /* -------- [Methode sur la grille des valeurs ] ------------ */
+    /**
+    * Vérifie si les indices (i, j) sont valides dans la matrice valeurs.
+    *
+    * @param i Indice de ligne dans la matrice valeurs.
+    * @param j Indice de colonne dans la matrice valeurs.
+    * @return true si les indices sont valides, false sinon.
+    */
+    private boolean estValideBis(int i, int j) {
+        return i >= 0 && i < valeurs.length && j >= 0 && j < valeurs[0].length;
+    }
+
+    
 
 }
