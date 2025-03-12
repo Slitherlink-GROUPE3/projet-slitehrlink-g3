@@ -25,7 +25,7 @@ public class App extends MySleep{
                 for(int x = 0; x < grille.getLargeur(); x++) {                
                     grille.actionnerCelule(x, y);
                     grille.afficher();
-                    //sleep(1);
+                    sleep(1);
                 }
             }
         }

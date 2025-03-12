@@ -87,29 +87,35 @@ public class Grille {
     }
 
     /**
-     * Methode qui permet de poser un baton sur un {@link Slot} de la grille.
-     * Et impossible de le faire autre part que sur un {@link Slot}.
+     * Methode qui permet de poser une Cellule sur un {@link Slot} de la grille.
+     * Comportement different selon le type de Cellules.
      */
     public void actionnerCelule(int x, int y){
         matrice[x][y].actionner();
     }
 
+    /*
+     * Retourne la hauteur de la grille
+     */
     public int getHauteur() {
         return hauteur;
     }
 
+    /*
+     * Retourne la largeur de la grille
+     */
     public int getLargeur() {
         return largeur;
     }
-
-    
-    
+   
+    /*
+     * Retourne la matrice complete
+     */
     public Cellule[][] getMatrice() {
         return matrice;
     }
 
-    
-    
+        
     /**
      * Retourne la cellule à la position spécifiée.
      *
@@ -136,30 +142,28 @@ public class Grille {
         return x >= 0 && x < largeur && y >= 0 && y < hauteur;
     }
 
-    /**
- * Renvoie le caractère affiché par la cellule à la position (x, y)
- * @param x Position x de la cellule
- * @param y Position y de la cellule
- * @return Le caractère affiché par la cellule, ou ' ' si la cellule n'existe pas
- */
-    public char afficherCellule(int x, int y) {
-        if (estValide(x, y) && matrice[y][x] != null) {
-            return matrice[y][x].afficher();
-        }
-        return ' ';
-    }
 
     /**
-     * Renvoie la cellule située aux coordonnées spécifiées.
-     *
-     * @param x Coordonnée x de la cellule
-     * @param y Coordonnée y de la cellule
-     * @return La cellule à la position (x, y), ou null si les coordonnées sont invalides
+     * Réinitialise la grille à son état initial.
      */
-    public Cellule getCellule(int x, int y) {
-        if (estValide(x, y)) {
-            return matrice[y][x];
+    public void reinitialiser() {
+        for (int y = 0; y < hauteur; y++) {
+            for (int x = 0; x < largeur; x++) {
+
+                /*Ajouter une CaseVide si x et y sont pairs*/
+                if (x % 2 == 0 && y % 2 == 0) {
+                    matrice[y][x] = new CaseVide(x, y);
+                }
+                /*Ajouter une Case si x et y sont impairs*/
+                else if (x % 2 == 1 && y % 2 == 1) {
+                    matrice[y][x] = new Case(x, y, 0); // Initialiser avec une valeur par défaut (0)
+                }
+                /*Ajouter un Slot si x est pair et y est impair ou x est impair et y est pair*/
+                else if ((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) {
+                    matrice[y][x] = new Slot(x, y);
+                }
+            }
         }
-        return null;
     }
+
 }

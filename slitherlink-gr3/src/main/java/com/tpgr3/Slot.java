@@ -1,12 +1,15 @@
 package com.tpgr3;
+import com.tpgr3.EtatSlot.Baton;
+import com.tpgr3.EtatSlot.Croix;
+import com.tpgr3.EtatSlot.Marque;
+import com.tpgr3.EtatSlot.Neutre;
 
-// Les slots où l’on peut placer un trait ou une croix
 class Slot extends Cellule {
-    private char marque; // '-' pour trait, 'X' pour croix, ' ' pour vide
+    private Marque marque;
 
     public Slot(int x, int y) {
         super(x, y);
-        this.marque =' ';
+        this.marque = new Neutre();
     }
 
     /*
@@ -15,16 +18,17 @@ class Slot extends Cellule {
     @Override
     public void actionner() {
         super.actionner();
+        System.out.println("contenu : '" + marque.afficher() + "'");
+
         // debug();// appel à la methode de debug
-        if (marque == '-') {
-            marque = 'X';
-        } else if (marque == 'X') {
-            marque = ' ';
+        if (marque instanceof Baton) {
+            marque = new Croix();
+        } else if (marque instanceof Croix) {
+            marque = new Neutre();
         } else {
-            marque = '-';
+            marque = new Baton();
         }
     }
-
 
     public void clearConsole(){
         System.out.print("\033[H\033[2J");
@@ -41,6 +45,6 @@ class Slot extends Cellule {
 
     @Override
     public char afficher() {
-        return marque; // Affiche le symbole du slot
+        return marque.afficher(); // Affiche le symbole du slot
     }
 }
