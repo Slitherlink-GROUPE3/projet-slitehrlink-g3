@@ -103,6 +103,14 @@ public class GameScene {
         }
     }
 
+    private static int[][] gameMatrix; // Matrice représentant l'état complet du jeu
+    private static final int EMPTY = 0;      // Cellule vide ou segment vide
+    private static final int LINE = 1;       // Segment avec une ligne
+    private static final int CROSS = 2;      // Segment avec une croix
+    private static final int HYPOTHESIS = 3; // Segment avec une ligne en hypothèse
+    private static final int DOT = -1;       // Point de connexion
+
+
     // Méthode pour charger la grille depuis un fichier JSON
     private static int[][] loadGridFromJson(String filePath) {
         JSONParser parser = new JSONParser();
@@ -232,6 +240,7 @@ public class GameScene {
     public static void show(Stage primaryStage) {
         // Charger la grille depuis le fichier JSON
         gridNumbers = loadGridFromJson("grid.json");
+        initializeGameMatrix();
         
         mainLayer = new VBox();
         mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SECONDARY_COLOR + ";");
@@ -904,6 +913,13 @@ public class GameScene {
                 }
             }
         }
+        
+        System.out.println("\n ");
+        System.out.println("\n ");
+        System.out.println("\n ");
+        getSimplifiedGameMatrix();
+        printSimplifiedGameMatrix();
+
     }
     /**
      * Méthode à appeler lors d'un clic sur le bouton "Check"
@@ -1540,5 +1556,222 @@ public class GameScene {
     private static boolean isLineActive(Line line) {
         Color lineColor = (Color) line.getStroke();
         return lineColor != null && !lineColor.equals(Color.TRANSPARENT);
+    }
+
+    /**
+ * Initialise la matrice du jeu avec une taille basée sur la grille actuelle
+ * et la remplit avec les valeurs initiales.
+ */
+private static void initializeGameMatrix() {
+    // Pour une grille avec gridRows x gridCols de cellules, on a besoin d'une matrice
+    // de taille (2*gridRows+1) x (2*gridCols+1)
+    int matrixRows = 2 * gridRows + 1;
+    int matrixCols = 2 * gridCols + 1;
+    gameMatrix = new int[matrixRows][matrixCols];
+    
+    // Initialisation de la matrice
+    for (int i = 0; i < matrixRows; i++) {
+        for (int j = 0; j < matrixCols; j++) {
+            // Positions des points (coordonnées paires)
+            if (i % 2 == 0 && j % 2 == 0) {
+                gameMatrix[i][j] = DOT;
+            }
+            // Positions des chiffres (coordonnées impaires)
+            else if (i % 2 == 1 && j % 2 == 1) {
+                int gridRow = i / 2;
+                int gridCol = j / 2;
+                if (gridRow < gridRows && gridCol < gridCols) {
+                    gameMatrix[i][j] = gridNumbers[gridRow][gridCol];
+                } else {
+                    gameMatrix[i][j] = EMPTY;
+                }
+            }
+            // Positions des segments (une coordonnée paire, une impaire)
+            else {
+                gameMatrix[i][j] = EMPTY;
+            }
+        }
+    }
+    
+    // Mettre à jour la matrice avec l'état actuel des lignes et des croix
+    updateGameMatrix();
+}
+
+/**
+ * Met à jour la matrice du jeu avec l'état actuel des lignes et des croix
+ */
+/**
+ * Met à jour la matrice du jeu avec l'état actuel des lignes et des croix
+ */
+private static void updateGameMatrix() {
+    // Parcourir toutes les lignes et mettre à jour la matrice
+    for (Map.Entry<String, Line> entry : gridLines.entrySet()) {
+        String lineKey = entry.getKey();
+        Line line = entry.getValue();
+        
+        // Extraire les coordonnées et le type de la ligne
+        String[] parts = lineKey.split("_");
+        char type = parts[0].charAt(0);
+        int i = Integer.parseInt(parts[1]);
+        int j = Integer.parseInt(parts[2]);
+        
+        // Calculer la position dans la matrice
+        int matrixRow = (type == 'H') ? 2 * i : 2 * i + 1;
+        int matrixCol = (type == 'H') ? 2 * j + 1 : 2 * j;
+        
+        // Déterminer l'état de la ligne
+        if (isColorEqual((Color)line.getStroke(), Color.web(DARK_COLOR))) {
+            gameMatrix[matrixRow][matrixCol] = LINE;
+        } else if (isColorEqual((Color)line.getStroke(), Color.web(LIGHT_COLOR))) {
+            gameMatrix[matrixRow][matrixCol] = HYPOTHESIS;
+        } else if (hasCross(line)) {
+            gameMatrix[matrixRow][matrixCol] = CROSS;
+        } else {
+            gameMatrix[matrixRow][matrixCol] = EMPTY;
+        }
+    }
+}
+
+/**
+ * Retourne la matrice représentant l'état actuel du jeu
+ */
+public static int[][] getGameMatrix() {
+    // Mettre à jour la matrice avant de la retourner
+    updateGameMatrix();
+    return gameMatrix;
+}
+
+
+    /**
+ * Crée et retourne une matrice simplifiée qui contient uniquement les chiffres 
+ * et l'état des segments autour de chaque cellule
+ * 
+ * @return Une matrice 3D de taille gridRows x gridCols x 5 où chaque cellule contient:
+ *         [0]: la valeur du chiffre dans la case (-1 si pas de chiffre)
+ *         [1]: l'état du segment du haut
+ *         [2]: l'état du segment de droite
+ *         [3]: l'état du segment du bas
+ *         [4]: l'état du segment de gauche
+ *         où les états des segments sont:
+ *           0: pas de segment
+ *           1: segment (ligne)
+ *           2: croix
+ *           3: segment en mode hypothèse
+ */
+    public static int[][][] getSimplifiedGameMatrix() {
+        // Mise à jour de la matrice complète
+        updateGameMatrix();
+        
+        // Création de la matrice simplifiée
+        int[][][] simplifiedMatrix = new int[gridRows][gridCols][5];
+        
+        // Parcourir chaque cellule de la grille
+        for (int row = 0; row < gridRows; row++) {
+            for (int col = 0; col < gridCols; col++) {
+                // Position dans la matrice complète (coordonnées impaires pour les chiffres)
+                int i = 2 * row + 1;
+                int j = 2 * col + 1;
+                
+                // Récupérer le chiffre
+                simplifiedMatrix[row][col][0] = gameMatrix[i][j];
+                
+                // État des segments autour
+                simplifiedMatrix[row][col][1] = gameMatrix[i-1][j];    // segment du haut
+                simplifiedMatrix[row][col][2] = gameMatrix[i][j+1];    // segment de droite
+                simplifiedMatrix[row][col][3] = gameMatrix[i+1][j];    // segment du bas
+                simplifiedMatrix[row][col][4] = gameMatrix[i][j-1];    // segment de gauche
+            }
+        }
+        
+        return simplifiedMatrix;
+    }
+
+    /**
+     * Affiche la matrice simplifiée dans la console de manière visuelle
+     */
+    private static void printSimplifiedGameMatrix() {
+        int[][][] simplifiedMatrix = getSimplifiedGameMatrix();
+        
+        System.out.println("\n==== ÉTAT ACTUEL DE LA GRILLE ====");
+        System.out.println("Légende: [ ] vide, [─] ligne, [X] croix, [~] hypothèse, [·] valeur non définie");
+        System.out.println();
+        
+        // Afficher la bordure supérieure
+        System.out.print("    ");
+        for (int j = 0; j < gridCols; j++) {
+            System.out.print("+-----");
+        }
+        System.out.println("+");
+        
+        for (int i = 0; i < gridRows; i++) {
+            // Ligne du haut avec les segments horizontaux supérieurs
+            System.out.print("    ");
+            for (int j = 0; j < gridCols; j++) {
+                System.out.print("|  ");
+                printSegment(simplifiedMatrix[i][j][1]); // segment du haut
+                System.out.print("  ");
+            }
+            System.out.println("|");
+            
+            // Ligne du milieu avec les segments verticaux et la valeur
+            System.out.printf(" %2d ", i);
+            for (int j = 0; j < gridCols; j++) {
+                // Segment gauche
+                System.out.print(j == 0 ? "|" : " ");
+                printSegment(simplifiedMatrix[i][j][4]); // segment de gauche
+                
+                // Valeur centrale
+                int value = simplifiedMatrix[i][j][0];
+                if (value == -1) {
+                    System.out.print(" · ");
+                } else {
+                    System.out.printf(" %d ", value);
+                }
+                
+                // Segment droit
+                printSegment(simplifiedMatrix[i][j][2]); // segment de droite
+            }
+            System.out.println("|");
+            
+            // Ligne du bas avec les segments horizontaux inférieurs
+            System.out.print("    ");
+            for (int j = 0; j < gridCols; j++) {
+                System.out.print("|  ");
+                printSegment(simplifiedMatrix[i][j][3]); // segment du bas
+                System.out.print("  ");
+            }
+            System.out.println("|");
+            
+            // Séparateur horizontal entre les lignes
+            System.out.print("    ");
+            for (int j = 0; j < gridCols; j++) {
+                System.out.print("+-----");
+            }
+            System.out.println("+");
+        }
+        
+        System.out.println();
+    }
+
+    /**
+     * Affiche un caractère représentant l'état d'un segment
+     */
+    private static void printSegment(int segmentState) {
+        switch (segmentState) {
+            case EMPTY:
+                System.out.print(" "); // Espace pour segment vide
+                break;
+            case LINE:
+                System.out.print("─"); // Tiret pour ligne
+                break;
+            case CROSS:
+                System.out.print("X"); // X pour croix
+                break;
+            case HYPOTHESIS:
+                System.out.print("~"); // Tilde pour hypothèse
+                break;
+            default:
+                System.out.print("?"); // Point d'interrogation pour valeur inattendue
+        }
     }
 }
