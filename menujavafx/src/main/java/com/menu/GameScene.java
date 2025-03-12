@@ -53,12 +53,27 @@ import com.menu.javafx.PauseMenu;
 import com.menu.javafx.TopBar;
 
 public class GameScene {
-    // Constantes de couleurs du Menu
-    private static final String MAIN_COLOR = "#3A7D44"; // Vert principal
-    private static final String SECONDARY_COLOR = "#F2E8CF"; // Beige clair
-    private static final String ACCENT_COLOR = "#BC4749"; // Rouge-brique
-    private static final String DARK_COLOR = "#386641"; // Vert foncé
-    private static final String LIGHT_COLOR = "#A7C957"; // Vert clair
+    // Add at the top of the GameScene class, replacing your current color
+    // constants:
+    private static String MAIN_COLOR;
+    private static String SECONDARY_COLOR;
+    private static String ACCENT_COLOR;
+    private static String DARK_COLOR;
+    private static String LIGHT_COLOR;
+
+    // Light theme constants
+    private static final String LIGHT_MAIN_COLOR = "#3A7D44"; // Vert principal
+    private static final String LIGHT_SECONDARY_COLOR = "#F2E8CF"; // Beige clair
+    private static final String LIGHT_ACCENT_COLOR = "#BC4749"; // Rouge-brique
+    private static final String LIGHT_DARK_COLOR = "#386641"; // Vert foncé
+    private static final String LIGHT_LIGHT_COLOR = "#A7C957"; // Vert clair
+
+    // Dark theme constants
+    private static final String DARK_MAIN_COLOR = "#4c8b5d"; // Vert principal (plus lumineux)
+    private static final String DARK_SECONDARY_COLOR = "#1a1a1a"; // Gris très foncé
+    private static final String DARK_ACCENT_COLOR = "#e05d5f"; // Rouge-brique (plus lumineux)
+    private static final String DARK_DARK_COLOR = "#2d3b2d"; // Vert très foncé
+    private static final String DARK_LIGHT_COLOR = "#6a8844";
 
     private static Pane slitherlinkGrid;
     private static double CELL_SIZE;
@@ -83,6 +98,25 @@ public class GameScene {
     private static int gridCols;
 
     private static Map<String, Line> gridLines = new HashMap<>();
+
+    // Add a method to apply the current theme:
+    private static void applyTheme() {
+        boolean isDarkMode = SettingScene.isDarkModeEnabled();
+
+        if (isDarkMode) {
+            MAIN_COLOR = DARK_MAIN_COLOR;
+            SECONDARY_COLOR = DARK_SECONDARY_COLOR;
+            ACCENT_COLOR = DARK_ACCENT_COLOR;
+            DARK_COLOR = DARK_DARK_COLOR;
+            LIGHT_COLOR = DARK_LIGHT_COLOR;
+        } else {
+            MAIN_COLOR = LIGHT_MAIN_COLOR;
+            SECONDARY_COLOR = LIGHT_SECONDARY_COLOR;
+            ACCENT_COLOR = LIGHT_ACCENT_COLOR;
+            DARK_COLOR = LIGHT_DARK_COLOR;
+            LIGHT_COLOR = LIGHT_LIGHT_COLOR;
+        }
+    }
 
     private static class Move {
         private final Line line;
@@ -232,13 +266,19 @@ public class GameScene {
     }
 
     public static void show(Stage primaryStage) {
+
+        applyTheme();
+
         // Charger la grille depuis le fichier JSON
         gridNumbers = loadGridFromJson("grid.json");
 
         mainLayer = new VBox();
         mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SECONDARY_COLOR + ";");
 
-        TopBar topBar = new TopBar(primaryStage, "Jacoboni", "5", "Facile");
+        String username = UserManager.getCurrentUser();
+        System.out.println("Logged in as: " + username);
+
+        TopBar topBar = new TopBar(primaryStage, username, "5", "Facile");
 
         java.util.Timer timer = new java.util.Timer();
         final int[] secondsElapsed = { 0 };
@@ -269,6 +309,31 @@ public class GameScene {
             javafx.application.Platform.runLater(() -> {
                 topBar.updateChronometer(0, 0);
             });
+        });
+
+        // Configuration du callback pour réinitialiser la grille
+        topBar.setGridResetCallback(() -> {
+            // Recréer la grille de jeu
+            slitherlinkGrid.getChildren().clear();
+            originalLineStates.clear();
+            savedLineStates.clear();
+            savedCrossStates.clear();
+
+            // Réinitialise le compteur de vérifications
+            checkCounter = 3;
+
+            // Réinitialise le mode hypothèse
+            isHypothesisActive = false;
+
+            // Réinitialiser l'historique des mouvements
+            moveHistory.clear();
+            currentMoveIndex = -1;
+
+            // Reconstruire la grille
+            updateGrid(root.getScene().getWidth(), root.getScene().getHeight());
+
+            // Mettre à jour les boutons d'historique
+            updateHistoryButtons();
         });
 
         root = new HBox();
@@ -1547,5 +1612,32 @@ public class GameScene {
     private static boolean isLineActive(Line line) {
         Color lineColor = (Color) line.getStroke();
         return lineColor != null && !lineColor.equals(Color.TRANSPARENT);
+    }
+
+    /**
+     * Updates the UI with the current theme settings
+     * Can be called from SettingScene when theme changes
+     */
+    public static void updateTheme(Stage primaryStage) {
+        applyTheme();
+
+        // If the game is already displayed, refresh it
+        if (root != null) {
+            // Update background colors
+            String gradientStyle = SettingScene.isDarkModeEnabled()
+                    ? "linear-gradient(to bottom right, " + SECONDARY_COLOR + ", " + DARK_COLOR + " 70%);"
+                    : "linear-gradient(to bottom right, " + SECONDARY_COLOR + ", " + LIGHT_COLOR + " 70%);";
+
+            root.setStyle(
+                    "-fx-background-color: " + gradientStyle +
+                            "-fx-background-radius: 0;" +
+                            "-fx-padding: 20px;");
+
+            // Update other UI elements as needed
+            // ...
+
+            // Refresh the grid
+            updateGrid(root.getScene().getWidth(), root.getScene().getHeight());
+        }
     }
 }

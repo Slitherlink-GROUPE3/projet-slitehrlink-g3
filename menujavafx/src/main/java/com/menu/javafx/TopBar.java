@@ -34,6 +34,8 @@ public class TopBar {
     private HBox topBarContainer;
     private Label chronoLabel;
     private Runnable chronoResetCallback;
+    private Runnable gridResetCallback;
+    
 
     // Constantes de couleurs du Menu (même palette que GameScene)
     private static final String MAIN_COLOR = "#3A7D44"; // Vert principal
@@ -65,6 +67,10 @@ public class TopBar {
     // Ajouter une méthode pour définir la fonction de réinitialisation
     public void setChronoResetCallback(Runnable resetCallback) {
         this.chronoResetCallback = resetCallback;
+    }
+
+    public void setGridResetCallback(Runnable resetCallback) {
+        this.gridResetCallback = resetCallback;
     }
 
     // Getters
@@ -385,6 +391,11 @@ public class TopBar {
                     // Reset the chronometer logic if callback exists
                     if (chronoResetCallback != null) {
                         chronoResetCallback.run();
+                    }
+                    
+                    // Ajoutez ceci : Reset the grid if callback exists
+                    if (gridResetCallback != null) {
+                        gridResetCallback.run();
                     }
                     
                     // Close with fade animation
