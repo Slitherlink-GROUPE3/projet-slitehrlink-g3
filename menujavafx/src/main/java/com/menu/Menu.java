@@ -135,7 +135,9 @@ public class Menu extends Application {
         
         adventureButton.setOnAction(e -> {
             animateButtonClick(adventureButton);
-            GameScene.show(primaryStage);
+            //GameScene.show(primaryStage);
+            GridScene.show(primaryStage);
+
         });
         
         freeModeButton.setOnAction(e -> {
