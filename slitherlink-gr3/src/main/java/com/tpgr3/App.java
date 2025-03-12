@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import com.tpgr3.Case;
 import com.tpgr3.Slot;
 import com.tpgr3.Cellule;
-import com.tpgr3.Techniques.Techniques3_3Cote; 
+import com.tpgr3.Techniques.Techniques3diag; 
 
 public class App extends MySleep{
     public static void main(String[] args) {
@@ -25,6 +25,7 @@ public class App extends MySleep{
         Grille grille = new Grille(valeurs);
         grille.afficher();
 
+<<<<<<< HEAD
         /*Iteration de la grille , boucle 4 fois pour tester la methode actionner de toutes les celllules */
         for (int j = 3 ; j >= 0 ; j--) {
             for(int y = 0; y < grille.getHauteur(); y++) {
@@ -35,6 +36,8 @@ public class App extends MySleep{
                 }
             }
         }
+=======
+>>>>>>> c55fe9fa8a3487b81669d1b599640618e04ce14d
 
         // Afficher les voisins d'une cellule
         Cellule c = grille.getCellule(1, 1);
@@ -52,7 +55,7 @@ public class App extends MySleep{
 
 
         // Création d'une instance de votre technique
-        Techniques3_3Cote technique = new Techniques3_3Cote();
+        Techniques3diag technique = new Techniques3diag();
         
         // Test de la technique
         boolean estApplicable = technique.estApplicable(grille);
