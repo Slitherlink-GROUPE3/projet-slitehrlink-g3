@@ -30,7 +30,7 @@ public class TopBar {
     
     // Constante pour stylizé la barre 
     private static final String BACKGROUND_COLOR = "#4a90e2";
-    private static final String HOVER_COLOR = "#3a80d2";
+    /*private static final String HOVER_COLOR = "#3a80d2";*/
     private static final double BASE_FONT_SIZE = 14;
     private static final double MIN_FONT_SIZE = 12;
     private static final double MAX_FONT_SIZE = 20;
