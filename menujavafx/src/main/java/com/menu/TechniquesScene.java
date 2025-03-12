@@ -9,14 +9,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-public class SettingScene {
+public class TechniquesScene {
     public static void show(Stage primaryStage) {
         VBox root = new VBox(20); // 20px d'espacement entre les éléments
         root.setAlignment(javafx.geometry.Pos.TOP_CENTER); // Aligner en haut au centre
         root.setStyle("-fx-padding: 20;"); // Ajouter un peu d'espace en haut
 
         // Texte
-        Text label = new Text("Settings Scene");
+        Text label = new Text("Techniques Scene");
         label.setFont(Font.font("Arial", 24));
         label.setFill(Color.DARKBLUE);
         label.setStyle("-fx-font-weight: bold;");
