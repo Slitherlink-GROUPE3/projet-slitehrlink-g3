@@ -138,6 +138,14 @@ public class GameScene {
         }
     }
 
+    private static int[][] gameMatrix; // Matrice représentant l'état complet du jeu
+    private static final int EMPTY = 0;      // Cellule vide ou segment vide
+    private static final int LINE = 1;       // Segment avec une ligne
+    private static final int CROSS = 2;      // Segment avec une croix
+    private static final int HYPOTHESIS = 3; // Segment avec une ligne en hypothèse
+    private static final int DOT = -1;       // Point de connexion
+
+
     // Méthode pour charger la grille depuis un fichier JSON
     private static int[][] loadGridFromJson(String filePath) {
         JSONParser parser = new JSONParser();
@@ -272,6 +280,8 @@ public class GameScene {
         // Charger la grille depuis le fichier JSON
         gridNumbers = loadGridFromJson("grid.json");
 
+        initializeGameMatrix();
+        
         mainLayer = new VBox();
         mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SECONDARY_COLOR + ";");
 
@@ -979,6 +989,13 @@ public class GameScene {
                 }
             }
         }
+        
+        System.out.println("\n ");
+        System.out.println("\n ");
+        System.out.println("\n ");
+        getSimplifiedGameMatrix();
+        printSimplifiedGameMatrix();
+
     }
 
     /**
@@ -1322,23 +1339,58 @@ public class GameScene {
 
         // Récupérer toutes les lignes actives
         for (Line line : gridLines.values()) {
-            if (line.getStroke() == Color.web(DARK_COLOR) || line.getStroke() == Color.web(LIGHT_COLOR)) {
+            // Modification ici : vérifier si la ligne n'est pas transparente
+            if (line.getStroke() != null && !line.getStroke().equals(Color.TRANSPARENT)) {
                 activeLines.add(line);
             }
         }
-
-        // Si aucune ligne n'est tracée, la solution est invalide
-        if (activeLines.isEmpty()) {
-            return false;
+        
+        // Debug: Imprimer le nombre de lignes actives et leurs couleurs
+        System.out.println("Nombre de lignes actives : " + activeLines.size());
+        for (Line line : activeLines) {
+            System.out.println("Ligne active : " + line.getId() + " - Couleur : " + line.getStroke());
         }
-
-        // Vérifier que les nombres correspondent aux lignes adjacentes
-        if (!checkNumbers()) {
-            return false;
+        
+        // Vérifier les nombres de cellules
+        boolean numbersCheck = checkNumbers();
+        System.out.println("Vérification des nombres : " + numbersCheck);
+        
+        // Vérifier le circuit fermé
+        boolean singleLoopCheck = checkSingleClosedLoop(activeLines);
+        System.out.println("Vérification du circuit fermé : " + singleLoopCheck);
+        
+        // Vérifier la connexité des cellules
+        boolean cellsCheck = areCellsFullyConnected(activeLines);
+        System.out.println("Vérification des cellules : " + cellsCheck);
+        
+        // Debug: Vérifier chaque cellule individuellement
+        for (int i = 0; i < gridRows; i++) {
+            for (int j = 0; j < gridCols; j++) {
+                int number = gridNumbers[i][j];
+                if (number != -1) {
+                    int lineCount = countAdjacentLines(i, j);
+                    System.out.println("Cellule [" + i + "," + j + "] : nombre attendu = " + number + ", lignes actuelles = " + lineCount);
+                }
+            }
         }
+        
+        // Retourne true seulement si toutes les conditions sont remplies
+        return numbersCheck && singleLoopCheck && cellsCheck;
+    }
 
-        // Vérifier que les lignes forment un seul circuit fermé
-        return checkSingleClosedLoop(activeLines);
+    private static boolean areCellsFullyConnected(List<Line> activeLines) {
+        for (int i = 0; i < gridRows; i++) {
+            for (int j = 0; j < gridCols; j++) {
+                int number = gridNumbers[i][j];
+                if (number != -1) {
+                    int lineCount = countAdjacentLines(i, j);
+                    if (lineCount != number) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -1370,33 +1422,33 @@ public class GameScene {
         // Vérifier la ligne du haut
         String topLineKey = "H_" + row + "_" + col;
         Line topLine = gridLines.get(topLineKey);
-        if (topLine != null
-                && (topLine.getStroke() == Color.web(DARK_COLOR) || topLine.getStroke() == Color.web(LIGHT_COLOR))) {
+        if (topLine != null && topLine.getStroke() != null && !topLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
+            System.out.println("Ligne du haut [" + topLineKey + "] est active");
         }
 
         // Vérifier la ligne du bas
         String bottomLineKey = "H_" + (row + 1) + "_" + col;
         Line bottomLine = gridLines.get(bottomLineKey);
-        if (bottomLine != null && (bottomLine.getStroke() == Color.web(DARK_COLOR)
-                || bottomLine.getStroke() == Color.web(LIGHT_COLOR))) {
+        if (bottomLine != null && bottomLine.getStroke() != null && !bottomLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
+            System.out.println("Ligne du bas [" + bottomLineKey + "] est active");
         }
 
         // Vérifier la ligne de gauche
         String leftLineKey = "V_" + row + "_" + col;
         Line leftLine = gridLines.get(leftLineKey);
-        if (leftLine != null
-                && (leftLine.getStroke() == Color.web(DARK_COLOR) || leftLine.getStroke() == Color.web(LIGHT_COLOR))) {
+        if (leftLine != null && leftLine.getStroke() != null && !leftLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
+            System.out.println("Ligne de gauche [" + leftLineKey + "] est active");
         }
 
         // Vérifier la ligne de droite
         String rightLineKey = "V_" + row + "_" + (col + 1);
         Line rightLine = gridLines.get(rightLineKey);
-        if (rightLine != null && (rightLine.getStroke() == Color.web(DARK_COLOR)
-                || rightLine.getStroke() == Color.web(LIGHT_COLOR))) {
+        if (rightLine != null && rightLine.getStroke() != null && !rightLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
+            System.out.println("Ligne de droite [" + rightLineKey + "] est active");
         }
 
         return count;
@@ -1638,6 +1690,220 @@ public class GameScene {
 
             // Refresh the grid
             updateGrid(root.getScene().getWidth(), root.getScene().getHeight());
+
+   * Initialise la matrice du jeu avec une taille basée sur la grille actuelle
+   * et la remplit avec les valeurs initiales.
+   */
+  private static void initializeGameMatrix() {
+      // Pour une grille avec gridRows x gridCols de cellules, on a besoin d'une matrice
+      // de taille (2*gridRows+1) x (2*gridCols+1)
+      int matrixRows = 2 * gridRows + 1;
+      int matrixCols = 2 * gridCols + 1;
+      gameMatrix = new int[matrixRows][matrixCols];
+
+      // Initialisation de la matrice
+      for (int i = 0; i < matrixRows; i++) {
+          for (int j = 0; j < matrixCols; j++) {
+              // Positions des points (coordonnées paires)
+              if (i % 2 == 0 && j % 2 == 0) {
+                  gameMatrix[i][j] = DOT;
+              }
+              // Positions des chiffres (coordonnées impaires)
+              else if (i % 2 == 1 && j % 2 == 1) {
+                  int gridRow = i / 2;
+                  int gridCol = j / 2;
+                  if (gridRow < gridRows && gridCol < gridCols) {
+                      gameMatrix[i][j] = gridNumbers[gridRow][gridCol];
+                  } else {
+                      gameMatrix[i][j] = EMPTY;
+                  }
+              }
+              // Positions des segments (une coordonnée paire, une impaire)
+              else {
+                  gameMatrix[i][j] = EMPTY;
+              }
+          }
+      }
+
+      // Mettre à jour la matrice avec l'état actuel des lignes et des croix
+      updateGameMatrix();
+  }
+
+  /**
+   * Met à jour la matrice du jeu avec l'état actuel des lignes et des croix
+   */
+  /**
+   * Met à jour la matrice du jeu avec l'état actuel des lignes et des croix
+   */
+  private static void updateGameMatrix() {
+      // Parcourir toutes les lignes et mettre à jour la matrice
+      for (Map.Entry<String, Line> entry : gridLines.entrySet()) {
+          String lineKey = entry.getKey();
+          Line line = entry.getValue();
+
+          // Extraire les coordonnées et le type de la ligne
+          String[] parts = lineKey.split("_");
+          char type = parts[0].charAt(0);
+          int i = Integer.parseInt(parts[1]);
+          int j = Integer.parseInt(parts[2]);
+
+          // Calculer la position dans la matrice
+          int matrixRow = (type == 'H') ? 2 * i : 2 * i + 1;
+          int matrixCol = (type == 'H') ? 2 * j + 1 : 2 * j;
+
+          // Déterminer l'état de la ligne
+          if (isColorEqual((Color)line.getStroke(), Color.web(DARK_COLOR))) {
+              gameMatrix[matrixRow][matrixCol] = LINE;
+          } else if (isColorEqual((Color)line.getStroke(), Color.web(LIGHT_COLOR))) {
+              gameMatrix[matrixRow][matrixCol] = HYPOTHESIS;
+          } else if (hasCross(line)) {
+              gameMatrix[matrixRow][matrixCol] = CROSS;
+          } else {
+              gameMatrix[matrixRow][matrixCol] = EMPTY;
+          }
+      }
+  }
+
+  /**
+   * Retourne la matrice représentant l'état actuel du jeu
+   */
+  public static int[][] getGameMatrix() {
+      // Mettre à jour la matrice avant de la retourner
+      updateGameMatrix();
+      return gameMatrix;
+  }
+
+
+      /**
+   * Crée et retourne une matrice simplifiée qui contient uniquement les chiffres 
+   * et l'état des segments autour de chaque cellule
+   * 
+   * @return Une matrice 3D de taille gridRows x gridCols x 5 où chaque cellule contient:
+   *         [0]: la valeur du chiffre dans la case (-1 si pas de chiffre)
+   *         [1]: l'état du segment du haut
+   *         [2]: l'état du segment de droite
+   *         [3]: l'état du segment du bas
+   *         [4]: l'état du segment de gauche
+   *         où les états des segments sont:
+   *           0: pas de segment
+   *           1: segment (ligne)
+   *           2: croix
+   *           3: segment en mode hypothèse
+   */
+      public static int[][][] getSimplifiedGameMatrix() {
+          // Mise à jour de la matrice complète
+          updateGameMatrix();
+
+          // Création de la matrice simplifiée
+          int[][][] simplifiedMatrix = new int[gridRows][gridCols][5];
+
+          // Parcourir chaque cellule de la grille
+          for (int row = 0; row < gridRows; row++) {
+              for (int col = 0; col < gridCols; col++) {
+                  // Position dans la matrice complète (coordonnées impaires pour les chiffres)
+                  int i = 2 * row + 1;
+                  int j = 2 * col + 1;
+
+                  // Récupérer le chiffre
+                  simplifiedMatrix[row][col][0] = gameMatrix[i][j];
+
+                  // État des segments autour
+                  simplifiedMatrix[row][col][1] = gameMatrix[i-1][j];    // segment du haut
+                  simplifiedMatrix[row][col][2] = gameMatrix[i][j+1];    // segment de droite
+                  simplifiedMatrix[row][col][3] = gameMatrix[i+1][j];    // segment du bas
+                  simplifiedMatrix[row][col][4] = gameMatrix[i][j-1];    // segment de gauche
+              }
+          }
+
+          return simplifiedMatrix;
+      }
+
+      /**
+       * Affiche la matrice simplifiée dans la console de manière visuelle
+       */
+      private static void printSimplifiedGameMatrix() {
+          int[][][] simplifiedMatrix = getSimplifiedGameMatrix();
+
+          System.out.println("\n==== ÉTAT ACTUEL DE LA GRILLE ====");
+          System.out.println("Légende: [ ] vide, [─] ligne, [X] croix, [~] hypothèse, [·] valeur non définie");
+          System.out.println();
+
+          // Afficher la bordure supérieure
+          System.out.print("    ");
+          for (int j = 0; j < gridCols; j++) {
+              System.out.print("+-----");
+          }
+          System.out.println("+");
+
+          for (int i = 0; i < gridRows; i++) {
+              // Ligne du haut avec les segments horizontaux supérieurs
+              System.out.print("    ");
+              for (int j = 0; j < gridCols; j++) {
+                  System.out.print("|  ");
+                  printSegment(simplifiedMatrix[i][j][1]); // segment du haut
+                  System.out.print("  ");
+              }
+              System.out.println("|");
+
+              // Ligne du milieu avec les segments verticaux et la valeur
+              System.out.printf(" %2d ", i);
+              for (int j = 0; j < gridCols; j++) {
+                  // Segment gauche
+                  System.out.print(j == 0 ? "|" : " ");
+                  printSegment(simplifiedMatrix[i][j][4]); // segment de gauche
+
+                  // Valeur centrale
+                  int value = simplifiedMatrix[i][j][0];
+                  if (value == -1) {
+                      System.out.print(" · ");
+                  } else {
+                      System.out.printf(" %d ", value);
+                  }
+
+                  // Segment droit
+                  printSegment(simplifiedMatrix[i][j][2]); // segment de droite
+              }
+              System.out.println("|");
+
+              // Ligne du bas avec les segments horizontaux inférieurs
+              System.out.print("    ");
+              for (int j = 0; j < gridCols; j++) {
+                  System.out.print("|  ");
+                  printSegment(simplifiedMatrix[i][j][3]); // segment du bas
+                  System.out.print("  ");
+              }
+              System.out.println("|");
+
+              // Séparateur horizontal entre les lignes
+              System.out.print("    ");
+              for (int j = 0; j < gridCols; j++) {
+                  System.out.print("+-----");
+              }
+              System.out.println("+");
+          }
+
+          System.out.println();
+      }
+
+      /**
+       * Affiche un caractère représentant l'état d'un segment
+       */
+      private static void printSegment(int segmentState) {
+          switch (segmentState) {
+              case EMPTY:
+                  System.out.print(" "); // Espace pour segment vide
+                  break;
+              case LINE:
+                  System.out.print("─"); // Tiret pour ligne
+                  break;
+              case CROSS:
+                  System.out.print("X"); // X pour croix
+                  break;
+              case HYPOTHESIS:
+                  System.out.print("~"); // Tilde pour hypothèse
+                  break;
+              default:
+                  System.out.print("?"); // Point d'interrogation pour valeur inattendue
         }
     }
 }
