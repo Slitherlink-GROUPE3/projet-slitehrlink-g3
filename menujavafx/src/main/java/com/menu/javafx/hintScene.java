@@ -12,8 +12,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.beans.binding.Bindings;
-import java.nio.file.Paths;
+/*import javafx.beans.binding.Bindings;
+import java.nio.file.Paths;*/
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -23,7 +23,7 @@ public class hintScene {
     public static String TexteIndice = "Le texte de mon indice je ne sais pas ce que je veux ecrire mais je veux faire un indice plus long";
     public ImageView imageView;
     public ImageView bottomImageView;
-    private String bottomImagePath = "03Res.png"; // Juste le nom du fichier
+    /*private String bottomImagePath = "03Res.png"; // Juste le nom du fichier*/
     
     public hintScene() {
         // Image à côté du texte
