@@ -1690,7 +1690,9 @@ public class GameScene {
 
             // Refresh the grid
             updateGrid(root.getScene().getWidth(), root.getScene().getHeight());
-
+        }
+    }
+   /* 
    * Initialise la matrice du jeu avec une taille basée sur la grille actuelle
    * et la remplit avec les valeurs initiales.
    */
