@@ -25,7 +25,6 @@ public class App extends MySleep{
         Grille grille = new Grille(valeurs);
         grille.afficher();
 
-<<<<<<< HEAD
         /*Iteration de la grille , boucle 4 fois pour tester la methode actionner de toutes les celllules */
         for (int j = 3 ; j >= 0 ; j--) {
             for(int y = 0; y < grille.getHauteur(); y++) {
@@ -36,8 +35,6 @@ public class App extends MySleep{
                 }
             }
         }
-=======
->>>>>>> c55fe9fa8a3487b81669d1b599640618e04ce14d
 
         // Afficher les voisins d'une cellule
         Cellule c = grille.getCellule(1, 1);
