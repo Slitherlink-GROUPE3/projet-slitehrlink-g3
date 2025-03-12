@@ -1250,23 +1250,58 @@ public class GameScene {
         
         // Récupérer toutes les lignes actives
         for (Line line : gridLines.values()) {
-            if (line.getStroke() == Color.web(DARK_COLOR) || line.getStroke() == Color.web(LIGHT_COLOR)) {
+            // Modification ici : vérifier si la ligne n'est pas transparente
+            if (line.getStroke() != null && !line.getStroke().equals(Color.TRANSPARENT)) {
                 activeLines.add(line);
             }
         }
         
-        // Si aucune ligne n'est tracée, la solution est invalide
-        if (activeLines.isEmpty()) {
-            return false;
+        // Debug: Imprimer le nombre de lignes actives et leurs couleurs
+        System.out.println("Nombre de lignes actives : " + activeLines.size());
+        for (Line line : activeLines) {
+            System.out.println("Ligne active : " + line.getId() + " - Couleur : " + line.getStroke());
         }
         
-        // Vérifier que les nombres correspondent aux lignes adjacentes
-        if (!checkNumbers()) {
-            return false;
+        // Vérifier les nombres de cellules
+        boolean numbersCheck = checkNumbers();
+        System.out.println("Vérification des nombres : " + numbersCheck);
+        
+        // Vérifier le circuit fermé
+        boolean singleLoopCheck = checkSingleClosedLoop(activeLines);
+        System.out.println("Vérification du circuit fermé : " + singleLoopCheck);
+        
+        // Vérifier la connexité des cellules
+        boolean cellsCheck = areCellsFullyConnected(activeLines);
+        System.out.println("Vérification des cellules : " + cellsCheck);
+        
+        // Debug: Vérifier chaque cellule individuellement
+        for (int i = 0; i < gridRows; i++) {
+            for (int j = 0; j < gridCols; j++) {
+                int number = gridNumbers[i][j];
+                if (number != -1) {
+                    int lineCount = countAdjacentLines(i, j);
+                    System.out.println("Cellule [" + i + "," + j + "] : nombre attendu = " + number + ", lignes actuelles = " + lineCount);
+                }
+            }
         }
         
-        // Vérifier que les lignes forment un seul circuit fermé
-        return checkSingleClosedLoop(activeLines);
+        // Retourne true seulement si toutes les conditions sont remplies
+        return numbersCheck && singleLoopCheck && cellsCheck;
+    }
+
+    private static boolean areCellsFullyConnected(List<Line> activeLines) {
+        for (int i = 0; i < gridRows; i++) {
+            for (int j = 0; j < gridCols; j++) {
+                int number = gridNumbers[i][j];
+                if (number != -1) {
+                    int lineCount = countAdjacentLines(i, j);
+                    if (lineCount != number) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -1298,33 +1333,38 @@ public class GameScene {
         // Vérifier la ligne du haut
         String topLineKey = "H_" + row + "_" + col;
         Line topLine = gridLines.get(topLineKey);
-        if (topLine != null && (topLine.getStroke() == Color.web(DARK_COLOR) || topLine.getStroke() == Color.web(LIGHT_COLOR))) {
+        if (topLine != null && topLine.getStroke() != null && !topLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
+            System.out.println("Ligne du haut [" + topLineKey + "] est active");
         }
         
         // Vérifier la ligne du bas
         String bottomLineKey = "H_" + (row + 1) + "_" + col;
         Line bottomLine = gridLines.get(bottomLineKey);
-        if (bottomLine != null && (bottomLine.getStroke() == Color.web(DARK_COLOR) || bottomLine.getStroke() == Color.web(LIGHT_COLOR))) {
+        if (bottomLine != null && bottomLine.getStroke() != null && !bottomLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
+            System.out.println("Ligne du bas [" + bottomLineKey + "] est active");
         }
         
         // Vérifier la ligne de gauche
         String leftLineKey = "V_" + row + "_" + col;
         Line leftLine = gridLines.get(leftLineKey);
-        if (leftLine != null && (leftLine.getStroke() == Color.web(DARK_COLOR) || leftLine.getStroke() == Color.web(LIGHT_COLOR))) {
+        if (leftLine != null && leftLine.getStroke() != null && !leftLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
+            System.out.println("Ligne de gauche [" + leftLineKey + "] est active");
         }
         
         // Vérifier la ligne de droite
         String rightLineKey = "V_" + row + "_" + (col + 1);
         Line rightLine = gridLines.get(rightLineKey);
-        if (rightLine != null && (rightLine.getStroke() == Color.web(DARK_COLOR) || rightLine.getStroke() == Color.web(LIGHT_COLOR))) {
+        if (rightLine != null && rightLine.getStroke() != null && !rightLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
+            System.out.println("Ligne de droite [" + rightLineKey + "] est active");
         }
         
         return count;
     }
+
     private static boolean hasCross(Line line) {
         return slitherlinkGrid.getChildren().stream()
             .anyMatch(node -> node instanceof Line && node.getUserData() == line);
