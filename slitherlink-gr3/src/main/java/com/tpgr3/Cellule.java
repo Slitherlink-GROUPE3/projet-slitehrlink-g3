@@ -1,7 +1,7 @@
 package com.tpgr3;
 
 // Classe abstraite pour les cellules de la grille
-abstract class Cellule {
+public abstract class Cellule {
     protected int x, y;
 
     public Cellule(int x, int y) {
