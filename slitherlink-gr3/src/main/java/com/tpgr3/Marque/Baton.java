@@ -5,4 +5,9 @@ public class Baton extends Marque {
     public char afficher() {
         return '-';
     }
+
+    @Override
+    public int getValeur() {
+        return BATON;
+    }
 }

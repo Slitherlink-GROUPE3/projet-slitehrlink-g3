@@ -5,4 +5,9 @@ public class Croix extends Marque {
     public char afficher() {
         return 'X';
     }
+
+    @Override
+    public int getValeur() {
+        return CROIX;
+    }
 }

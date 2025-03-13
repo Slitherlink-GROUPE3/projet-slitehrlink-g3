@@ -14,4 +14,9 @@ public class Croix extends Cellule {
     public char afficher() {
         return 'X';
     }
+
+    @Override
+    public int getValeur() {
+        return CROIX;
+    }
 }

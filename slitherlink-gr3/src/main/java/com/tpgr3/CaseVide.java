@@ -15,5 +15,10 @@ public class CaseVide extends Cellule {
     public char afficher() {
         return ' ';
     }
+
+    @Override
+    public int getValeur() {
+        return CASE_VIDE;
+    }
    
 }

@@ -1,8 +1,8 @@
 package com.tpgr3;
-import com.tpgr3.EtatSlot.Baton;
-import com.tpgr3.EtatSlot.Croix;
-import com.tpgr3.EtatSlot.Marque;
-import com.tpgr3.EtatSlot.Neutre;
+import com.tpgr3.Marque.Baton;
+import com.tpgr3.Marque.Croix;
+import com.tpgr3.Marque.Marque;
+import com.tpgr3.Marque.Neutre;
 
 class Slot extends Cellule {
     private Marque marque;
@@ -46,5 +46,11 @@ class Slot extends Cellule {
     @Override
     public char afficher() {
         return marque.afficher(); // Affiche le symbole du slot
+    }
+
+
+    @Override
+    public int getValeur() {
+        return marque.getValeur();
     }
 }

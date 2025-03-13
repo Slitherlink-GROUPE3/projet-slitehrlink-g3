@@ -174,41 +174,7 @@ public class Grille {
             }
         }
     }
-    /**
-     * Retourne une liste des cases adjacentes à la cellule spécifiée.
-     * Seules les cellules de type {@link Case} sont incluses.
-     *
-     * @param cellule La cellule dont on cherche les voisins.
-     * @return Une liste des cases adjacentes.
-     */
-    public List<Case> getVoisin(Cellule cellule) {
-        List<Case> voisins = new ArrayList<>();
 
-        // Récupérer les coordonnées de la cellule
-        int x = cellule.getX();
-        int y = cellule.getY();
-
-        // Parcours des 8 cases adjacentes dans un rayon de 2 cases
-        for (int dy = -2; dy <= 2; dy += 2) {
-            for (int dx = -2; dx <= 2; dx += 2) {
-                if (dx == 0 && dy == 0) continue; // Ignorer la cellule actuelle
-
-                int nx = x + dx;
-                int ny = y + dy;
-
-                // Vérifier si les coordonnées sont valides
-                if (estValide(nx, ny)) {
-                    Cellule celluleVoisine = matrice[ny][nx];
-                    // Vérifier si la cellule est de type Case
-                    if (celluleVoisine instanceof Case) {
-                        voisins.add((Case) celluleVoisine);
-                    }
-                }
-            }
-        }
-
-        return voisins;
-    }
 
     /* -------- [Methode sur la grille des valeurs ] ------------ */
     /**

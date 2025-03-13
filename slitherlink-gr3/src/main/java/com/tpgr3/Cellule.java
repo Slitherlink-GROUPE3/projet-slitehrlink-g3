@@ -1,8 +1,9 @@
 package com.tpgr3;
 
 // Classe abstraite pour les cellules de la grille
-public abstract class Cellule {
+public abstract class Cellule implements Constantes {
     protected int x, y;
+
 
     public Cellule(int x, int y) {
         this.x = x;
@@ -16,7 +17,7 @@ public abstract class Cellule {
     public abstract char afficher();
 
     public int getValeur() {
-        return 0;
+        return CASE_NON_INITIALISEE;
     }
 
     /*getters */

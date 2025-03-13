@@ -5,4 +5,9 @@ public class Neutre extends Marque {
     public char afficher() {
         return ' ';
     }
+
+    @Override
+    public int getValeur() {
+        return NEUTRE;
+    }
 }
