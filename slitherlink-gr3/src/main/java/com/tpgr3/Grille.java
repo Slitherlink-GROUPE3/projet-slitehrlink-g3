@@ -95,6 +95,37 @@ public class Grille {
         }
     }
 
+    public void afficherValeursReeles() {
+        for (int y = 0; y < hauteur; y++) {
+            for (int x = 0; x < largeur; x++) {
+                if (matrice[y][x] != null) {
+                    System.out.print(matrice[y][x].afficher());
+                    // Add vertical separator between columns
+                    if (x < largeur - 1) {
+                        System.out.print(" | ");
+                    }
+                } else {
+                    System.out.print("  ");
+                    if (x < largeur - 1) {
+                        System.out.print(" | ");
+                    }
+                }
+            }
+            System.out.println();
+            
+            // Add horizontal separator between rows
+            if (y < hauteur - 1) {
+                for (int x = 0; x < largeur; x++) {
+                    System.out.print("___");
+                    if (x < largeur - 1) {
+                        System.out.print("_");
+                    }
+                }
+                System.out.println();
+            }
+        }
+    }
+
     /**
      * Methode qui permet de poser une Cellule sur un {@link Slot} de la grille.
      * Comportement different selon le type de Cellules.

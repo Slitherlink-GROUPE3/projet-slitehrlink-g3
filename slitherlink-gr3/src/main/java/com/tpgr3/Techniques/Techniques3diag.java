@@ -17,8 +17,10 @@ public class Techniques3diag implements Techniques {
         
         
         grille.afficher();
+        //grille.afficherValeursReeles();
 
         // Tester la détection des voisins à différents endroits
+        /* 
         System.out.println("Test des voisins au centre :");
         Voisins vCentre = new Voisins(grille, 2, 2);
         vCentre.testDetection();
@@ -30,7 +32,7 @@ public class Techniques3diag implements Techniques {
         System.out.println("\nTest des voisins en bas à droite :");
         Voisins vBasDroite = new Voisins(grille, 3, 3);
         vBasDroite.testDetection();
-        
+        */
         return false;
     }
 }

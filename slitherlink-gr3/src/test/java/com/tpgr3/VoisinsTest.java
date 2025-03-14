@@ -1,143 +1,137 @@
 package com.tpgr3;
 
-public class Voisins implements Constantes {
-    private Cellule c;
-    private Grille grille;
-    private int hauteur;
-    private int largeur;
-    private Cellule[][] CellTab;
+import junit.framework.TestCase;
 
-    private int voisinHaut;
-    private int voisinHautGauche;
-    private int voisinHautDroite;
-    private int voisinBas;
-    private int voisinBasGauche;
-    private int voisinBasDroite;
-    private int voisinGauche;
-    private int voisinDroite;
-    // Pour Voisins, nous sauvegardons désormais les coordonnées du centre (Case) dans la grille complète
-    private int centerX, centerY;
-
-    public Voisins(Grille grille, int x, int y) {
-        this.grille = grille;
-        // Correction : la case numérique se trouve aux indices impairs :
-        // (x*2+1, y*2+1)
-        this.centerX = x * 2 + 1;
-        this.centerY = y * 2 + 1;
-        this.c = grille.getCellule(centerX, centerY);
-        this.hauteur = grille.getHauteur();
-        this.largeur = grille.getLargeur();
-        this.CellTab = grille.getMatrice();
-        this.voisinHaut = VALEUR_NON_INITIALISEE;
-        this.voisinHautGauche = VALEUR_NON_INITIALISEE;
-        this.voisinHautDroite = VALEUR_NON_INITIALISEE;
-        this.voisinBas = VALEUR_NON_INITIALISEE;
-        this.voisinBasGauche = VALEUR_NON_INITIALISEE;
-        this.voisinBasDroite = VALEUR_NON_INITIALISEE;
-        this.voisinGauche = VALEUR_NON_INITIALISEE;
-        this.voisinDroite = VALEUR_NON_INITIALISEE;
-    }
-
-    public void afficher(){
-        System.out.println("Centre (Case) : " + c.getValeur());
-    }
-
-    public void TrouverVoisins() {
-        System.out.println("Calcul des voisins pour la case au centre (" + centerX + "," + centerY + ")");
-        
-        // Voisin en haut : (centerX, centerY - 1)
-        if(centerY - 1 >= 0 && grille.estValide(centerX, centerY - 1)
-           && grille.getCellule(centerX, centerY - 1) instanceof Case) {
-            this.voisinHaut = grille.getCellule(centerX, centerY - 1).getValeur();
-        } else {
-            System.out.println("Pas de voisin en haut");
-            this.voisinHaut = HORS_LIMITES;
-        }
-        
-        // Voisin en haut à gauche : (centerX - 1, centerY - 1)
-        if(centerX - 1 >= 0 && centerY - 1 >= 0 && grille.estValide(centerX - 1, centerY - 1)
-           && grille.getCellule(centerX - 1, centerY - 1) instanceof Case) {
-            this.voisinHautGauche = grille.getCellule(centerX - 1, centerY - 1).getValeur();
-        } else {
-            System.out.println("Pas de voisin en haut à gauche");
-            this.voisinHautGauche = HORS_LIMITES;
-        }
-        
-        // Voisin en haut à droite : (centerX + 1, centerY - 1)
-        if(centerX + 1 < largeur && centerY - 1 >= 0 && grille.estValide(centerX + 1, centerY - 1)
-           && grille.getCellule(centerX + 1, centerY - 1) instanceof Case) {
-            this.voisinHautDroite = grille.getCellule(centerX + 1, centerY - 1).getValeur();
-        } else {
-            System.out.println("Pas de voisin en haut à droite");
-            this.voisinHautDroite = HORS_LIMITES;
-        }
-        
-        // Voisin à gauche : (centerX - 1, centerY)
-        if(centerX - 1 >= 0 && grille.estValide(centerX - 1, centerY)
-           && grille.getCellule(centerX - 1, centerY) instanceof Case) {
-            this.voisinGauche = grille.getCellule(centerX - 1, centerY).getValeur();
-        } else {
-            System.out.println("Pas de voisin à gauche");
-            this.voisinGauche = HORS_LIMITES;
-        }
-        
-        // Voisin à droite : (centerX + 1, centerY)
-        if(centerX + 1 < largeur && grille.estValide(centerX + 1, centerY)
-           && grille.getCellule(centerX + 1, centerY) instanceof Case) {
-            this.voisinDroite = grille.getCellule(centerX + 1, centerY).getValeur();
-        } else {
-            System.out.println("Pas de voisin à droite");
-            this.voisinDroite = HORS_LIMITES;
-        }
-        
-        // Voisin en bas : (centerX, centerY + 1)
-        if(grille.estValide(centerX, centerY + 1)
-           && grille.getCellule(centerX, centerY + 1) instanceof Case) {
-            this.voisinBas = grille.getCellule(centerX, centerY + 1).getValeur();
-        } else {
-            System.out.println("Pas de voisin en bas");
-            this.voisinBas = HORS_LIMITES;
-        }
-        
-        // Voisin en bas à gauche : (centerX - 1, centerY + 1)
-        if(centerX - 1 >= 0 && grille.estValide(centerX - 1, centerY + 1)
-           && grille.getCellule(centerX - 1, centerY + 1) instanceof Case) {
-            this.voisinBasGauche = grille.getCellule(centerX - 1, centerY + 1).getValeur();
-        } else {
-            System.out.println("Pas de voisin en bas à gauche");
-            this.voisinBasGauche = HORS_LIMITES;
-        }
-        
-        // Voisin en bas à droite : (centerX + 1, centerY + 1)
-        if(centerX + 1 < largeur && grille.estValide(centerX + 1, centerY + 1)
-           && grille.getCellule(centerX + 1, centerY + 1) instanceof Case) {
-            this.voisinBasDroite = grille.getCellule(centerX + 1, centerY + 1).getValeur();
-        } else {
-            System.out.println("Pas de voisin en bas à droite");
-            this.voisinBasDroite = HORS_LIMITES;
-        }
-    }
-
-    // Les getters restent inchangés
-    public int getVoisinHaut() { return voisinHaut; }
-    public int getVoisinHautGauche() { return voisinHautGauche; }
-    public int getVoisinHautDroite() { return voisinHautDroite; }
-    public int getVoisinBas() { return voisinBas; }
-    public int getVoisinBasGauche() { return voisinBasGauche; }
-    public int getVoisinBasDroite() { return voisinBasDroite; }
-    public int getVoisinGauche() { return voisinGauche; }
-    public int getVoisinDroite() { return voisinDroite; }
+/**
+ * Tests unitaires pour la classe Voisins
+ */
+public class VoisinsTest extends TestCase implements Constantes {
     
-    public void testDetection() {
-        TrouverVoisins();
-        System.out.println("Voisins trouvés :");
-        System.out.println("Haut : " + voisinHaut);
-        System.out.println("Haut-Gauche : " + voisinHautGauche);
-        System.out.println("Haut-Droite : " + voisinHautDroite);
-        System.out.println("Gauche : " + voisinGauche);
-        System.out.println("Droite : " + voisinDroite);
-        System.out.println("Bas : " + voisinBas);
-        System.out.println("Bas-Gauche : " + voisinBasGauche);
-        System.out.println("Bas-Droite : " + voisinBasDroite);
+    private Grille grille;
+    
+    @Override
+    protected void setUp() {
+        // Configuration d'une grille de test 3x3
+        int[][] valeurs = {
+            {3, 2, 3},
+            {1, 3, 2},
+            {2, 1, 0}
+        };
+        grille = new Grille(valeurs);
+    }
+    
+    public void testConstructeur() {
+        // Vérifie que l'objet Voisins est bien créé sans erreur
+        Voisins voisins = new Voisins(grille, 1, 1);
+        assertNotNull(voisins);
+    }
+    
+    public void testInitialisation() {
+        // Vérifie que les attributs sont correctement initialisés
+        Voisins voisins = new Voisins(grille, 1, 1);
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinHaut());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinHautGauche());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinHautDroite());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinBas());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinBasGauche());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinBasDroite());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinGauche());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinDroite());
+    }
+    
+    public void testVoisinsCentre() {
+        // Test pour une cellule au centre (position 1,1)
+        Voisins voisins = new Voisins(grille, 1, 1);
+        voisins.TrouverVoisins();
+        
+        // Vérifie que tous les voisins sont détectés (les valeurs ne sont plus non initialisées)
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinHaut());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinHautGauche());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinHautDroite());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinBas());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinBasGauche());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinBasDroite());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinGauche());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinDroite());
+    }
+    
+    public void testVoisinsHautGauche() {
+        // Test pour une cellule en haut à gauche (position 0,0)
+        Voisins voisins = new Voisins(grille, 0, 0);
+        voisins.TrouverVoisins();
+        
+        // Vérifie les voisins hors limites
+        assertEquals(HORS_LIMITES, voisins.getVoisinHaut());
+        assertEquals(HORS_LIMITES, voisins.getVoisinHautGauche());
+        assertEquals(HORS_LIMITES, voisins.getVoisinGauche());
+        
+        // Vérifie les voisins qui devraient exister
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinDroite());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinBas());
+    }
+    
+    public void testVoisinsBasDroite() {
+        // Test pour une cellule en bas à droite (position 2,2)
+        Voisins voisins = new Voisins(grille, 2, 2);
+        voisins.TrouverVoisins();
+        
+        // Vérifie les voisins hors limites
+        assertEquals(HORS_LIMITES, voisins.getVoisinBasDroite());
+        assertEquals(HORS_LIMITES, voisins.getVoisinDroite());
+        assertEquals(HORS_LIMITES, voisins.getVoisinBas());
+        
+        // Vérifie les voisins qui devraient exister
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinHaut());
+        assertTrue(VALEUR_NON_INITIALISEE != voisins.getVoisinGauche());
+    }
+    
+    public void testCoordonnéesInvalides() {
+        // Test avec des coordonnées en dehors de la grille
+        Voisins voisins = new Voisins(grille, 10, 10);
+        voisins.TrouverVoisins();
+        
+        // Tous les voisins devraient rester à VALEUR_NON_INITIALISEE
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinHaut());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinHautGauche());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinHautDroite());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinBas());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinBasGauche());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinBasDroite());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinGauche());
+        assertEquals(VALEUR_NON_INITIALISEE, voisins.getVoisinDroite());
+    }
+    
+    public void testCoherenceVoisinsDiagonaux() {
+        // Vérifie que les voisins diagonaux sont cohérents avec les voisins directs
+        Voisins voisins = new Voisins(grille, 1, 1);
+        voisins.TrouverVoisins();
+        
+        // Si le voisin du haut et le voisin de gauche sont HORS_LIMITES,
+        // alors le voisin en haut à gauche devrait aussi être HORS_LIMITES
+        if (voisins.getVoisinHaut() == HORS_LIMITES && voisins.getVoisinGauche() == HORS_LIMITES) {
+            assertEquals(HORS_LIMITES, voisins.getVoisinHautGauche());
+        }
+        
+        // Même chose pour les autres diagonales
+        if (voisins.getVoisinHaut() == HORS_LIMITES && voisins.getVoisinDroite() == HORS_LIMITES) {
+            assertEquals(HORS_LIMITES, voisins.getVoisinHautDroite());
+        }
+        
+        if (voisins.getVoisinBas() == HORS_LIMITES && voisins.getVoisinGauche() == HORS_LIMITES) {
+            assertEquals(HORS_LIMITES, voisins.getVoisinBasGauche());
+        }
+        
+        if (voisins.getVoisinBas() == HORS_LIMITES && voisins.getVoisinDroite() == HORS_LIMITES) {
+            assertEquals(HORS_LIMITES, voisins.getVoisinBasDroite());
+        }
+    }
+    
+    public void testAffichage() {
+        // Ce test vérifie simplement que la méthode testDetection() s'exécute sans erreur
+        Voisins voisins = new Voisins(grille, 1, 1);
+        voisins.TrouverVoisins();
+        voisins.testDetection();
+        // Si aucune exception n'est levée, le test est considéré comme réussi
+        assertTrue(true);
     }
 }
