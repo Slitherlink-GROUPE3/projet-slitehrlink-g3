@@ -52,6 +52,7 @@ import javafx.geometry.Insets;
 import com.menu.javafx.PauseMenu;
 import com.menu.javafx.TopBar;
 
+
 public class GameScene {
     // Add at the top of the GameScene class, replacing your current color
     // constants:
@@ -99,6 +100,7 @@ public class GameScene {
 
     private static Map<String, Line> gridLines = new HashMap<>();
 
+
     // Add a method to apply the current theme:
     private static void applyTheme() {
         boolean isDarkMode = SettingScene.isDarkModeEnabled();
@@ -118,25 +120,7 @@ public class GameScene {
         }
     }
 
-    private static class Move {
-        private final Line line;
-        private final Object action;
-        private final Color color;
 
-        public Move(Line line, Object action, Color color) {
-            this.line = line;
-            this.action = action;
-            this.color = color;
-        }
-
-        public Line getLine() {
-            return line;
-        }
-
-        public Object getAction() {
-            return action;
-        }
-    }
 
     private static int[][] gameMatrix; // Matrice représentant l'état complet du jeu
     private static final int EMPTY = 0;      // Cellule vide ou segment vide
@@ -926,7 +910,7 @@ public class GameScene {
                 if (lineId != null && gridLines.containsKey(lineId)) {
                     Line newLine = gridLines.get(lineId);
                     // Créer un nouveau mouvement avec la nouvelle instance de la ligne
-                    Move newMove = new Move(newLine, oldMove.getAction(), (Color) oldMove.color);
+                    Move newMove = new Move(newLine, oldMove.getAction(), (Color) oldMove.getColor());
                     moveHistory.add(newMove);
                 } else {
                     // Si on ne trouve pas de correspondance, on ajoute quand même le mouvement
