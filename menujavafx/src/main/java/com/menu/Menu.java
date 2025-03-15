@@ -26,6 +26,7 @@ import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.Tooltip;
 import java.io.InputStream;
 
 public class Menu extends Application {
@@ -138,6 +139,12 @@ public class Menu extends Application {
         Button tutorialButton = createAnimatedButton("Tutoriel", "📖");
         Button exitButton = createAnimatedButton("Quitter", "🚪");
 
+        //Explique l'utilité du boutton lorsqu'on met la souris dessus
+        Tooltip tooltipTutorialButton = new Tooltip("Affiche le tutoriel !");
+        Tooltip.install(tutorialButton,tooltipTutorialButton);
+        
+        
+        // Actions des boutons
         adventureButton.setOnAction(e -> {
             animateButtonClick(adventureButton);
             //GameScene.show(primaryStage);
