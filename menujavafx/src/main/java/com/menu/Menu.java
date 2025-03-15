@@ -139,10 +139,21 @@ public class Menu extends Application {
         Button tutorialButton = createAnimatedButton("Tutoriel", "📖");
         Button exitButton = createAnimatedButton("Quitter", "🚪");
 
-        //Explique l'utilité du boutton lorsqu'on met la souris dessus
+        // Explique l'utilité des boutons lorsqu'on met la souris dessus
+        Tooltip tooltipAdventureButton = new Tooltip("Commencez une nouvelle aventure !");
+        Tooltip.install(adventureButton, tooltipAdventureButton);
+
+        Tooltip tooltipFreeModeButton = new Tooltip("Jouez en mode libre !");
+        Tooltip.install(freeModeButton, tooltipFreeModeButton);
+
+        Tooltip tooltipSettingsButton = new Tooltip("Accédez aux paramètres !");
+        Tooltip.install(settingsButton, tooltipSettingsButton);
+
         Tooltip tooltipTutorialButton = new Tooltip("Affiche le tutoriel !");
-        Tooltip.install(tutorialButton,tooltipTutorialButton);
-        
+        Tooltip.install(tutorialButton, tooltipTutorialButton);
+
+        Tooltip tooltipExitButton = new Tooltip("Quittez le jeu !");
+        Tooltip.install(exitButton, tooltipExitButton);
         
         // Actions des boutons
         adventureButton.setOnAction(e -> {

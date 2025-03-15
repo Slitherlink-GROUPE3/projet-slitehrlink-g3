@@ -48,6 +48,7 @@ import javafx.util.Duration;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.geometry.Insets;
+import javafx.scene.control.Tooltip;
 
 import com.menu.javafx.PauseMenu;
 import com.menu.javafx.TopBar;
@@ -375,11 +376,13 @@ public class GameScene {
         controlsTitle.setTextFill(Color.web(DARK_COLOR));
 
         Button helpButton = createStyledButton("   AIDE   ?  ", false);
+        helpButton.setTooltip(new Tooltip("Obtenez de l'aide sur le jeu"));
         helpButton.setOnAction(e -> {
             animateButtonClick(helpButton);
         });
 
         Button checkButton = createStyledButton("Vérifier", true);
+        checkButton.setTooltip(new Tooltip("Vérifiez si votre solution est correcte"));
 
         Text checkCount = new Text(String.valueOf(checkCounter));
         checkCount.setFont(Font.font("Montserrat", FontWeight.BOLD, 22));
