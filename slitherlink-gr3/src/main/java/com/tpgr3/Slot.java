@@ -4,7 +4,7 @@ import com.tpgr3.Marque.Croix;
 import com.tpgr3.Marque.Marque;
 import com.tpgr3.Marque.Neutre;
 
-class Slot extends Cellule {
+public class Slot extends Cellule {
     private Marque marque;
 
     public Slot(int x, int y) {

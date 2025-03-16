@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Représente une grille de jeu contenant des cellules de type {@link Case} et {@link Slot} {@link CaseVide}.
+ * Représente une grille de jeu contenant des cellules de type {@link Case}, {@link Slot} et {@link CaseVide}.
  * La grille est initialisée avec une matrice de valeurs et organise les cellules en conséquence.
  */
 public class Grille {
@@ -16,7 +16,7 @@ public class Grille {
     private int largeur;
     private int hauteur;
 
-    /* Sauvagarde des valeurs des cases donnés en parametre*/
+    /** Sauvegarde des valeurs des cases fournies en paramètre. */
     private int[][] valeurs;
 
     /**
@@ -25,62 +25,67 @@ public class Grille {
      * @param valeurs Tableau 2D contenant les valeurs des cases (uniquement pour les cases avec chiffres).
      */
     public Grille(int[][] valeurs) {
-        this.hauteur = valeurs.length * 2 + 1;
-        this.largeur = valeurs[0].length * 2 + 1;
-        this.matrice = new Cellule[hauteur][largeur];
-        this.valeurs = valeurs;
+        this.hauteur = valeurs.length * 2 + 1;  // Calcul de la hauteur de la grille
+        this.largeur = valeurs[0].length * 2 + 1;  // Calcul de la largeur de la grille
+        this.matrice = new Cellule[hauteur][largeur];  // Initialisation de la matrice
+        this.valeurs = valeurs;  // Sauvegarde des valeurs
 
-        initialiserGrille(valeurs);
+        initialiserGrille(valeurs);  // Initialisation de la grille
     }
 
     /**
-     * Initialise la grille en créant des objets {@link Case} et {@link Slot} 
+     * Initialise la grille en créant des objets {@link Case}, {@link Slot} et {@link CaseVide}
      * en fonction de leur position dans la matrice.
-     * Les {@link Cases} sont initialisées sur x et y impairs, 
-     * Les {@link Slots} sur x et y pairs.
-     * Le reste c'est des {@link CaseVide}.
+     * - Les {@link Case} sont placées aux coordonnées impaires (x et y impairs).
+     * - Les {@link Slot} sont placés aux coordonnées mixtes (x pair et y impair, ou x impair et y pair).
+     * - Les {@link CaseVide} sont placées aux coordonnées paires (x et y pairs).
      *
      * @param valeurs Tableau 2D contenant les valeurs des cases numériques.
      */
     private void initialiserGrille(int[][] valeurs) {
-        int nbSlot = 0;
-        int nbCase = 0 ;
-        int nbVide = 0 ;
+        int nbSlot = 0;  // Compteur de slots créés
+        int nbCase = 0;  // Compteur de cases créées
+        int nbVide = 0;  // Compteur de cases vides créées
 
         for (int y = 0; y < hauteur; y++) {
             for (int x = 0; x < largeur; x++) {
 
-                /*Ajouter une Case si x et y sont impairs*/
+                // Ajouter une Case si x et y sont impairs
                 if (x % 2 == 1 && y % 2 == 1) {
-                    matrice[y][x] = new Case(x, y, valeurs[y / 2][x / 2]) ;
-                    nbCase ++;
-                    //System.out.println("Case créée en (" + x + ", " + y + ")");
-                
-                /*Ajouter un Slot si x est pair et y est impair ou x est impair et y est pair*/
-                }  else if ((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) {
-                    matrice[y][x] = new Slot(x, y);
-                    //System.out.println("Slot créé en (" + x + ", " + y + ")");
-                    nbSlot ++;
+                    matrice[y][x] = new Case(x, y, valeurs[y / 2][x / 2]);
+                    nbCase++;
                 }
-                /* Ajouter une CaseVide si x et y sont pairs */
+                // Ajouter un Slot si x est pair et y est impair, ou x est impair et y est pair
+                else if ((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) {
+                    matrice[y][x] = new Slot(x, y);
+                    nbSlot++;
+                }
+                // Ajouter une CaseVide si x et y sont pairs
                 else if (x % 2 == 0 && y % 2 == 0) {
                     matrice[y][x] = new CaseVide(x, y);
-                    //System.out.println("Case vide créé en (" + x + ", " + y + ")");
                     nbVide++;
                 }
             }
         }
-        System.out.println("Grille initialisée");
+
+        // Affichage des statistiques d'initialisation
+        System.out.println("\n\nGrille initialisée");
         System.out.println("Nombre de cases créées: " + nbCase);
         System.out.println("Nombre de slots créés: " + nbSlot);
-        System.out.println("Nombre de cases créées: " + nbVide);
+        System.out.println("Nombre de cases vides créées: " + nbVide);
     }
 
+    /**
+     * Réinitialise la grille à son état initial.
+     */
+    public void reinitialiser() {
+        initialiserGrille(valeurs);
+        System.out.println("Grille réinitialisée aux valeurs par défaut");
+    }
 
     /**
      * Affiche la grille dans la console.
      * Chaque cellule est représentée par son affichage spécifique défini dans {@link Cellule#afficher()}.
-     * Les cellules sont affichées dans une grille carrée avec des caractères de même taille.
      */
     public void afficher() {
         for (int y = 0; y < hauteur; y++) {
@@ -95,73 +100,54 @@ public class Grille {
         }
     }
 
-    public void afficherValeursReeles() {
-        for (int y = 0; y < hauteur; y++) {
-            for (int x = 0; x < largeur; x++) {
-                if (matrice[y][x] != null) {
-                    System.out.print(matrice[y][x].afficher());
-                    // Add vertical separator between columns
-                    if (x < largeur - 1) {
-                        System.out.print(" | ");
-                    }
-                } else {
-                    System.out.print("  ");
-                    if (x < largeur - 1) {
-                        System.out.print(" | ");
-                    }
-                }
-            }
-            System.out.println();
-            
-            // Add horizontal separator between rows
-            if (y < hauteur - 1) {
-                for (int x = 0; x < largeur; x++) {
-                    System.out.print("___");
-                    if (x < largeur - 1) {
-                        System.out.print("_");
-                    }
-                }
-                System.out.println();
-            }
+    /**
+     * Permet d'interagir avec une cellule à la position (x, y).
+     * Le comportement dépend du type de cellule.
+     *
+     * @param x Coordonnée x de la cellule.
+     * @param y Coordonnée y de la cellule.
+     */
+    public void actionnerCelule(int x, int y) {
+        if (estValide(x, y)) {
+            matrice[y][x].actionner();
+        } else {
+            System.out.println("Coordonnées invalides.");
         }
     }
 
     /**
-     * Methode qui permet de poser une Cellule sur un {@link Slot} de la grille.
-     * Comportement different selon le type de Cellules.
-     */
-    public void actionnerCelule(int x, int y){
-        matrice[x][y].actionner();
-    }
-
-    /*
-     * Retourne la hauteur de la grille
+     * Retourne la hauteur de la grille.
+     *
+     * @return La hauteur de la grille.
      */
     public int getHauteur() {
         return hauteur;
     }
 
-    /*
-     * Retourne la largeur de la grille
+    /**
+     * Retourne la largeur de la grille.
+     *
+     * @return La largeur de la grille.
      */
     public int getLargeur() {
         return largeur;
     }
-   
-    /*
-     * Retourne la matrice complete
+
+    /**
+     * Retourne la matrice complète de la grille.
+     *
+     * @return La matrice de cellules.
      */
     public Cellule[][] getMatrice() {
         return matrice;
     }
 
-        
     /**
      * Retourne la cellule à la position spécifiée.
      *
-     * @param x Indice x de la cellule.
-     * @param y Indice y de la cellule.
-     * @return La cellule à la position spécifiée.
+     * @param x Coordonnée x de la cellule.
+     * @param y Coordonnée y de la cellule.
+     * @return La cellule à la position (x, y), ou null si les coordonnées sont invalides.
      */
     public Cellule getCellule(int x, int y) {
         if (estValide(x, y)) {
@@ -170,55 +156,87 @@ public class Grille {
         return null;
     }
 
-
     /**
-     * Vérifie si les indices (x, y) sont valides dans la grille.
+     * Vérifie si les coordonnées (x, y) sont valides dans la grille.
      *
-     * @param x Indice x à vérifier.
-     * @param y Indice y à vérifier.
-     * @return true si les indices sont valides, false sinon.
+     * @param x Coordonnée x à vérifier.
+     * @param y Coordonnée y à vérifier.
+     * @return true si les coordonnées sont valides, false sinon.
      */
     public boolean estValide(int x, int y) {
         return x >= 0 && x < largeur && y >= 0 && y < hauteur;
     }
 
-
     /**
-     * Réinitialise la grille à son état initial.
+     * Retourne les Slots adjacents à une Case.
+     * @param x Coordonnée x de la Case (doit être impaire)
+     * @param y Coordonnée y de la Case (doit être impaire)
+     * @return Liste des Slots adjacents.
      */
-    public void reinitialiser() {
-        for (int y = 0; y < hauteur; y++) {
-            for (int x = 0; x < largeur; x++) {
-
-                /*Ajouter une CaseVide si x et y sont pairs*/
-                if (x % 2 == 0 && y % 2 == 0) {
-                    matrice[y][x] = new CaseVide(x, y);
-                }
-                /*Ajouter une Case si x et y sont impairs*/
-                else if (x % 2 == 1 && y % 2 == 1) {
-                    matrice[y][x] = new Case(x, y, 0); // Initialiser avec une valeur par défaut (0)
-                }
-                /*Ajouter un Slot si x est pair et y est impair ou x est impair et y est pair*/
-                else if ((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) {
-                    matrice[y][x] = new Slot(x, y);
-                }
+    public List<Slot> getSlotsAdjacentsCase(int x, int y) {
+        List<Slot> slots = new ArrayList<>();
+        if (x % 2 != 1 || y % 2 != 1) return slots; // Vérification Case
+        
+        // Directions : haut, bas, gauche, droite
+        int[][] directions = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+        
+        for (int[] dir : directions) {
+            int newX = x + dir[0];
+            int newY = y + dir[1];
+            if (estValide(newX, newY)) {
+                Cellule c = getCellule(newX, newY);
+                if (c instanceof Slot) slots.add((Slot)c);
             }
         }
+        return slots;
     }
 
-
-    /* -------- [Methode sur la grille des valeurs ] ------------ */
     /**
-    * Vérifie si les indices (i, j) sont valides dans la matrice valeurs.
-    *
-    * @param i Indice de ligne dans la matrice valeurs.
-    * @param j Indice de colonne dans la matrice valeurs.
-    * @return true si les indices sont valides, false sinon.
-    */
-    private boolean estValideBis(int i, int j) {
-        return i >= 0 && i < valeurs.length && j >= 0 && j < valeurs[0].length;
+     * Retourne les Cases adjacentes à une Case (2 cases de distance).
+     * @param x Coordonnée x de la Case (doit être impaire)
+     * @param y Coordonnée y de la Case (doit être impaire)
+     * @return Liste des Cases adjacentes.
+     */
+    public List<Case> getCasesAdjacentes(int x, int y) {
+        List<Case> cases = new ArrayList<>();
+        if (x % 2 != 1 || y % 2 != 1) return cases;
+        
+        // Directions : haut, bas, gauche, droite (2 unités)
+        int[][] directions = {{0, -2}, {0, 2}, {-2, 0}, {2, 0}};
+        
+        for (int[] dir : directions) {
+            int newX = x + dir[0];
+            int newY = y + dir[1];
+            if (estValide(newX, newY)) {
+                Cellule c = getCellule(newX, newY);
+                if (c instanceof Case) cases.add((Case)c);
+            }
+        }
+        return cases;
     }
 
-    
-
+    /**
+     * Retourne les Cases connectées à un Slot.
+     * @param x Coordonnée x du Slot
+     * @param y Coordonnée y du Slot
+     * @return Liste des Cases connectées.
+     */
+    public List<Case> getCasesPourSlot(int x, int y) {
+        List<Case> cases = new ArrayList<>();
+        if (!((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0))) {
+            return cases;
+        }
+        
+        // Slot horizontal
+        if (x % 2 == 0) {
+            if (estValide(x - 1, y)) cases.add((Case)getCellule(x - 1, y));
+            if (estValide(x + 1, y)) cases.add((Case)getCellule(x + 1, y));
+        } 
+        // Slot vertical
+        else {
+            if (estValide(x, y - 1)) cases.add((Case)getCellule(x, y - 1));
+            if (estValide(x, y + 1)) cases.add((Case)getCellule(x, y + 1));
+        }
+        return cases;
+    }
 }
