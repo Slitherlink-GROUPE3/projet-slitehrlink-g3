@@ -1,6 +1,9 @@
 package com.tpgr3;
 
 import java.util.List;
+
+import com.tpgr3.Techniques.Technique0et3;
+import com.tpgr3.Techniques.Technique0et3Diag;
 import com.tpgr3.Techniques.Techniques3diag;
 
 public class App {
@@ -8,9 +11,9 @@ public class App {
         
         /*Initialisation des valeurs de la grille */
         int[][] valeurs = {
-            {3, 2, 3},
-            {1, 3, 2},
-            {2, 1, 0}
+            {3, 0, 3},
+            {3, 3, 2},
+            {0, 1, 0}
         };
 
         
@@ -19,14 +22,12 @@ public class App {
         grille.afficher();
 
 
+        
+        Technique0et3Diag technique = new Technique0et3Diag();
+        //Techniques3diag technique = new Techniques3diag();
 
-        // Création d'une instance de votre technique
-        Techniques3diag technique = new Techniques3diag();
-        
-        // Test de la technique
-        boolean estApplicable = technique.estApplicable(grille);
-        
-        // Affichage du résultat
-        System.out.println("La technique des cases 3 adjacentes est applicable: " + estApplicable);
+        System.out.println("Technique 0 et 3 : ");
+        System.out.println(technique.estApplicable(grille));
+    
     }
 }
