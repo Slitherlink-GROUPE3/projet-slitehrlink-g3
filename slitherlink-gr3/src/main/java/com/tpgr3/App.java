@@ -3,6 +3,7 @@ package com.tpgr3;
 import com.tpgr3.Techniques.Techniques;
 import com.tpgr3.Techniques.Tech_0Coin;
 import com.tpgr3.Techniques.Tech_3Coin;
+import com.tpgr3.Techniques.Technique0et3Diag;
 import com.tpgr3.Techniques.Tech_1Coin;
 import com.tpgr3.Techniques.Tech_2Coin;
 import com.tpgr3.Techniques.Tech_3Adjacents;
@@ -21,7 +22,6 @@ public class App {
             {1, 3, 2, 0},
             {2, 1, 0, 3},
             {3 ,3, 0, 1},
-
         };
 
         // Création de la grille
@@ -31,33 +31,47 @@ public class App {
         System.out.println("Affichage de la grille :");
         grille.afficher();
 
-        // Liste des techniques disponibles
-        List<Techniques> techniques = new ArrayList<>();
-        techniques.add(new Tech_0Coin());
-        techniques.add(new Tech_3Coin());
-        techniques.add(new Tech_1Coin());
-        techniques.add(new Tech_2Coin());
-        techniques.add(new Tech_3Adjacents());
-        techniques.add(new Tech_1Entre0Et2());
-        techniques.add(new Tech_2Entre0Et2());
-        techniques.add(new Tech_1Entre1Et3());
+        // Pour activer les tests
+        boolean activerTestAntho = true;
+        boolean activerTestTitouan = false;
 
-        // Détection des techniques applicables
-        List<String> techniquesApplicables = new ArrayList<>();
-        for (Techniques tech : techniques) {
-            if (tech.estApplicable(grille)) {
-                techniquesApplicables.add(tech.getClass().getSimpleName());
+        if (activerTestAntho) {
+            System.out.println("Test Technique Antho: ");
+            // Liste des techniques disponibles
+            List<Techniques> techniques = new ArrayList<>();
+            techniques.add(new Tech_0Coin());
+            techniques.add(new Tech_3Coin());
+            techniques.add(new Tech_1Coin());
+            techniques.add(new Tech_2Coin());
+            techniques.add(new Tech_3Adjacents());
+            techniques.add(new Tech_1Entre0Et2());
+            techniques.add(new Tech_2Entre0Et2());
+            techniques.add(new Tech_1Entre1Et3());
+
+            // Détection des techniques applicables
+            List<String> techniquesApplicables = new ArrayList<>();
+            for (Techniques tech : techniques) {
+                if (tech.estApplicable(grille)) {
+                    techniquesApplicables.add(tech.getClass().getSimpleName());
+                }
+            }
+
+            // Affichage des résultats
+            System.out.println("\nTechniques applicables :");
+            if (techniquesApplicables.isEmpty()) {
+                System.out.println("Aucune technique applicable.");
+            } else {
+                for (String nomTechnique : techniquesApplicables) {
+                    System.out.println("- " + nomTechnique);
+                }
             }
         }
 
-        // Affichage des résultats
-        System.out.println("\nTechniques applicables :");
-        if (techniquesApplicables.isEmpty()) {
-            System.out.println("Aucune technique applicable.");
-        } else {
-            for (String nomTechnique : techniquesApplicables) {
-                System.out.println("- " + nomTechnique);
-            }
+        if (activerTestTitouan) {
+            System.out.println("Test Titouan : ");
+            Technique0et3Diag technique = new Technique0et3Diag();
+            System.out.println("Technique 0 et 3 : ");
+            System.out.println(technique.estApplicable(grille));
         }
     }
 }
