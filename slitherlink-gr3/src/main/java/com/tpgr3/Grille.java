@@ -13,11 +13,11 @@ public class Grille {
     private Cellule[][] matrice;
 
     /** Dimensions de la grille. */
-    private int largeur;
-    private int hauteur;
+    public int largeur; /*faudra remmetre en privée zebi les getters c'est pas pour rien */ 
+    public int hauteur;
 
     /** Sauvegarde des valeurs des cases fournies en paramètre. */
-    private int[][] valeurs;
+    public int[][] valeurs;
 
     /**
      * Constructeur de la classe Grille.
@@ -155,6 +155,17 @@ public class Grille {
         }
         return null;
     }
+
+    /**
+     * Retourne les dimensions logiques de la grille.
+     * Les dimensions logiques sont calculées en fonction des dimensions réelles de la grille.
+     *
+     * @return Un tableau contenant la largeur et la hauteur logiques de la grille.
+     */
+    public int[] getDimensionsLogiques() {
+        return new int[] { (largeur - 1) / 2, (hauteur - 1) / 2 };
+    }
+
 
     /**
      * Vérifie si les coordonnées (x, y) sont valides dans la grille.

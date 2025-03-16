@@ -13,6 +13,9 @@ import com.tpgr3.Techniques.Tech_1Entre1Et3;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tpgr3.Techniques.Technique0et3;
+import com.tpgr3.Techniques.Technique0et3Diag;
+
 public class App {
     public static void main(String[] args) {
         // Initialisation des valeurs de la grille de test
