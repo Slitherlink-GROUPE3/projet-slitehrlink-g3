@@ -8,20 +8,36 @@ public class Tech_2Entre0Et2 implements Techniques {
 
     @Override
     public boolean estApplicable(Grille grille) {
-        for (int y = 1; y < grille.getHauteur(); y += 2) { // Parcours des Cases
-            for (int x = 1; x < grille.getLargeur(); x += 2) {
+        for (int y = 1; y < grille.hauteur; y += 2) {
+            for (int x = 1; x < grille.largeur; x += 2) {
                 Case c = (Case) grille.getCellule(x, y);
-                if (c.getValeur() == 2) {
+                if (c != null && c.getValeur() == 2) {
                     List<Case> voisins = grille.getCasesAdjacentes(x, y);
-                    boolean a0 = false, a2 = false;
-                    for (Case v : voisins) {
-                        if (v.getValeur() == 0) a0 = true;
-                        if (v.getValeur() == 2) a2 = true;
+                    if (contientValeurs(voisins, 0, 2)) {
+                        System.out.printf("[OK] Tech_2Entre0Et2: Case (x=%d,y=%d) voisins=%s%n", 
+                            x, y, formatVoisins(voisins));
+                        return true;
                     }
-                    if (a0 && a2) return true; // Technique applicable
                 }
             }
         }
         return false;
+    }
+
+    private boolean contientValeurs(List<Case> voisins, int... valeurs) {
+        boolean[] trouve = new boolean[valeurs.length];
+        for (Case v : voisins) {
+            for (int i = 0; i < valeurs.length; i++) {
+                if (v.getValeur() == valeurs[i]) trouve[i] = true;
+            }
+        }
+        for (boolean t : trouve) if (!t) return false;
+        return true;
+    }
+
+    private String formatVoisins(List<Case> voisins) {
+        StringBuilder sb = new StringBuilder();
+        for (Case v : voisins) sb.append(v.getValeur()).append(" ");
+        return sb.toString().trim();
     }
 }

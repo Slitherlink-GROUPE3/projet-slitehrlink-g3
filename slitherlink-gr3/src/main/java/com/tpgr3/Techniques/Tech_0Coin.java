@@ -9,12 +9,13 @@ public class Tech_0Coin implements Techniques {
 
     @Override
     public boolean estApplicable(Grille grille) {
-        for (int y = 1; y < grille.getHauteur(); y += 2) { // Parcours des Cases
-            for (int x = 1; x < grille.getLargeur(); x += 2) {
+        for (int y = 1; y < grille.hauteur; y += 2) { // Parcours des cases
+            for (int x = 1; x < grille.largeur; x += 2) {
                 Case c = (Case) grille.getCellule(x, y);
-                if (c.getValeur() == 0 && estDansUnCoin(x, y, grille)) {
+                if (c != null && c.getValeur() == 0 && estDansUnCoin(x, y, grille)) {
                     List<Slot> slots = grille.getSlotsAdjacentsCase(x, y);
-                    if (slots.size() == 2) return true; // Technique applicable
+                    System.out.printf("[OK] Tech_0Coin: Case (x=%d,y=%d) dans un coin. Slots adjacents: %d%n", x, y, slots.size());
+                    return true;
                 }
             }
         }
@@ -22,9 +23,9 @@ public class Tech_0Coin implements Techniques {
     }
 
     private boolean estDansUnCoin(int x, int y, Grille grille) {
-        int maxX = grille.getLargeur() - 1;
-        int maxY = grille.getHauteur() - 1;
-        return (x == 1 && y == 1) || (x == maxX - 1 && y == 1)
-            || (x == 1 && y == maxY - 1) || (x == maxX - 1 && y == maxY - 1);
+        int maxX = grille.largeur - 2; // Dernière case impaire
+        int maxY = grille.hauteur - 2;
+        return (x == 1 && y == 1) || (x == maxX && y == 1)
+            || (x == 1 && y == maxY) || (x == maxX && y == maxY);
     }
 }

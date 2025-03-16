@@ -157,10 +157,18 @@ public class Grille {
     }
 
     /**
-     * Retourne les dimensions logiques de la grille.
-     * Les dimensions logiques sont calculées en fonction des dimensions réelles de la grille.
-     *
-     * @return Un tableau contenant la largeur et la hauteur logiques de la grille.
+     * Vérifie si une case est dans un coin logique de la grille.
+     * @param x Coordonnée x de la case (doit être impaire)
+     * @param y Coordonnée y de la case (doit être impaire)
+     */
+    public boolean estDansUnCoin(int x, int y) {
+        int[] dim = getDimensionsLogiques();
+        return (x == 1 && y == 1) || (x == dim[0] * 2 - 1 && y == 1) 
+            || (x == 1 && y == dim[1] * 2 - 1) || (x == dim[0] * 2 - 1 && y == dim[1] * 2 - 1);
+    }
+
+    /**
+     * Retourne les dimensions logiques de la grille (nombre de cases en largeur/hauteur).
      */
     public int[] getDimensionsLogiques() {
         return new int[] { (largeur - 1) / 2, (hauteur - 1) / 2 };
@@ -250,4 +258,6 @@ public class Grille {
         }
         return cases;
     }
+
+    
 }
