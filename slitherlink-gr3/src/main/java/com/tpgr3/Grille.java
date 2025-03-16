@@ -13,11 +13,11 @@ public class Grille {
     private Cellule[][] matrice;
 
     /** Dimensions de la grille. */
-    private int largeur;
-    private int hauteur;
+    public int largeur;
+    public int hauteur;
 
     /* Sauvagarde des valeurs des cases donnés en parametre*/
-    private int[][] valeurs;
+    public int[][] valeurs;
 
     /**
      * Constructeur de la classe Grille.
@@ -31,6 +31,10 @@ public class Grille {
         this.valeurs = valeurs;
 
         initialiserGrille(valeurs);
+    }
+
+    public int[] getDimensionsLogiques() {
+        return new int[] { (largeur - 1) / 2, (hauteur - 1) / 2 };
     }
 
     /**

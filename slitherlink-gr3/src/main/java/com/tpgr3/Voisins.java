@@ -7,7 +7,7 @@ package com.tpgr3;
  * @param y : coordonnée y de la case (coordonnées logiques, commençant à 1)
  */
 public class Voisins implements Constantes {
-    private Cellule c;
+    public Cellule c;
     private Grille grille;
     private int hauteur;
     private int largeur;
