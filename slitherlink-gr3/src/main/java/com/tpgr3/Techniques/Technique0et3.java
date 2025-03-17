@@ -287,4 +287,10 @@ public class Technique0et3 implements Techniques {
         v.testDetection();
         System.out.println("===============================================\n");
     }
+
+    //ajout de la méthode appliquer pour eviter les erreur de compilation
+    @Override
+    public void appliquer(Grille grille) {
+        // TODO Auto-generated method stub
+    }
 }

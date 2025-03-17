@@ -9,4 +9,5 @@ public interface Techniques {
      * @return true si la technique peut être appliquée, false sinon.
      */
     boolean estApplicable(Grille grille);
+    void appliquer(Grille grille);
 }
