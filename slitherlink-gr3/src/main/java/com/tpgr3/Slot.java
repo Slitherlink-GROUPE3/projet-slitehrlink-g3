@@ -53,4 +53,13 @@ public class Slot extends Cellule {
     public int getValeur() {
         return marque.getValeur();
     }
+
+    public Marque getMarque() {
+        return marque;
+    }
+
+    public void setMarque(Marque marque) {
+        this.marque = marque;
+    }
+
 }
