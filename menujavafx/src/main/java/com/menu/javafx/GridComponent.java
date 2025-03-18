@@ -1,4 +1,4 @@
-package com.menu;
+package com.menu.javafx;
 
 import javafx.scene.layout.GridPane;
 

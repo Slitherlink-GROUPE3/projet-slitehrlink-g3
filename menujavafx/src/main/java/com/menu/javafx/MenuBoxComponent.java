@@ -1,6 +1,4 @@
-package com.menu;
-
-import com.menu.javafx.hintScene;
+package com.menu.javafx;
 
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;

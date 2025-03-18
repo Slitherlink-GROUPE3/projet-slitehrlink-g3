@@ -1,9 +1,5 @@
 package com.menu.javafx;
 
-import com.menu.GameScene;
-import com.menu.Menu;
-import com.menu.SettingScene;
-
 import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

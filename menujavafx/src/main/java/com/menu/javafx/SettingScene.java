@@ -1,4 +1,4 @@
-package com.menu;
+package com.menu.javafx;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
@@ -9,7 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -19,7 +18,6 @@ import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -99,14 +97,14 @@ public class SettingScene {
                 "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);");
         
         // Créer les boutons de paramètres
-        Button mainMenuButton = createStyledButton("Menu principal", false);
-        Button saveButton = createStyledButton("Sauvegarder", true);
-        Button changeDifficultyButton = createStyledButton("Changer de difficulté", false);
-        Button changeAccountButton = createStyledButton("Changer de compte", false);
+        Button mainMenuButton = Util.createStyledButton("Menu principal", false, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
+        Button saveButton = Util.createStyledButton("Sauvegarder", true, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
+        Button changeDifficultyButton = Util.createStyledButton("Changer de difficulté", false, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
+        Button changeAccountButton = Util.createStyledButton("Changer de compte", false, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         
         // Boutons de mode avec état actif/inactif selon le mode courant
-        Button darkModeButton = createStyledButton("Mode sombre", isDarkMode);
-        Button lightModeButton = createStyledButton("Mode clair", !isDarkMode);
+        Button darkModeButton = Util.createStyledButton("Mode sombre", isDarkMode, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
+        Button lightModeButton = Util.createStyledButton("Mode clair", !isDarkMode, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         
         // Désactiver le bouton du mode actif
         if (isDarkMode) {
@@ -115,28 +113,29 @@ public class SettingScene {
             lightModeButton.setDisable(true);
         }
         
-        Button quitButton = createStyledButton("Quitter", true);
+        Button quitButton = Util.createStyledButton("Quitter", true, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         
         // Configurer les actions des boutons
         mainMenuButton.setOnAction(e -> {
-            animateButtonClick(mainMenuButton);
+            Util.animateButtonClick(mainMenuButton);
             Menu.show(primaryStage);
         });
         
         saveButton.setOnAction(e -> {
-            animateButtonClick(saveButton);
+            Util.animateButtonClick(saveButton);
             // Logique de sauvegarde à implémenter
+
         });
         
         changeDifficultyButton.setOnAction(e -> {
-            animateButtonClick(changeDifficultyButton);
+            Util.animateButtonClick(changeDifficultyButton);
             // Logique de changement de difficulté à implémenter
         });
         
         // Dans la section où les actions des boutons sont configurées
         // Modifier l'action du bouton "Changer de compte" :
         changeAccountButton.setOnAction(e -> {
-            animateButtonClick(changeAccountButton);
+            Util.animateButtonClick(changeAccountButton);
             
             // Afficher l'écran de connexion pour changer de compte
             LoginScene.show(primaryStage);
@@ -149,7 +148,7 @@ public class SettingScene {
         
         // Action pour activer le mode sombre
         darkModeButton.setOnAction(e -> {
-            animateButtonClick(darkModeButton);
+            Util.animateButtonClick(darkModeButton);
             isDarkMode = true;
             saveThemePreference(true); // Sauvegarde la préférence
             
@@ -162,14 +161,14 @@ public class SettingScene {
         
         // Action pour activer le mode clair
         lightModeButton.setOnAction(e -> {
-            animateButtonClick(lightModeButton);
+            Util.animateButtonClick(lightModeButton);
             isDarkMode = false;
             saveThemePreference(false); // Sauvegarde la préférence
             show(primaryStage); // Rafraîchit l'interface avec le nouveau thème
         });
         
         quitButton.setOnAction(e -> {
-            animateButtonClick(quitButton);
+            Util.animateButtonClick(quitButton);
             primaryStage.close();
         });
         
@@ -266,150 +265,7 @@ public class SettingScene {
         separator.setArcHeight(2);
         return separator;
     }
-    
-    /**
-     * Crée un bouton stylisé conformément au design de GameScene, adapté au thème
-     */
-    private static Button createStyledButton(String text, boolean isPrimary) {
-        Button button = new Button(text);
-        button.setFont(Font.font("Montserrat", FontWeight.BOLD, 16));
-        button.setPrefWidth(450);
-        button.setPrefHeight(50);
-        
-        Color textColor = isDarkMode ? Color.WHITE : Color.web(DARK_COLOR);
-        Color primaryTextColor = Color.WHITE;
-        
-        if (isPrimary) {
-            button.setTextFill(primaryTextColor);
-            button.setStyle(
-                    "-fx-background-color: " + MAIN_COLOR + ";" +
-                    "-fx-background-radius: 30;" +
-                    "-fx-border-color: " + DARK_COLOR + ";" +
-                    "-fx-border-width: 2;" +
-                    "-fx-border-radius: 30;" +
-                    "-fx-padding: 10 20;" +
-                    "-fx-cursor: hand;");
-        } else {
-            button.setTextFill(textColor);
-            button.setStyle(
-                    "-fx-background-color: " + SECONDARY_COLOR + ";" +
-                    "-fx-background-radius: 30;" +
-                    "-fx-border-color: " + MAIN_COLOR + ";" +
-                    "-fx-border-width: 2;" +
-                    "-fx-border-radius: 30;" +
-                    "-fx-padding: 10 20;" +
-                    "-fx-cursor: hand;");
-        }
-        
-        // Effet d'ombre
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(Color.web("#000000", 0.2));
-        shadow.setRadius(5);
-        shadow.setOffsetY(2);
-        button.setEffect(shadow);
-        
-        // Animations au survol
-        button.setOnMouseEntered(e -> {
-            if (!button.isDisabled()) {
-                if (isPrimary) {
-                    button.setStyle(
-                            "-fx-background-color: " + DARK_COLOR + ";" +
-                            "-fx-background-radius: 30;" +
-                            "-fx-border-color: " + MAIN_COLOR + ";" +
-                            "-fx-border-width: 2;" +
-                            "-fx-border-radius: 30;" +
-                            "-fx-padding: 10 20;" +
-                            "-fx-cursor: hand;");
-                } else {
-                    button.setStyle(
-                            "-fx-background-color: " + MAIN_COLOR + ";" +
-                            "-fx-background-radius: 30;" +
-                            "-fx-border-color: " + DARK_COLOR + ";" +
-                            "-fx-border-width: 2;" +
-                            "-fx-border-radius: 30;" +
-                            "-fx-padding: 10 20;" +
-                            "-fx-cursor: hand;");
-                    button.setTextFill(Color.WHITE);
-                }
-                
-                // Animation de mise à l'échelle
-                ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), button);
-                scaleTransition.setToX(1.03);
-                scaleTransition.setToY(1.03);
-                scaleTransition.play();
-            }
-        });
-        
-        button.setOnMouseExited(e -> {
-            if (!button.isDisabled()) {
-                if (isPrimary) {
-                    button.setStyle(
-                            "-fx-background-color: " + MAIN_COLOR + ";" +
-                            "-fx-background-radius: 30;" +
-                            "-fx-border-color: " + DARK_COLOR + ";" +
-                            "-fx-border-width: 2;" +
-                            "-fx-border-radius: 30;" +
-                            "-fx-padding: 10 20;" +
-                            "-fx-cursor: hand;");
-                    button.setTextFill(primaryTextColor);
-                } else {
-                    button.setStyle(
-                            "-fx-background-color: " + SECONDARY_COLOR + ";" +
-                            "-fx-background-radius: 30;" +
-                            "-fx-border-color: " + MAIN_COLOR + ";" +
-                            "-fx-border-width: 2;" +
-                            "-fx-border-radius: 30;" +
-                            "-fx-padding: 10 20;" +
-                            "-fx-cursor: hand;");
-                    button.setTextFill(textColor);
-                }
-                
-                // Animation de retour à l'échelle normale
-                ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), button);
-                scaleTransition.setToX(1.0);
-                scaleTransition.setToY(1.0);
-                scaleTransition.play();
-            }
-        });
-        
-        // Style spécial pour les boutons désactivés
-        button.disabledProperty().addListener((obs, wasDisabled, isDisabled) -> {
-            if (isDisabled) {
-                if (text.equals("Mode sombre") || text.equals("Mode clair")) {
-                    // Style spécifique pour indiquer le mode actif
-                    button.setTextFill(Color.WHITE);
-                    button.setStyle(
-                            "-fx-background-color: " + ACCENT_COLOR + ";" +
-                            "-fx-background-radius: 30;" +
-                            "-fx-border-color: " + DARK_COLOR + ";" +
-                            "-fx-border-width: 2;" +
-                            "-fx-border-radius: 30;" +
-                            "-fx-padding: 10 20;" +
-                            "-fx-opacity: 0.9;");
-                    button.setText(text + " ✓");
-                }
-            }
-        });
-        
-        return button;
-    }
-    
-    /**
-     * Anime un bouton lors du clic
-     */
-    private static void animateButtonClick(Button button) {
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), button);
-        scaleDown.setToX(0.95);
-        scaleDown.setToY(0.95);
-        
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), button);
-        scaleUp.setToX(1.0);
-        scaleUp.setToY(1.0);
-        
-        scaleDown.setOnFinished(e -> scaleUp.play());
-        scaleDown.play();
-    }
-    
+
     /**
      * Vérifie si le mode sombre est actif (peut être appelé par d'autres classes)
      * @return true si le mode sombre est actif, false sinon

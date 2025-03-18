@@ -1,4 +1,4 @@
-package com.menu;
+package com.menu.javafx;
 
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
@@ -139,28 +139,28 @@ public class Menu extends Application {
         Button exitButton = createAnimatedButton("Quitter", "🚪");
 
         adventureButton.setOnAction(e -> {
-            animateButtonClick(adventureButton);
+            Util.animateButtonClick(adventureButton);
             //GameScene.show(primaryStage);
             GridScene.show(primaryStage);
 
         });
 
         freeModeButton.setOnAction(e -> {
-            animateButtonClick(freeModeButton);
+            Util.animateButtonClick(freeModeButton);
         });
 
         settingsButton.setOnAction(e -> {
-            animateButtonClick(settingsButton);
+            Util.animateButtonClick(settingsButton);
             SettingScene.show(primaryStage);
         });
 
         tutorialButton.setOnAction(e -> {
-            animateButtonClick(tutorialButton);
+            Util.animateButtonClick(tutorialButton);
             TechniquesScene.show(primaryStage);
         });
 
         exitButton.setOnAction(e -> {
-            animateButtonClick(exitButton);
+            Util.animateButtonClick(exitButton);
             FadeTransition fadeOut = new FadeTransition(Duration.millis(600), primaryStage.getScene().getRoot());
             fadeOut.setFromValue(1.0);
             fadeOut.setToValue(0.0);
@@ -271,19 +271,6 @@ public class Menu extends Application {
         });
 
         return button;
-    }
-
-    private static void animateButtonClick(Button button) {
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), button);
-        scaleDown.setToX(0.95);
-        scaleDown.setToY(0.95);
-
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), button);
-        scaleUp.setToX(1.0);
-        scaleUp.setToY(1.0);
-
-        scaleDown.setOnFinished(e -> scaleUp.play());
-        scaleDown.play();
     }
 
     public static void changeScene(Stage primaryStage, Scene newScene) {

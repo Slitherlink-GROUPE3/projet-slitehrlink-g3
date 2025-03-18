@@ -1,7 +1,5 @@
 package com.menu.javafx;
 
-import com.menu.ButtonFactory;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,9 +11,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.animation.ScaleTransition;
@@ -207,7 +202,7 @@ public class TopBar {
         // Code du bouton Réessayer (même qu'avant)
         retryButton.setOnAction(e -> {
             // Animation de clic
-            animateButtonClick(retryButton);
+            Util.animateButtonClick(retryButton);
             
             // Constants for dialog styling (match GameScene's style)
             String MAIN_COLOR = "#3A7D44"; // Vert principal
@@ -449,7 +444,7 @@ public class TopBar {
 
         pauseButton.setOnAction(e -> {
             // Animation de clic
-            animateButtonClick(pauseButton);
+            Util.animateButtonClick(pauseButton);
             
             // Extraire les minutes et secondes du chronoLabel (format "MM:SS")
             String timeText = chronoLabel.getText();
@@ -581,22 +576,6 @@ public class TopBar {
         });
 
         return button;
-    }
-    
-    /**
-     * Animation pour les clics de bouton
-     */
-    private void animateButtonClick(Button button) {
-        ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), button);
-        scaleDown.setToX(0.95);
-        scaleDown.setToY(0.95);
-
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), button);
-        scaleUp.setToX(1.0);
-        scaleUp.setToY(1.0);
-
-        scaleDown.setOnFinished(e -> scaleUp.play());
-        scaleDown.play();
     }
 
     /**
