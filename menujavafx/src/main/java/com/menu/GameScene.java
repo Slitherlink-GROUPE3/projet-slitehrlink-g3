@@ -1,5 +1,6 @@
 package com.menu;
 
+import com.menu.SlitherlinkTechniquesAnalyzer ;
 import javafx.scene.shape.StrokeLineCap;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,6 +61,7 @@ public class GameScene {
     private static final String LIGHT_COLOR = "#A7C957"; // Vert clair
     
     private static Pane slitherlinkGrid;
+    private static Map<String, Line> gridLines = new HashMap<>();
     private static double CELL_SIZE;
     private static StackPane gridContainer;
     private static HBox root;
@@ -78,10 +80,9 @@ public class GameScene {
     private static Button nextButton;
     
     private static int[][] gridNumbers;
+    private static SlitherlinkTechniquesAnalyzer techniquesAnalyzer ;
     private static int gridRows;
     private static int gridCols;
-    
-    private static Map<String, Line> gridLines = new HashMap<>();
 
     private static class Move {
         private final Line line;
@@ -286,6 +287,7 @@ public class GameScene {
         Button helpButton = createStyledButton("   AIDE   ?  ", false);
         helpButton.setOnAction(e -> {
             animateButtonClick(helpButton);
+            techniquesAnalyzer.analyzeAndSuggestTechnique(primaryStage);
         });
         
         Button checkButton = createStyledButton("Vérifier", true);
@@ -527,6 +529,7 @@ public class GameScene {
 
         primaryStage.show();
         updateGrid(scene.getWidth(), scene.getHeight());
+        techniquesAnalyzer = new SlitherlinkTechniquesAnalyzer(gridNumbers, gridLines, slitherlinkGrid);
     }
 
     private static boolean isColorEqual(Color c1, Color c2) {
