@@ -1,4 +1,4 @@
-package com.menu;
+package com.menu.javafx;
 
 import java.io.*;
 import java.nio.file.*;

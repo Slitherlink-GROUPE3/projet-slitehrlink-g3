@@ -1,4 +1,4 @@
-package com.menu;
+package com.menu.javafx;
 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;

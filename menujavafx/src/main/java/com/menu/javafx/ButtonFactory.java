@@ -1,4 +1,4 @@
-package com.menu;
+package com.menu.javafx;
 
 import javafx.animation.ScaleTransition;
 import javafx.scene.control.Button;
