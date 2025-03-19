@@ -6,6 +6,8 @@ import com.tpgr3.Techniques.Tech_0And3Adjacent;
 import com.tpgr3.Techniques.Tech_0And3Diagonal;
 import com.tpgr3.Techniques.Tech_0Rule;
 import com.tpgr3.Techniques.Tech_1Et0Coin;
+import com.tpgr3.Techniques.Tech_1Et2Coin;
+import com.tpgr3.Techniques.Tech_3Et0Cote;
 import com.tpgr3.Techniques.Tech_CornerRule;
 import com.tpgr3.Techniques.Tech_LoopReaching1;
 import com.tpgr3.Techniques.Tech_LoopReaching3;
@@ -21,10 +23,12 @@ public class App {
         // Initialisation des valeurs de la grille de test
         int[][] valeurs = 
         {
-            { -1,  0 , 1},
-            { -1, -1,  0},
-            { -1, 0, 1}
-          };
+            { -1, -1 , -1 , -1 ,-1},
+            { -1, -1 ,  0 ,  3 ,-1},
+            { -1, -1 , -1 , -1 ,-1},
+            { -1, -1 , -1 , -1 ,-1},
+            { -1,  3 , -1 , -1 ,-1}
+        };
 
         // Création de la grille
         Grille grille = new Grille(valeurs);
@@ -47,12 +51,13 @@ public class App {
             // on ajoute une croix sur la case 6,5
 
             // technique a tester 
+            Techniques technique = new Tech_0And3Adjacent();
 
             // Listes des techniques à tester
             List<Techniques> techniques = new ArrayList<>();
-            techniques.add(new Tech_1Et0Coin());
-            techniques.add(new Tech_1Et0Coin());
-            techniques.add(new Tech_1Et0Coin());
+            techniques.add(technique);
+            techniques.add(technique);
+            techniques.add(technique);
 
 
             grille.afficher();
