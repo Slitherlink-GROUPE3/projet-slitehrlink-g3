@@ -35,6 +35,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.animation.FadeTransition;
 import javafx.util.Duration;
+import com.menu.javafx.SlitherlinkTechniquesAnalyzer;
 import javafx.scene.effect.DropShadow;
 import javafx.geometry.Insets;
 
@@ -231,6 +232,14 @@ public class GameScene {
         Button helpButton = Util.createStyledButton("   AIDE   ?  ", false, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         helpButton.setOnAction(e -> {
             Util.animateButtonClick(helpButton);
+            SlitherlinkTechniquesAnalyzer analyzer = new SlitherlinkTechniquesAnalyzer(
+                slitherGrid.getGridNumbers(),
+                slitherGrid.gridLines,
+                slitherGrid.getSlitherlinkGrid()
+            );
+    
+            // Lancer l'analyse et afficher les suggestions
+            analyzer.analyzeAndSuggestTechnique(primaryStage);
         });
 
         Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
