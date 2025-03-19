@@ -16,7 +16,7 @@ public class SlitherGridChecker {
     }
 
     public void checkGridAutomatically() {
-        if (!slitherGrid.isHypothesisInactive()) {
+        if (slitherGrid.isHypothesisInactive()) {
             boolean isCorrect = checkGrid();
             if (isCorrect) {
                 Util.showWinMessage();

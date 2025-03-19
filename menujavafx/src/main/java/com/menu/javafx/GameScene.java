@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
@@ -18,14 +16,11 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -62,7 +57,7 @@ public class GameScene {
     private static StackPane gridContainer;
     private static HBox root;
     private static VBox mainLayer;
-    private static int checkCounter;
+    private static int checkCounter = 3;
 
     private static SlitherGrid slitherGrid;
     private static GameMatrix gameMatrix;
@@ -189,8 +184,6 @@ public class GameScene {
         topBar.setGridResetCallback(() -> {
             // Recréer la grille de jeu
             slitherGrid.reset();
-
-
 
             // Reconstruire la grille
             slitherGrid.updateGrid(root.getScene().getWidth(), root.getScene().getHeight());

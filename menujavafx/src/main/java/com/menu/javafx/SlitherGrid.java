@@ -118,8 +118,7 @@ public class SlitherGrid {
     public void prepareHypothesis(){
         originalLineStates.clear();
         for (Node node : slitherlinkGrid.getChildren()) {
-            if (node instanceof Line) {
-                Line line = (Line) node;
+            if (node instanceof Line line) {
                 if (line.getUserData() == null) {
                     originalLineStates.put(line, (Color) line.getStroke());
                 }
@@ -133,8 +132,15 @@ public class SlitherGrid {
         for (Map.Entry<Line, Color> entry : originalLineStates.entrySet()) {
             entry.getKey().setStroke(entry.getValue());
         }
+
+        slitherlinkGrid.getChildren().forEach(node -> {
+            if (node instanceof Line) {
+                System.out.println("User Data : " + node.getUserData());
+            }
+        });
+
         slitherlinkGrid.getChildren()
-                .removeIf(node -> node instanceof Line && "hypothesis".equals(((Line) node).getUserData()));
+                .removeIf(node -> node instanceof Line && "hypothesis".equals( ((Line) node).getUserData() ) );
         isHypothesisActive = false;
         originalLineStates.clear();
     }
@@ -144,12 +150,13 @@ public class SlitherGrid {
         for (Line line : originalLineStates.keySet()) {
             // Vérifier si la ligne est en vert clair (hypothèse) et la transformer en vert
             // foncé (confirmée)
-            if (isColorEqual((Color) line.getStroke(), Color.web(LIGHT_COLOR))) {
+            if (isColorEqual( (Color) line.getStroke(), Color.web(LIGHT_COLOR))) {
                 line.setStroke(Color.web(DARK_COLOR));
                 anyChanges = true;
             }
         }
 
+/*
         for (Node node : slitherlinkGrid.getChildren()) {
             if (node instanceof Line && "hypothesis".equals(node.getUserData())) {
                 Line crossLine = (Line) node;
@@ -158,6 +165,7 @@ public class SlitherGrid {
                 anyChanges = true;
             }
         }
+*/
 
         if (anyChanges) {
             if (currentMoveIndex < moveHistory.size() - 1) {
@@ -221,10 +229,6 @@ public class SlitherGrid {
                 }
             }
         }
-
-        System.out.println("\n ");
-        System.out.println("\n ");
-        System.out.println("\n ");
 
     }
 
@@ -508,9 +512,6 @@ public class SlitherGrid {
     public boolean checkGrid(){
         return slitherGridChecker.checkGrid();
     }
-
-
-
 
     /*
     Getters & Setters
