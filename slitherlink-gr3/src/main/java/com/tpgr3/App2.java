@@ -5,7 +5,6 @@ import com.tpgr3.Marque.Baton;
 import com.tpgr3.Techniques.Tech_0And3Adjacent;
 import com.tpgr3.Techniques.Tech_0And3Diagonal;
 import com.tpgr3.Techniques.Tech_0Rule;
-import com.tpgr3.Techniques.Tech_1Et0Coin;
 import com.tpgr3.Techniques.Tech_CornerRule;
 import com.tpgr3.Techniques.Tech_LoopReaching1;
 import com.tpgr3.Techniques.Tech_LoopReaching3;
@@ -16,14 +15,16 @@ import com.tpgr3.Techniques.Technique0et3Diag;
 import java.util.ArrayList;
 import java.util.List;
 
-public class App {
+public class App2 {
     public static void main(String[] args) {
         // Initialisation des valeurs de la grille de test
         int[][] valeurs = 
         {
-            { -1,  0 , 1},
-            { -1, -1,  0},
-            { -1, 0, 1}
+            {3, 2, 1, -1, -1},
+            {-1, -1, -1, 2, 2},
+            {3, 1, -1, 2, 3},
+            {3, -1, -1, 0, 3},
+            {-1, -1, 3, -1, -1}
           };
 
         // Création de la grille
@@ -50,11 +51,15 @@ public class App {
 
             // Listes des techniques à tester
             List<Techniques> techniques = new ArrayList<>();
-            techniques.add(new Tech_1Et0Coin());
-            techniques.add(new Tech_1Et0Coin());
-            techniques.add(new Tech_1Et0Coin());
+            techniques.add(new Tech_0Rule());
+            techniques.add(new Tech_0Rule());
+            techniques.add(new Tech_0And3Adjacent());
+            techniques.add(new Tech_0And3Adjacent());
+            techniques.add(new Tech_0And3Adjacent());
+            techniques.add(new Tech_0And3Diagonal());
+            techniques.add(new Tech_0And3Diagonal());
 
-
+            
             grille.afficher();
             
             // Tester toutes les techniques
