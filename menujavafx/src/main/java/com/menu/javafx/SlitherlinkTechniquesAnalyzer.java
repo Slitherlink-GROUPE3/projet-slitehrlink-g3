@@ -1,4 +1,4 @@
-package com.menu;
+package com.menu.javafx;
 
  
 
@@ -60,28 +60,6 @@ import java.util.HashMap;
  
 
 
- 
-
-import com.menu.javafx.hintScene;
- 
-
-import com.tpgr3.Grille;
- 
-
-import com.tpgr3.Techniques.Tech_0Rule;
- 
-
-import com.tpgr3.Techniques.Tech_0And3Adjacent;
- 
-
-import com.tpgr3.Techniques.Technique0et3Diag;
- 
-
-import com.tpgr3.Techniques.Techniques3diag;
- 
-
-import com.tpgr3.Techniques.Techniques;
- 
 
 
  

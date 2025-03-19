@@ -4,7 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -49,14 +49,13 @@ public class PauseMenu {
         pauseMenu.setStyle("-fx-background-color: " + SECONDARY_COLOR + "; -fx-padding: 20;");
 
         // "PAUSE"
-        javafx.scene.control.Label pauseTitle = new javafx.scene.control.Label("PAUSE");
+        Label pauseTitle = new Label("PAUSE");
         pauseTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 42));
         pauseTitle.setTextFill(Color.web(DARK_COLOR));
         pauseTitle.setStyle("-fx-padding: 20;");
 
         // Bouton "Reprendre"
         Button resumeButton = createStyledButton("Reprendre");
-        resumeButton.setTooltip(new javafx.scene.control.Tooltip("Reprendre la partie"));
         resumeButton.setOnAction(e -> {
             // Désactiver l'état de pause avant de revenir au jeu
             isGamePaused = false;
@@ -72,7 +71,7 @@ public class PauseMenu {
                 }
             } else {
                 // Si pas de scène sauvegardée (cas improbable), revenir à une nouvelle
-                GameScene.show(primaryStage);
+                GameScene.show(primaryStage, GameScene.getCurrentGridId());
             }
         });
 

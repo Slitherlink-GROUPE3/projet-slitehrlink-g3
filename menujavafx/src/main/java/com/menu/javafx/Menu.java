@@ -72,9 +72,15 @@ public class Menu extends Application {
 
     public static void show(Stage primaryStage) {
 
-        // Modification du titre pour inclure le nom d'utilisateur
+        // Récupérer le nom d'utilisateur actuel
         String username = UserManager.getCurrentUser();
         primaryStage.setTitle("Slitherlink - " + (username != null ? username : "Menu Principal"));
+
+        // Vérifier si l'utilisateur a des sauvegardes et proposer de les charger
+        System.out.println("Vérification des sauvegardes pour " + username);
+        boolean saveLoaded = com.menu.javafx.SaveGameLoader.loadUserSave(primaryStage);
+        System.out.println(
+                "Résultat de la vérification: " + (saveLoaded ? "Sauvegarde chargée" : "Pas de sauvegarde chargée"));
 
         if (primaryStage.getIcons().isEmpty()) {
             Image icon = loadImage("/amir.jpeg");
@@ -154,11 +160,11 @@ public class Menu extends Application {
 
         Tooltip tooltipExitButton = new Tooltip("Quittez le jeu !");
         Tooltip.install(exitButton, tooltipExitButton);
-        
+
         // Actions des boutons
         adventureButton.setOnAction(e -> {
             Util.animateButtonClick(adventureButton);
-            //GameScene.show(primaryStage);
+            // GameScene.show(primaryStage);
             GridScene.show(primaryStage);
 
         });
