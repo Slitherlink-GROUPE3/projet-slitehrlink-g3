@@ -55,6 +55,9 @@ public class Tech_3Et0Cote implements Techniques {
         reset();
     }
 
+    /*
+     * Detecte la configuration 3 et 0 cote
+     */
     private boolean detecterConfiguration(Grille grille) {
         int largeur = grille.getLargeur(), hauteur = grille.getHauteur();
         for (int y = 1; y < hauteur; y += 2) {
@@ -116,6 +119,11 @@ public class Tech_3Et0Cote implements Techniques {
         return true;
     }
 
+    /*
+     * Detecte le bord de la grille 
+     * @return le bord détecté
+     * 
+     */
     private String detectBord(int x, int y, Grille g) {
         int w = g.getLargeur(), h = g.getHauteur();
         if (y == 1) return "haut";
