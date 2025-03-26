@@ -46,6 +46,7 @@ public class SlitherGrid {
 
     protected Map<String, Line> gridLines = new HashMap<>();
     protected int[][] gridNumbers;
+
     protected int gridCols;
     protected int gridRows;
 
