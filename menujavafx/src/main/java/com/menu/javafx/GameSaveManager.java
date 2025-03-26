@@ -184,6 +184,27 @@ public static boolean loadGame(String saveFilePath, Stage primaryStage) {
         String gridId = (String) saveData.get("gridId");
         long elapsedTime = (Long) saveData.get("elapsedTime");
         long remainingChecks = (Long) saveData.get("remainingChecks");
+
+        // Debug logs for save data
+        System.out.println("=== Debug: Game Loading Details ===");
+        System.out.println("- Username: " + username);
+        System.out.println("- Grid ID: " + gridId);
+        System.out.println("- Elapsed Time: " + elapsedTime + " seconds");
+        System.out.println("- Remaining Checks: " + remainingChecks);
+        System.out.println("- Current user: " + UserManager.getCurrentUser());
+
+        // Debug the grid state before parsing
+        JSONArray gridStateArray = (JSONArray) saveData.get("gridState");
+        System.out.println("- Grid state found: " + (gridStateArray != null));
+        if (gridStateArray != null) {
+            System.out.println("- Grid dimensions: " + gridStateArray.size() + " rows");
+            if (gridStateArray.size() > 0) {
+                System.out.println("- First row size: " + ((JSONArray)gridStateArray.get(0)).size() + " columns");
+                if (((JSONArray)gridStateArray.get(0)).size() > 0) {
+                    System.out.println("- Cell depth: " + ((JSONArray)((JSONArray)gridStateArray.get(0)).get(0)).size());
+                }
+            }
+        }
         
         System.out.println("Sauvegarde trouvée - Grille: " + gridId + ", Temps: " + elapsedTime + "s");
         
@@ -201,7 +222,6 @@ public static boolean loadGame(String saveFilePath, Stage primaryStage) {
         }
         
         // Charger l'état de la grille
-        JSONArray gridStateArray = (JSONArray) saveData.get("gridState");
         int[][][] gridState = parseGridState(gridStateArray);
         
         // Utiliser SaveGameLoader pour charger la partie sauvegardée

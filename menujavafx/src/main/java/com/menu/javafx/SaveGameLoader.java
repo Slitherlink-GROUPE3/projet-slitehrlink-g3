@@ -59,62 +59,99 @@ public class SaveGameLoader {
         if (gridId.startsWith("grid-")) {
             actualGridId = gridId.substring(5); // Enlever "grid-"
         }
-
-        // Charger la grille depuis le fichier JSON avec le bon nom
-        // Le format du fichier est toujours "grid-XXX.json"
-        int[][] gridNumbers = GameScene.loadGridFromJson("grids/grid-" + actualGridId + ".json");
-
+    
         // Initialiser le compteur et le temps
         GameScene.setcheckCounter(checkCount);
         savedElapsedTime = elapsedTime;
 
         // Afficher la scène de jeu avec les données chargées
+        System.out.println("Affichage de la scène de jeu avec la sauvegarde...");
+        // Log gridState details
+        System.out.println("Loading grid state with dimensions: " + 
+                         gridState.length + "x" + 
+                         gridState[0].length + "x" + 
+                         gridState[0][0].length);
+                         
+        // Count different types of elements
+        int lines = 0, crosses = 0, hypotheses = 0;
+        for (int i = 0; i < gridState.length; i++) {
+            for (int j = 0; j < gridState[i].length; j++) {
+                for (int k = 1; k < gridState[i][j].length; k++) {
+                    switch (gridState[i][j][k]) {
+                        case LINE: lines++; break;
+                        case CROSS: crosses++; break;
+                        case HYPOTHESIS: hypotheses++; break;
+                    }
+                }
+            }
+        }
+        System.out.println("Grid contains: " + lines + " lines, " + 
+                          crosses + " crosses, " + 
+                          hypotheses + " hypotheses");
         GameScene.showWithSavedState(primaryStage, actualGridId, gridState, elapsedTime);
     }
 
     /**
-     * Applique un état spécifique à un segment de ligne
-     * 
-     * @param line        La ligne à modifier
-     * @param state       L'état à appliquer (EMPTY, LINE, CROSS ou HYPOTHESIS)
-     * @param slitherGrid La grille sur laquelle appliquer l'état
-     */
-    public static void applySegmentState(Line line, int state, SlitherGrid slitherGrid) {
-        try {
-            // D'abord supprimer les croix si elles existent
-            slitherGrid.getSlitherlinkGrid().getChildren()
-                    .removeIf(node -> node instanceof Line && node.getUserData() == line);
+ * Applique un état spécifique à un segment de ligne
+ * 
+ * @param line        La ligne à modifier
+ * @param state       L'état à appliquer (EMPTY, LINE, CROSS ou HYPOTHESIS)
+ * @param slitherGrid La grille sur laquelle appliquer l'état
+ */
+public static void applySegmentState(Line line, int state, SlitherGrid slitherGrid) {
+    try {
+        // Ajouter un log détaillé pour le débogage
+        System.out.println("Application de l'état " + state + " à la ligne: " + line.getId());
+        
+        // D'abord supprimer les croix si elles existent
+        slitherGrid.getSlitherlinkGrid().getChildren()
+                .removeIf(node -> node instanceof Line && node.getUserData() == line);
 
-            switch (state) {
-                case EMPTY:
-                    line.setStroke(Color.TRANSPARENT);
-                    line.setOpacity(0.0); // Assure que la ligne est invisible
-                    break;
-                case LINE:
+        switch (state) {
+            case EMPTY:
+                // Mettre la ligne à l'état initial (transparent)
+                line.setStroke(Color.TRANSPARENT);
+                line.setOpacity(0.0);
+                break;
+            case LINE:
+                // CORRECTION ICI: Utiliser directement toggleLine si la ligne n'est pas active
+                if (!slitherGrid.isLineActive(line)) {
+                    slitherGrid.toggleLine(line);
+                } else {
+                    // Forcer la mise à jour si la ligne est déjà active
                     line.setStroke(Color.web(SlitherGrid.DARK_COLOR));
-                    line.setOpacity(1.0); // Assure que la ligne est visible
-                    line.setStrokeWidth(3.0); // Assure que la ligne a une épaisseur correcte
-                    break;
-                case CROSS:
-                    line.setStroke(Color.TRANSPARENT);
-                    line.setOpacity(0.0);
-                    // Utiliser createCrossForSave
-                    CrossMoveHelper.createCrossForSave(line, false, slitherGrid);
-                    break;
-                case HYPOTHESIS:
-                    line.setStroke(Color.web(SlitherGrid.LIGHT_COLOR));
                     line.setOpacity(1.0);
                     line.setStrokeWidth(3.0);
-                    break;
-                default:
-                    System.err.println("État de segment inconnu: " + state);
-                    break;
-            }
-        } catch (Exception e) {
-            System.err.println("Erreur lors de l'application de l'état " + state + " à une ligne: " + e.getMessage());
-            e.printStackTrace();
+                }
+                // Vérifier après l'application
+                System.out.println(" -> Ligne activée: " + slitherGrid.isLineActive(line));
+                break;
+            case CROSS:
+                // Rendre la ligne transparente et ajouter une croix
+                line.setStroke(Color.TRANSPARENT);
+                line.setOpacity(0.0);
+                // Créer la croix en utilisant votre helper
+                CrossMoveHelper.createCrossForSave(line, false, slitherGrid);
+                break;
+            case HYPOTHESIS:
+                // Pour les hypothèses, utiliser la couleur claire
+                line.setStroke(Color.web(SlitherGrid.LIGHT_COLOR));
+                line.setOpacity(1.0);
+                line.setStrokeWidth(3.0);
+                break;
+            default:
+                System.err.println("État de segment inconnu: " + state);
+                break;
         }
+        
+        // Forcer une mise à jour du rendu
+        line.setVisible(true);
+        
+    } catch (Exception e) {
+        System.err.println("Erreur lors de l'application de l'état " + state + " à une ligne: " + e.getMessage());
+        e.printStackTrace();
     }
+}
 
             /**
      * Applique un état sauvegardé à la grille actuelle.
@@ -237,9 +274,12 @@ public class SaveGameLoader {
         GameSaveManager.SaveMetadata lastSave = saves.get(0);
         System.out.println("Sauvegarde la plus récente: " + lastSave.getGridId() + " du " + lastSave.getSaveDate());
 
-        // Pour éviter les problèmes de concurrence avec les callbacks
-        final boolean[] result = { false };
+        final boolean[] saveWasLoaded = {false};
 
+            java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+
+
+        // Exécuter sur le thread JavaFX
         Platform.runLater(() -> {
             // Créer une boîte de dialogue pour demander à l'utilisateur
             Stage dialog = new Stage();

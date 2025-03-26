@@ -63,6 +63,8 @@ public class GameScene {
     private static VBox mainLayer;
     private static int checkCounter;
 
+    private static String gridId = "001"; // Valeur par défaut
+
     // Variables pour gérer les états sauvegardés
     private static int[][][] savedGridState = null;
     private static int savedElapsedTime = 0;
@@ -163,20 +165,21 @@ public class GameScene {
 
         // Afficher la scène de jeu normalement, elle utilisera l'état sauvegardé si
         // disponible
-        show(primaryStage, gridId);
+        show(primaryStage, gridId); 
     }
 
-    public static void show(Stage primaryStage, String gridId) {
-
+    public static void show(Stage primaryStage, String... newGridId) {
         applyTheme();
 
-        // Store the current grid ID
-        currentGridId = gridId;
+        // Update the current grid ID if provided
+        if (newGridId != null && newGridId.length > 0 && newGridId[0] != null) {
+            currentGridId = newGridId[0];
+        }
 
+        String gridIdForLoading = gridId.startsWith("grid-") ? gridId : "grid-" + gridId;
+        
         // Charger la grille depuis le fichier JSON
-        String gridPath = "grids/grid-" + gridId + ".json";
-        System.out.println("Loading grid from: " + gridPath);
-        int[][] gridNumbers = loadGridFromJson(gridPath);
+        int[][] gridNumbers = loadGridFromJson("grids/" + gridIdForLoading + ".json");
         slitherGrid = new SlitherGrid(gridNumbers);
         gameMatrix = slitherGrid.getGameMatrix();
 
@@ -414,7 +417,7 @@ public class GameScene {
                 SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         saveButton.setOnAction(e -> {
             Util.animateButtonClick(saveButton);
-            if (GameSaveManager.saveGame("grid-" + currentGridId, secondsElapsed[0], checkCounter, false)) {
+            if (GameSaveManager.saveGame("grid-" + gridId, secondsElapsed[0], checkCounter, false)) {
                 GameSaveManager.showSaveNotification(slitherGrid.getSlitherlinkGrid());
             }
         });
