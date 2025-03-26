@@ -121,10 +121,11 @@ public class SaveGameLoader {
      * 
      * @param state État de la grille à appliquer (tableau 3D avec l'état de chaque segment)
      */
-    private static void applyGridState(int[][][] state) {
-        int gridRows = SlitherGrid.getGridRows();
-        int gridCols = SlitherGrid.getGridCols();
-        Map<String, Line> gridLines = SlitherGrid.getGridLines();
+    public static void applyGridState(int[][][] state) {
+        SlitherGrid slitherGrid = GameScene.getSlitherGrid();
+        int gridRows = slitherGrid.getGridRows();
+        int gridCols = slitherGrid.getGridCols();
+        Map<String, Line> gridLines = slitherGrid.getGridLines();
         // Vérifier les dimensions
         if (state.length != gridRows || state[0].length != gridCols) {
             System.err.println("Erreur: dimensions de l'état (" + state.length + 
@@ -155,7 +156,7 @@ public class SaveGameLoader {
                     if (state[i][j][1] != 0) {
                         System.out.println("Segment haut trouvé: [" + i + "][" + j + "][1] = " + state[i][j][1]);
                     }
-                    applySegmentState(topLine, state[i][j][1]);
+                    applySegmentState(topLine, state[i][j][1], slitherGrid);
                     foundLines++;
                 }
                 
@@ -166,7 +167,7 @@ public class SaveGameLoader {
                     if (state[i][j][2] != 0) {
                         System.out.println("Segment droit trouvé: [" + i + "][" + j + "][2] = " + state[i][j][2]);
                     }
-                    applySegmentState(rightLine, state[i][j][2]);
+                    applySegmentState(rightLine, state[i][j][2], slitherGrid);
                     foundLines++;
                 }
                 
@@ -177,7 +178,7 @@ public class SaveGameLoader {
                     if (state[i][j][3] != 0) {
                         System.out.println("Segment bas trouvé: [" + i + "][" + j + "][3] = " + state[i][j][3]);
                     }
-                    applySegmentState(bottomLine, state[i][j][3]);
+                    applySegmentState(bottomLine, state[i][j][3], slitherGrid);
                     foundLines++;
                 }
                 
@@ -188,7 +189,7 @@ public class SaveGameLoader {
                     if (state[i][j][4] != 0) {
                         System.out.println("Segment gauche trouvé: [" + i + "][" + j + "][4] = " + state[i][j][4]);
                     }
-                    applySegmentState(leftLine, state[i][j][4]);
+                    applySegmentState(leftLine, state[i][j][4], slitherGrid);
                     foundLines++;
                 }
             }
@@ -198,7 +199,7 @@ public class SaveGameLoader {
         System.out.println("Nombre de segments non vides dans l'état: " + nonEmptySegments);
         
         // Mettre à jour la matrice de jeu après avoir appliqué tous les états
-        updateGameMatrix();
+        slitherGrid.getGameMatrix();
     }
 
     /**

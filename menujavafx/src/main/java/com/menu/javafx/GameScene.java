@@ -235,7 +235,7 @@ public class GameScene {
 
         // Si un état sauvegardé est disponible, l'appliquer à la grille
         if (savedGridState != null) {
-            SaveGameLoader.applyGridState(savedGridState, slitherGrid);
+            SaveGameLoader.applyGridState(savedGridState);
             savedGridState = null; // Réinitialiser pour éviter de réappliquer
         }
 
@@ -414,7 +414,7 @@ public class GameScene {
                 SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         saveButton.setOnAction(e -> {
             Util.animateButtonClick(saveButton);
-            if (GameSaveManager.saveGame(currentGridId, secondsElapsed[0], checkCounter, false)) {
+            if (GameSaveManager.saveGame("grid-" + currentGridId, secondsElapsed[0], checkCounter, false)) {
                 GameSaveManager.showSaveNotification(slitherGrid.getSlitherlinkGrid());
             }
         });
@@ -427,7 +427,7 @@ public class GameScene {
             Platform.runLater(() -> {
                 try {
                     System.out.println("Application différée de l'état sauvegardé");
-                    SaveGameLoader.applyGridState(savedGridState, slitherGrid);
+                    SaveGameLoader.applyGridState(savedGridState);
                     savedGridState = null; // Réinitialiser pour éviter de réappliquer
                 } catch (Exception e) {
                     System.err.println("Erreur lors de l'application différée de l'état: " + e.getMessage());
@@ -695,5 +695,40 @@ public class GameScene {
     public static String getCurrentGridId() {
         return currentGridId;
     }
+    /**
+     * Returns the current SlitherGrid instance
+     * 
+     * @return The current SlitherGrid instance
+     */
+    public static SlitherGrid getSlitherGrid() {
+        return slitherGrid;
+    }
+
+    /*
+     * public static void loadFromSave(Stage primaryStage, String gridId, int elapsedTime, int checkCount, int[][][] gridState) {
+        // Sauvegarder les données de la partie
+        savedGridState = gridState;
+        System.out.println("État chargé depuis la sauvegarde: " + 
+                  (savedGridState != null ? savedGridState.length + "x" + 
+                  savedGridState[0].length + "x" + savedGridState[0][0].length : "null"));
+        
+        // Extraire l'ID réel de la grille (enlever le préfixe "grid-" s'il existe)
+        String actualGridId = gridId;
+        if (gridId.startsWith("grid-")) {
+            actualGridId = gridId.substring(5);  // Enlever "grid-"
+        }
+        
+        // Charger la grille depuis le fichier JSON avec le bon nom
+        // Le format du fichier est toujours "grid-XXX.json"
+        gridNumbers = loadGridFromJson("grids/grid-" + actualGridId + ".json");
+        
+        // Initialiser le compteur et le temps
+        checkCounter = checkCount;
+        savedElapsedTime = elapsedTime;
+        
+        // Afficher la scène de jeu avec l'ID de la grille
+        show(primaryStage, actualGridId);
+    }
+     */
 
 }
