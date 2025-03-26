@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
@@ -16,6 +18,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -30,7 +34,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.animation.FadeTransition;
 import javafx.util.Duration;
-import com.menu.javafx.SlitherlinkTechniquesAnalyzer;
+import com.tpgr3.Techniques.Techniques;
+import com.menu.javafx.TechniqueDescriptions;
 import javafx.scene.effect.DropShadow;
 import javafx.geometry.Insets;
 
@@ -139,7 +144,7 @@ public class GameScene {
         applyTheme();
 
         // Charger la grille depuis le fichier JSON
-        slitherGrid = new SlitherGrid(loadGridFromJson("grid.json"));
+        slitherGrid = new SlitherGrid(loadGridFromJson("gridLvl5.json"));
         gameMatrix = slitherGrid.getGameMatrix();
 
         mainLayer = new VBox();
@@ -225,16 +230,65 @@ public class GameScene {
         Button helpButton = Util.createStyledButton("   AIDE   ?  ", false, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         helpButton.setOnAction(e -> {
             Util.animateButtonClick(helpButton);
-            SlitherlinkTechniquesAnalyzer analyzer = new SlitherlinkTechniquesAnalyzer(
-                slitherGrid.getGridNumbers(),
-                slitherGrid.gridLines,
+            
+            SlitherlinkTechniqueDetector detector = new SlitherlinkTechniqueDetector(
+                slitherGrid.getGridNumbers(), 
+                slitherGrid.gridLines, 
                 slitherGrid.getSlitherlinkGrid()
             );
-    
-            // Lancer l'analyse et afficher les suggestions
-            analyzer.analyzeAndSuggestTechnique(primaryStage);
-        });
+            
+            // Trouver la première technique applicable
+            Optional<Class<? extends Techniques>> techniqueSuggere = TechniquesPriority.PRIORITY_ORDER.stream()
+                .filter(detector::estTechniqueApplicable)
+                .findFirst();
 
+            Stage suggestionStage = new Stage();
+            suggestionStage.initModality(Modality.APPLICATION_MODAL);
+
+            VBox content = new VBox(20);
+            content.setAlignment(Pos.CENTER);
+            content.setPadding(new Insets(30));
+            content.setStyle(
+                "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", " + SlitherGrid.LIGHT_COLOR + " 90%);" +
+                "-fx-background-radius: 15;" +
+                "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
+                "-fx-border-width: 2;" +
+                "-fx-border-radius: 15;"
+            );
+
+            Label titre = new Label(techniqueSuggere.isPresent() 
+                ? "Technique de Résolution" 
+                : "Aucune Technique Disponible");
+            titre.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
+            titre.setTextFill(Color.web(SlitherGrid.MAIN_COLOR));
+
+            VBox details = new VBox(10);
+            details.setAlignment(Pos.CENTER_LEFT);
+
+            if (techniqueSuggere.isPresent()) {
+                String nomTechnique = techniqueSuggere.get().getSimpleName();
+                
+                Label description = new Label(TechniqueDescriptions.getDescription(nomTechnique));
+                description.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+                description.setWrapText(true); // Pour que le texte passe à la ligne
+                
+                details.getChildren().add(description);
+            }
+
+            Button okButton = Util.createStyledButton("Compris", true, 
+                SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+            okButton.setPrefWidth(120);
+            okButton.setOnAction(event -> {
+                Util.animateButtonClick(okButton);
+                suggestionStage.close();
+            });
+
+            content.getChildren().addAll(titre, details, okButton);
+
+            Scene scene = new Scene(content, 400, 250);
+            suggestionStage.setScene(scene);
+            suggestionStage.show();
+        });
         Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
 
         Text checkCount = new Text(String.valueOf(checkCounter));

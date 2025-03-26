@@ -1,74 +1,71 @@
-// Common imports for Technique classes
 package com.tpgr3.Techniques;
-
-import java.util.Map;
-import javafx.scene.shape.Line;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 
 import com.tpgr3.*;
 import com.tpgr3.Marque.*;
 
 public class Tech_Two3Diagonal implements Techniques {
 
-    private int[][] gridNumbers;
-    private Map<String, Line> gridLines;
-    private Pane slitherlinkGrid;
+    private int[] positionA = null; // Position du premier 3
+    private int[] positionB = null; // Position du deuxième 3
 
     /**
-     * Constructeur avec les informations nécessaires pour l'analyse.
-     * 
-     * @param gridNumbers Tableau 2D représentant les chiffres de la grille
-     * @param gridLines Map des lignes de la grille
-     * @param slitherlinkGrid Pane contenant la grille de Slitherlink
+     * Vérifie si un slot aux coordonnées données est un bâton.
      */
-    public Tech_Two3Diagonal(int[][] gridNumbers, Map<String, Line> gridLines, Pane slitherlinkGrid) {
-        this.gridNumbers = gridNumbers;
-        this.gridLines = gridLines;
-        this.slitherlinkGrid = slitherlinkGrid;
+    private boolean estBaton(Grille grille, int x, int y) {
+        if (grille.estValide(x, y)) {
+            Cellule c = grille.getCellule(x, y);
+            return c instanceof Slot && ((Slot) c).getMarque() instanceof Baton;
+        }
+        return false;
     }
 
+    /**
+     * Place une marque (Bâton ou Croix) sur une liste de slots donnés.
+     */
+    private void placerMarque(Grille grille, int[][] coords, Marque marque) {
+        for (int[] coord : coords) {
+            int x = coord[0];
+            int y = coord[1];
+            if (grille.estValide(x, y)) {
+                Cellule c = grille.getCellule(x, y);
+                if (c instanceof Slot) {
+                    ((Slot) c).setMarque(marque);
+                }
+            }
+        }
+    }
+
+    /**
+     * Détection : Deux 3 en diagonale, avec au moins un slot cible non bâton.
+     */
     @Override
     public boolean estApplicable(Grille grille) {
-        for (int i = 0; i < gridNumbers.length; i++) {
-            for (int j = 0; j < gridNumbers[i].length; j++) {
-                // Cherche un 3 dans la grille
-                if (gridNumbers[i][j] == 3) {
-                    // Vérifie s'il y a un autre 3 en diagonale
-                    int[][] diagonales = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
-                    
-                    for (int[] diag : diagonales) {
-                        int xB = i + diag[0] * 2;
-                        int yB = j + diag[1] * 2;
+        for (int y = 0; y < grille.getHauteur(); y++) {
+            for (int x = 0; x < grille.getLargeur(); x++) {
+                Cellule cellule = grille.getCellule(x, y);
 
-                        // Vérifie si les indices sont valides
-                        if (xB >= 0 && xB < gridNumbers.length && 
-                            yB >= 0 && yB < gridNumbers[i].length) {
-                            
-                            // Vérifie s'il y a un 3 à cette position
-                            if (gridNumbers[xB][yB] == 3) {
-                                // Vérifie les segments intermédiaires
-                                String[] segmentsToCheck = {
-                                    "H_" + (i + diag[0]) + "_" + j,
-                                    "V_" + i + "_" + (j + diag[1])
-                                };
-                                
-                                // Vérifie si au moins un des segments est neutre
-                                for (String segmentKey : segmentsToCheck) {
-                                    Line segment = gridLines.get(segmentKey);
-                                    if (segment != null && segment.getStroke() == Color.TRANSPARENT) {
-                                        boolean hasCross = false;
-                                        for (javafx.scene.Node node : slitherlinkGrid.getChildren()) {
-                                            if (node instanceof Line && node.getUserData() == segment) {
-                                                hasCross = true;
-                                                break;
-                                            }
-                                        }
-                                        
-                                        if (!hasCross) {
-                                            return true; // Un segment neutre existe
-                                        }
-                                    }
+                if (cellule instanceof Case && ((Case) cellule).getValeur() == 3) {
+                    int[][] diagonales = {{2, 2}, {-2, 2}, {-2, -2}, {2, -2}};
+                    for (int[] dir : diagonales) {
+                        int xB = x + dir[0];
+                        int yB = y + dir[1];
+
+                        if (grille.estValide(xB, yB)) {
+                            Cellule voisin = grille.getCellule(xB, yB);
+                            if (voisin instanceof Case && ((Case) voisin).getValeur() == 3) {
+
+                                int dx = dir[0] / 2;
+                                int dy = dir[1] / 2;
+
+                                // Vérifie les deux slots clés entre les 3
+                                boolean baton1 = estBaton(grille, x + dx, y);
+                                boolean baton2 = estBaton(grille, x, y + dy);
+
+                                if (!(baton1 && baton2)) {
+                                    // Stocker les positions
+                                    positionA = new int[]{x, y};
+                                    positionB = new int[]{xB, yB};
+                                    return true;
                                 }
                             }
                         }
@@ -79,8 +76,35 @@ public class Tech_Two3Diagonal implements Techniques {
         return false;
     }
 
-    @Override
+    /**
+     * Applique la technique : pose bâtons et croix si la configuration est valide.
+     */
     public void appliquer(Grille grille) {
-        
+        if (!estApplicable(grille)) return;
+    
+        int xA = positionA[0];
+        int yA = positionA[1];
+        int xB = positionB[0];
+        int yB = positionB[1];
+    
+        int dx = (xB - xA) / 2;
+        int dy = (yB - yA) / 2;
+    
+        int[][] batonCoords = {
+            {xA + dx, yA},
+            {xA, yA + dy},
+            {xB - dx, yB},
+            {xB, yB - dy}
+        };
+        placerMarque(grille, batonCoords, new Baton());
+    
+        int[][] croixCoords = {
+            {xA - dx, yA},
+            {xA, yA - dy},
+            {xB + dx, yB},
+            {xB, yB + dy}
+        };
+        placerMarque(grille, croixCoords, new Croix());
     }
+    
 }
