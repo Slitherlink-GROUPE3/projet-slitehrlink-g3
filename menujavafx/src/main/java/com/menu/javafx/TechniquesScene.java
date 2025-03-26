@@ -4,67 +4,123 @@ import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-//import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.paint.Color;
 import javafx.scene.Scene;
-//import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Button;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 public class TechniquesScene {
+
+    // Constantes de couleurs du Menu (cohérence avec GameScene)
+    private static final String MAIN_COLOR = "#3A7D44"; // Vert principal
+    private static final String SECONDARY_COLOR = "#F2E8CF"; // Beige clair
+    private static final String ACCENT_COLOR = "#BC4749"; // Rouge-brique
+    private static final String DARK_COLOR = "#386641"; // Vert foncé
+    private static final String LIGHT_COLOR = "#A7C957"; // Vert clair
+
+    // Variables pour gérer le tutoriel
+    private static int currentStep = 0;
+    private static Map<String, Line> gridLines = new HashMap<>();
+    private static Pane tutorialGrid;
+    private static VBox instructionsPanel;
+    private static TextFlow instructionsText;
+    private static Button nextStepButton;
+    private static Text stepTitle;
+    private static double CELL_SIZE = 60;
+
+    // Structure statique d'une petite grille pour le tutoriel
+    private static final int[][] tutorialNumbers = {
+            {3, 2, 2},
+            {1, 3, 1},
+            {0, 2, 3}
+    };
+
+    private static Stage primaryStage;
+
     public static void show(Stage primaryStage) {
-        VBox root = new VBox(20); // 20px d'espacement entre les éléments
-        root.setAlignment(javafx.geometry.Pos.TOP_CENTER); // Aligner en haut au centre
-        root.setStyle("-fx-padding: 20;"); // Ajouter un peu d'espace en haut
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: " + SECONDARY_COLOR + ";");
+        primaryStage = primaryStage; // Stocker la référence au stage
 
-        // Texte
-        Text label = new Text("Techniques Scene");
-        label.setFont(Font.font("Arial", 24));
-        label.setFill(Color.DARKBLUE);
-        label.setStyle("-fx-font-weight: bold;");
+        // Titre du tutoriel
+        Text title = new Text("Tutoriel Slitherlink");
+        title.setFont(Font.font("Montserrat", FontWeight.BOLD, 32));
+        title.setFill(Color.web(DARK_COLOR));
 
-        // Bouton "Retour"
-        Button backButton = new Button("Retour au menu");
-        backButton.setOnAction(e -> Menu.show(primaryStage));
+        // Bouton Retour
+        Button backButton = createStyledButton("Retour au menu", false);
+        Stage finalPrimaryStage = primaryStage;
+        backButton.setOnAction(e -> Menu.show(finalPrimaryStage));
 
-        // Bouton "Tutoriel"
-        Button tutorialButton = new Button("Voir le tutoriel");
-        
-        // Ajout du Tooltip au bouton
-        Tooltip tutorialTooltip = new Tooltip("Cliquez pour voir un tutoriel sur Slitherlink !");
-        tutorialButton.setTooltip(tutorialTooltip);
+        // En-tête avec titre et bouton retour
+        HBox header = new HBox(20);
+        header.setAlignment(Pos.CENTER);
+        header.setPadding(new Insets(30, 20, 30, 20));
+        header.getChildren().addAll(title, backButton);
 
-        // Ajout d'une action au bouton (Exemple : Afficher une autre scène ou une alerte)
-        tutorialButton.setOnAction(e -> {
-            Text tutorialText = new Text("Le tutoriel détaillé sera ajouté ici...");
-            tutorialText.setFont(Font.font("Arial", 16));
-            tutorialText.setFill(Color.GREEN);
+        // CORRECTION: Créer d'abord le panel d'instructions
+        instructionsPanel = createInstructionsPanel();
 
-            VBox tutorialRoot = new VBox(20, tutorialText, backButton);
-            tutorialRoot.setAlignment(Pos.CENTER);
-            Scene tutorialScene = new Scene(tutorialRoot, 800, 600);
-            primaryStage.setScene(tutorialScene);
-        });
+        // Créer la grille de tutoriel - AJUSTEMENT TAILLE
+        tutorialGrid = new Pane();
+        tutorialGrid.setMinSize(400, 400);
+        StackPane gridContainer = new StackPane(tutorialGrid);
+        gridContainer.setPadding(new Insets(30));
+        gridContainer.setMinSize(450, 450);
+        gridContainer.setStyle(
+                "-fx-background-color: rgba(255, 255, 255, 0.9);" +
+                        "-fx-background-radius: 15;" +
+                        "-fx-padding: 30;"
+        );
 
-        // Ajouter les éléments à la VBox
-        root.getChildren().addAll(label, description, tutorialButton, backButton);
-        // Ajouter les éléments à la VBox
-        root.getChildren().addAll(label, backButton);
+        DropShadow gridShadow = new DropShadow();
+        gridShadow.setColor(Color.web("#000000", 0.2));
+        gridShadow.setRadius(10);
+        gridShadow.setOffsetY(5);
+        gridContainer.setEffect(gridShadow);
 
-        // Afficher la scène
-        Scene scene = new Scene(root, 800, 600);
+        // Initialiser la grille
+        initializeGrid();
+
+        // Conteneur principal pour la grille et les instructions
+        HBox mainContent = new HBox(40);
+        mainContent.setAlignment(Pos.CENTER);
+        mainContent.setPadding(new Insets(20, 30, 30, 30));
+        mainContent.getChildren().addAll(gridContainer, instructionsPanel);
+
+        // Assembler le tout
+        root.setTop(header);
+        root.setCenter(mainContent);
+
+        // Créer et configurer la scène
+        Scene scene = new Scene(root, 1000, 700);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Tutoriel Slitherlink");
-        
+
         // Afficher l'étape initiale
         showStep(0);
-        
+
         // Afficher la scène
         primaryStage.show();
     }
@@ -103,7 +159,7 @@ public class TechniquesScene {
         scrollPane.setFitToWidth(true);
         scrollPane.setPrefHeight(350); // Hauteur suffisante
         scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
-        scrollPane.setHbarPolicy(ScrollBarPolicy.NEVER); // Pas de barre horizontale
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Pas de barre horizontale
         
         // Bouton pour passer à l'étape suivante
         nextStepButton = createStyledButton("Suivant", true);
@@ -451,7 +507,7 @@ public class TechniquesScene {
         ScaleTransition scaleDown = new ScaleTransition(Duration.millis(100), button);
         scaleDown.setToX(0.95);
         scaleDown.setToY(0.95);
-        
+
         ScaleTransition scaleUp = new ScaleTransition(Duration.millis(100), button);
         scaleUp.setToX(1.0);
         scaleUp.setToY(1.0);
