@@ -29,4 +29,8 @@ public abstract class Move {
     public void setLine( Line line ){ this.line = line; }
     public void setAction( Object action ){ this.action = action; }
     public void setColor( Color color ) { this.color = color; }
+
+    public Color getColor() {
+        return color;
+    }
 }

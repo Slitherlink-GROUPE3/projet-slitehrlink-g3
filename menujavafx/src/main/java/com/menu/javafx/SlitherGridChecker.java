@@ -8,8 +8,7 @@ import java.util.*;
 public class SlitherGridChecker {
 
     private SlitherGrid slitherGrid;
-
-    SlitherGridChecker(){}
+    private int checkCounter = 3;
 
     SlitherGridChecker(SlitherGrid slitherGrid){
         this.slitherGrid = slitherGrid;
@@ -219,7 +218,6 @@ public class SlitherGridChecker {
     /*
      * Getters & Setters
      */
-    public void setSlitherGrid(SlitherGrid slitherGrid) {
-        this.slitherGrid = slitherGrid;
-    }
+
+
 }

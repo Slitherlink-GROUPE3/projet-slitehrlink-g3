@@ -57,10 +57,10 @@ public class GameScene {
     private static StackPane gridContainer;
     private static HBox root;
     private static VBox mainLayer;
-    private static int checkCounter = 3;
 
     private static SlitherGrid slitherGrid;
     private static GameMatrix gameMatrix;
+    private static int checkCounter;
 
     // Add a method to apply the current theme:
     private static void applyTheme() {
@@ -134,7 +134,7 @@ public class GameScene {
     }
 
     public static void show(Stage primaryStage) {
-
+        checkCounter = 3;
         applyTheme();
 
         // Charger la grille depuis le fichier JSON
