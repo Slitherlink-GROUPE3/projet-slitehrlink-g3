@@ -5,3 +5,7 @@ Ayoub
 yacine
 jaco
 test
+<<<<<<< HEAD
+=======
+yass
+>>>>>>> main

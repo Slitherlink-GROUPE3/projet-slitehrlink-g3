@@ -56,6 +56,7 @@ public class PauseMenu {
 
         // Bouton "Reprendre"
         Button resumeButton = createStyledButton("Reprendre");
+        resumeButton.setTooltip(new javafx.scene.control.Tooltip("Reprendre la partie"));
         resumeButton.setOnAction(e -> {
             // Désactiver l'état de pause avant de revenir au jeu
             isGamePaused = false;
@@ -77,18 +78,21 @@ public class PauseMenu {
 
         // Bouton "Tutoriel"
         Button tutorialButton = createStyledButton("Tutoriel");
+        tutorialButton.setTooltip(new javafx.scene.control.Tooltip("Voir le tutoriel"));
         tutorialButton.setOnAction(e -> {
             hintScene.show(primaryStage);
         });
 
         // Bouton "Paramètres"
         Button settingsButton = createStyledButton("Paramètres");
+        settingsButton.setTooltip(new javafx.scene.control.Tooltip("Modifier les paramètres"));
         settingsButton.setOnAction(e -> {
             SettingScene.show(primaryStage);
         });
 
         // Bouton "Quitter la partie"
         Button quitButton = createStyledButton("Quitter la partie");
+        quitButton.setTooltip(new javafx.scene.control.Tooltip("Quitter la partie et revenir au menu principal"));
         quitButton.setOnAction(e -> {
             // Revient au menu principal sans fermer l'application
             Menu.show(primaryStage);

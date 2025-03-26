@@ -17,6 +17,10 @@ import javafx.scene.text.Text;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SlitherGrid {
 
@@ -89,6 +93,7 @@ public class SlitherGrid {
             moveHistory = new ArrayList<>(moveHistory.subList(0, currentMoveIndex + 1));
         }
 
+        // Ajoute le nouveau mouvement (suppression de croix)
         moveHistory.add(move);
         currentMoveIndex++;
         updateHistoryButtons();
@@ -489,7 +494,6 @@ public class SlitherGrid {
                 .anyMatch(node -> node instanceof Line && node.getUserData() == line);
     }
 
-
     public void toggleLine(Line line) {
         if (isHypothesisActive) {
             line.setStroke(line.getStroke().equals(Color.TRANSPARENT) ? Color.web(LIGHT_COLOR) : Color.TRANSPARENT);
@@ -555,6 +559,5 @@ public class SlitherGrid {
         this.gameMatrix.updateGameMatrix(gridLines);
         return gameMatrix;
     }
-
 
 }

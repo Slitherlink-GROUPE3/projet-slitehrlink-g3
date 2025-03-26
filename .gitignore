@@ -23,6 +23,8 @@
 hs_err_pid*
 replay_pid*
 
+.idea/
+
 #ignore les target 
 menujavafx/target
 slitherlink-gr3/target
