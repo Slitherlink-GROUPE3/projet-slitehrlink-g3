@@ -15,10 +15,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SlitherGrid {
 
@@ -86,11 +84,11 @@ public class SlitherGrid {
     }
 
     public void addMove(Move move){
+        // Supprime les mouvements futurs si on était revenu en arrière
         if (currentMoveIndex < moveHistory.size() - 1) {
             moveHistory = new ArrayList<>(moveHistory.subList(0, currentMoveIndex + 1));
         }
 
-        // Ajoute le nouveau mouvement (suppression de croix)
         moveHistory.add(move);
         currentMoveIndex++;
         updateHistoryButtons();
@@ -128,32 +126,51 @@ public class SlitherGrid {
         isHypothesisActive = true;
     }
 
+    private void removeHypothesisFromHistory(){
+        moveHistory = moveHistory
+                .stream()
+                .map(move -> {
+                    if( move instanceof LineMove && isColorEqual(move.getColor(), Color.web(LIGHT_COLOR)) ) currentMoveIndex--;
+                    return move;
+                } )
+                .filter( move -> ( move instanceof LineMove && !isColorEqual(move.getColor(), Color.web(LIGHT_COLOR)) ) )
+                .peek(System.out::println)
+                .collect(Collectors.toList());
+    }
+
     public void cancelHypothesis(){
+        removeHypothesisFromHistory();
+        System.out.println("moveHistory = " + moveHistory);
         for (Map.Entry<Line, Color> entry : originalLineStates.entrySet()) {
             entry.getKey().setStroke(entry.getValue());
         }
-
-        slitherlinkGrid.getChildren().forEach(node -> {
-            if (node instanceof Line) {
-                System.out.println("User Data : " + node.getUserData());
-            }
-        });
-
-        slitherlinkGrid.getChildren()
-                .removeIf(node -> node instanceof Line && "hypothesis".equals( ((Line) node).getUserData() ) );
         isHypothesisActive = false;
         originalLineStates.clear();
     }
 
     public void confirmerHypothesis(){
         boolean anyChanges = false;
+        int counter = 0;
         for (Line line : originalLineStates.keySet()) {
+
             // Vérifier si la ligne est en vert clair (hypothèse) et la transformer en vert
             // foncé (confirmée)
             if (isColorEqual( (Color) line.getStroke(), Color.web(LIGHT_COLOR))) {
                 line.setStroke(Color.web(DARK_COLOR));
                 anyChanges = true;
             }
+
+            this.moveHistory = this.moveHistory
+                    .stream()
+                    .map(
+                            move -> {
+                                if(move instanceof LineMove && isColorEqual(move.getColor(), Color.web(LIGHT_COLOR)))
+                                    move.setColor( Color.web(DARK_COLOR) );
+                                return move;
+                            }
+                    )
+                    .collect(Collectors.toList());
+
         }
 
 /*
@@ -168,17 +185,9 @@ public class SlitherGrid {
 */
 
         if (anyChanges) {
-            if (currentMoveIndex < moveHistory.size() - 1) {
-                moveHistory = new ArrayList<>(moveHistory.subList(0, currentMoveIndex + 1));
-            }
-
-            moveHistory.add(new HypothesisConfirmMove(null, "hypothesis_confirm", null, this));
-            currentMoveIndex++;
-            updateHistoryButtons();
+            addMove(new HypothesisConfirmMove(null, "hypothesis_confirm", null, this));
         }
-
         isHypothesisActive = false;
-
         originalLineStates.clear();
 
         // Vérifier automatiquement après confirmation d'hypothèse
@@ -192,19 +201,11 @@ public class SlitherGrid {
 
                 // Si ce n'est pas en mode hypothèse, enregistre le mouvement dans l'historique
                 if (isHypothesisInactive() && !line.getStroke().equals(Color.TRANSPARENT)) {
-                    // Supprime les mouvements futurs si on était revenu en arrière
-                    if (currentMoveIndex < moveHistory.size() - 1) {
-                        moveHistory = new ArrayList<>(moveHistory.subList(0, currentMoveIndex + 1));
-                    }
-
-                    // Ajoute le nouveau mouvement
-                    moveHistory.add(new LineMove(line, "line", (Color) line.getStroke(), this));
-                    currentMoveIndex++;
-                    updateHistoryButtons();
 
                     // Vérifier automatiquement si la grille est correcte
                     slitherGridChecker.checkGridAutomatically();
                 }
+                addMove(new LineMove(line, "line", (Color) line.getStroke(), this));
             }
         } else if (e.getButton() == MouseButton.SECONDARY) {
             if (!isLineActive(line)) { // Vérifie si une ligne est déjà tracée
@@ -488,6 +489,7 @@ public class SlitherGrid {
                 .anyMatch(node -> node instanceof Line && node.getUserData() == line);
     }
 
+
     public void toggleLine(Line line) {
         if (isHypothesisActive) {
             line.setStroke(line.getStroke().equals(Color.TRANSPARENT) ? Color.web(LIGHT_COLOR) : Color.TRANSPARENT);
@@ -553,5 +555,6 @@ public class SlitherGrid {
         this.gameMatrix.updateGameMatrix(gridLines);
         return gameMatrix;
     }
+
 
 }
