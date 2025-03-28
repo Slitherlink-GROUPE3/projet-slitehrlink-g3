@@ -1,6 +1,6 @@
 {
     "numbers": [
-        {"row": 0, "col": 0, "value": 3},
+        {"row": 0, "col": 0, "value": 2},
         {"row": 0, "col": 1, "value": 2},
         {"row": 0, "col": 2, "value": 1},
         {"row": 1, "col": 3, "value": 2},

@@ -117,19 +117,27 @@ public class SlitherlinkTechniqueDetector {
         return rapport.toString();
     }
 
-    // Méthode pour traduire le nom technique
-    private String traduireTechnique(String techniqueName) {
-        switch (techniqueName) {
-            case "Tech_0Rule": return "Règle du 0 (aucune ligne)";
-            case "Tech_CornerRule": return "Règle des coins";
-            case "Tech_ThreeRule": return "Règle du 3";
-            case "Tech_0And3Adjacent": return "0 et 3 adjacents";
-            case "Tech_0And3Diagonal": return "0 et 3 en diagonale";
-            case "Tech_Two3Adjacent": return "Deux 3 adjacents";
-            case "Tech_Two3Diagonal": return "Deux 3 en diagonale";
-            case "Tech_LoopReaching1": return "Détection de boucle pour 1";
-            case "Tech_LoopReaching3": return "Détection de boucle pour 3";
-            default: return techniqueName;
-        }
+        private String traduireTechnique(String techniqueName) {
+        return switch (techniqueName) {
+            case "Tech_0Rule" -> "Règle du 0 (aucune ligne)";
+            case "Tech_CornerRule" -> "Règle des coins";
+            case "Tech_ThreeRule" -> "Règle du 3";
+            case "Tech_3InCorner" -> "3 dans un angle";
+            case "Tech_2InCorner" -> "2 dans un angle";
+            case "Tech_1OnSide" -> "1 sur un côté";
+            case "Tech_0And3Adjacent" -> "0 et 3 adjacents";
+            case "Tech_0And3Diagonal" -> "0 et 3 en diagonale";
+            case "Tech_0And2OnSide" -> "0 et 2 sur un côté";
+            case "Tech_3And0OnSide" -> "3 et 0 sur un côté";
+            case "Tech_Two3Adjacent" -> "Deux 3 adjacents";
+            case "Tech_Two3Diagonal" -> "Deux 3 en diagonale";
+            case "Tech_1And0InCorner" -> "1 et 0 dans un angle";
+            case "Tech_1And2InCorner" -> "1 et 2 dans un angle";
+            case "Tech_2And1InCorner" -> "2 et 1 dans un angle";
+            case "Tech_Two3InCorner" -> "Deux 3 dans un angle";
+            case "Tech_LoopReaching1" -> "Détection de boucle pour 1";
+            case "Tech_LoopReaching3" -> "Détection de boucle pour 3";
+            default -> techniqueName;
+        };
     }
 }
