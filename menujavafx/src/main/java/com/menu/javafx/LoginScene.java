@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -20,12 +22,51 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+
 public class LoginScene {
     private static final String MAIN_COLOR = "#3A7D44";    // Vert principal
     private static final String SECONDARY_COLOR = "#F2E8CF"; // Beige clair
     private static final String ACCENT_COLOR = "#BC4749";   // Rouge-brique
     private static final String DARK_COLOR = "#386641";     // Vert foncé
     private static final String LIGHT_COLOR = "#A7C957";    // Vert clair
+
+
+    public static void gestionUtilisateur(TextField usernameField, Label statusLabel ){
+
+        String username = usernameField.getText().trim();
+            
+            if (username.isEmpty()) {
+                statusLabel.setText("Veuillez entrer un pseudo");
+                statusLabel.setTextFill(Color.web(ACCENT_COLOR));
+                return;
+            }
+            
+            if (username.length() < 3) {
+                statusLabel.setText("Le pseudo doit contenir au moins 3 caractères");
+                statusLabel.setTextFill(Color.web(ACCENT_COLOR));
+                return;
+            }
+            
+            boolean isExistingUser = UserManager.userExists(username);
+            
+            if (isExistingUser) {
+                statusLabel.setText("Bon retour parmi nous, " + username + " !");
+                statusLabel.setTextFill(Color.web(MAIN_COLOR));
+            } else {
+                if (UserManager.registerUser(username)) {
+                    statusLabel.setText("Bienvenue, " + username + " !");
+                    statusLabel.setTextFill(Color.web(MAIN_COLOR));
+                } else {
+                    statusLabel.setText("Erreur lors de l'enregistrement du pseudo");
+                    statusLabel.setTextFill(Color.web(ACCENT_COLOR));
+                    return;
+                }
+            }
+            
+            // Enregistrer l'utilisateur courant
+            UserManager.setCurrentUser(username);
+
+    }
 
     public static void show(Stage primaryStage) {
         // Conteneur principal
@@ -122,38 +163,8 @@ public class LoginScene {
         
         // Action du bouton
         loginButton.setOnAction(e -> {
-            String username = usernameField.getText().trim();
-            
-            if (username.isEmpty()) {
-                statusLabel.setText("Veuillez entrer un pseudo");
-                statusLabel.setTextFill(Color.web(ACCENT_COLOR));
-                return;
-            }
-            
-            if (username.length() < 3) {
-                statusLabel.setText("Le pseudo doit contenir au moins 3 caractères");
-                statusLabel.setTextFill(Color.web(ACCENT_COLOR));
-                return;
-            }
-            
-            boolean isExistingUser = UserManager.userExists(username);
-            
-            if (isExistingUser) {
-                statusLabel.setText("Bon retour parmi nous, " + username + " !");
-                statusLabel.setTextFill(Color.web(MAIN_COLOR));
-            } else {
-                if (UserManager.registerUser(username)) {
-                    statusLabel.setText("Bienvenue, " + username + " !");
-                    statusLabel.setTextFill(Color.web(MAIN_COLOR));
-                } else {
-                    statusLabel.setText("Erreur lors de l'enregistrement du pseudo");
-                    statusLabel.setTextFill(Color.web(ACCENT_COLOR));
-                    return;
-                }
-            }
-            
-            // Enregistrer l'utilisateur courant
-            UserManager.setCurrentUser(username);
+
+            gestionUtilisateur(usernameField, statusLabel);
             
             // Transition vers le menu principal après un court délai
             javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(Duration.seconds(1.5));
@@ -182,6 +193,12 @@ public class LoginScene {
                 "-fx-border-radius: 30;" +
                 "-fx-cursor: hand;"
             );
+        });
+
+        usernameField.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                loginButton.fire(); // Déclenche l'action du bouton de login
+            }
         });
         
         // Assembler les composants
