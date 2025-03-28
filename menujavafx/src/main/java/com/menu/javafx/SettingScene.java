@@ -224,7 +224,7 @@ public class SettingScene {
      * Applique le thème approprié (clair ou sombre)
      * @param darkMode true pour le mode sombre, false pour le mode clair
      */
-    private static void applyTheme(boolean darkMode) {
+    public static void applyTheme(boolean darkMode) {
         if (darkMode) {
             // Appliquer les couleurs du mode sombre
             MAIN_COLOR = DARK_MAIN_COLOR;

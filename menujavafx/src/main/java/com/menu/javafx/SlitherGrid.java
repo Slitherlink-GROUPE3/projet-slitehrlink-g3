@@ -53,7 +53,7 @@ public class SlitherGrid {
     private SlitherGridChecker slitherGridChecker = new SlitherGridChecker(this);
     private GameMatrix gameMatrix;
 
-    public SlitherGrid( int[][] gridNumbers ){
+    public SlitherGrid(int[][] gridNumbers) {
         this.gridNumbers = gridNumbers;
         gridRows = gridNumbers.length;
         gridCols = gridNumbers[0].length;
@@ -71,7 +71,7 @@ public class SlitherGrid {
             navigateHistory(1);
         });
 
-        gameMatrix = new GameMatrix( gridRows, gridCols, gridNumbers, this );
+        gameMatrix = new GameMatrix(gridRows, gridCols, gridNumbers, this);
 
     }
 
@@ -88,8 +88,7 @@ public class SlitherGrid {
         move.redoMove();
     }
 
-    public void addMove(Move move){
-        // Supprime les mouvements futurs si on était revenu en arrière
+    public void addMove(Move move) {
         if (currentMoveIndex < moveHistory.size() - 1) {
             moveHistory = new ArrayList<>(moveHistory.subList(0, currentMoveIndex + 1));
         }
@@ -99,7 +98,7 @@ public class SlitherGrid {
         updateHistoryButtons();
     }
 
-    public void reset(){
+    public void reset() {
         slitherlinkGrid.getChildren().clear();
         originalLineStates.clear();
         savedLineStates.clear();
@@ -118,7 +117,7 @@ public class SlitherGrid {
         nextButton.setDisable(currentMoveIndex >= moveHistory.size() - 1);
     }
 
-    public void prepareHypothesis(){
+    public void prepareHypothesis() {
         originalLineStates.clear();
         for (Node node : slitherlinkGrid.getChildren()) {
             if (node instanceof Line line) {
@@ -153,7 +152,7 @@ public class SlitherGrid {
         originalLineStates.clear();
     }
 
-    public void confirmerHypothesis(){
+    public void confirmerHypothesis() {
         boolean anyChanges = false;
         int counter = 0;
         for (Line line : originalLineStates.keySet()) {
@@ -238,7 +237,6 @@ public class SlitherGrid {
 
     }
 
-
     public void navigateHistory(int direction) {
         if (direction < 0 && currentMoveIndex > -1) {
             Move moveToUndo = moveHistory.get(currentMoveIndex);
@@ -269,7 +267,7 @@ public class SlitherGrid {
                     // Créer un nouveau mouvement avec la nouvelle instance de la ligne
 
                     oldMove.setLine(newLine);
-                    //Move newMove = new Move(newLine, oldMove.action(), (Color) oldMove.color());
+                    // Move newMove = new Move(newLine, oldMove.action(), (Color) oldMove.color());
                 }
             }
             moveHistory.add(oldMove);
@@ -516,12 +514,12 @@ public class SlitherGrid {
         return lineColor != null && !lineColor.equals(Color.TRANSPARENT);
     }
 
-    public boolean checkGrid(){
+    public boolean checkGrid() {
         return slitherGridChecker.checkGrid();
     }
 
     /*
-    Getters & Setters
+     * Getters & Setters
      */
 
     public boolean isHypothesisInactive() {
@@ -556,10 +554,69 @@ public class SlitherGrid {
         return gridNumbers;
     }
 
-    public GameMatrix getGameMatrix(){
+    public GameMatrix getGameMatrix() {
         this.gameMatrix.updateGameMatrix(gridLines);
         return gameMatrix;
     }
 
+    /**
+     * Retourne une représentation simplifiée de la matrice de jeu
+     * 
+     * @return Matrice 3D avec l'état de chaque segment
+     */
+    public int[][][] getSimplifiedGameMatrix() {
+        // gameMatrix est l'instance de GameMatrix
+        // gridLines est la Map<String, Line> nécessaire
+        return gameMatrix.getSimplifiedGameMatrix(gridLines);
+    }
+
+    /**
+     * Returns a map of all grid lines with their ID as key
+     * 
+     * @return Map containing all grid lines
+     */
+    public Map<String, Line> getGridLines() {
+        return gridLines;
+    }
+
+    /**
+     * Returns the cell size used for grid rendering
+     * @return The current cell size
+     */
+    public static double getCellSize() {
+        return CELL_SIZE;
+    }
+
+    /**
+     * Returns the current move history
+     * @return List of moves in history
+     */
+    public List<Move> getMoveHistory() {
+        return moveHistory;
+    }
+
+    /**
+     * Returns the current index in the move history
+     * @return Current move index
+     */
+    public int getCurrentMoveIndex() {
+        return currentMoveIndex;
+    }
+
+    /**
+     * Checks if hypothesis mode is currently active
+     * @return true if hypothesis mode is active, false otherwise
+     */
+    public boolean isHypothesisActive() {
+        return isHypothesisActive;
+    }
+
+    /**
+     * Gets the SlitherGridChecker instance
+     * @return The checker object for this grid
+     */
+    public SlitherGridChecker getSlitherGridChecker() {
+        return slitherGridChecker;
+    }
 
 }

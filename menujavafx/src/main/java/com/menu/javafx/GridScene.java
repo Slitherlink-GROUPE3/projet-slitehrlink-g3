@@ -101,9 +101,11 @@ public class GridScene {
                 
                 // Ajout de l'action pour lancer le jeu
                 int levelNumber = i + 1;
+                // Format the level number as 3 digits (e.g., 001, 002, etc.)
+                String levelString = String.format("%03d", levelNumber);
                 levelButton.setOnMouseClicked(e -> {
-                    // Vous pouvez passer le numéro de niveau à GameScene si nécessaire
-                    GameScene.show(primaryStage);
+                    // Pass the formatted level number to GameScene
+                    GameScene.show(primaryStage, levelString);
                 });
             } else {
                 // Niveaux verrouillés
