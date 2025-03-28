@@ -167,7 +167,7 @@ public class GameScene {
 
         // Afficher la scène de jeu normalement, elle utilisera l'état sauvegardé si
         // disponible
-        show(primaryStage, gridId); 
+        show(primaryStage, gridId);
     }
 
     public static void show(Stage primaryStage, String... newGridId) {
@@ -176,17 +176,15 @@ public class GameScene {
         // Update the current grid ID if provided
         if (newGridId != null && newGridId.length > 0 && newGridId[0] != null) {
             currentGridId = newGridId[0];
-            gridId = newGridId[0]; 
+            gridId = newGridId[0];
         }
 
         String gridIdForLoading = gridId.startsWith("grid-") ? gridId : "grid-" + gridId;
-        
+
         // Charger la grille depuis le fichier JSON
         int[][] gridNumbers = loadGridFromJson("grids/" + gridIdForLoading + ".json");
         slitherGrid = new SlitherGrid(gridNumbers);
         gameMatrix = slitherGrid.getGameMatrix();
-
-        
 
         mainLayer = new VBox();
         mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
@@ -194,10 +192,13 @@ public class GameScene {
         String username = UserManager.getCurrentUser();
         System.out.println("Logged in as: " + username);
 
-        TopBar topBar = new TopBar(primaryStage, username, "5", "Facile", slitherGrid);
+        String level = getLevelFromGridId(gridId);
+        String difficulty = getDifficultyFromLevel(level); // Voir la fonction ci-dessous
+        TopBar topBar = new TopBar(primaryStage, username, level, difficulty, slitherGrid);
 
         java.util.Timer timer = new java.util.Timer();
-        final int[] secondsElapsed = { 0 };
+        final int[] secondsElapsed = { savedElapsedTime > 0 ? savedElapsedTime : 0 };
+
         timer.scheduleAtFixedRate(new java.util.TimerTask() {
             @Override
             public void run() {
@@ -229,9 +230,12 @@ public class GameScene {
 
         // Configuration du callback pour réinitialiser la grille
         topBar.setGridResetCallback(() -> {
+
+            savedGridState = null;
+
             // Recréer la grille de jeu
             slitherGrid.getSlitherlinkGrid().getChildren()
-                .removeIf(node -> node instanceof Line );
+                    .removeIf(node -> node instanceof Line);
             System.out.println(slitherGrid.getSlitherlinkGrid());
 
             // Reconstruire la grille
@@ -288,17 +292,16 @@ public class GameScene {
                 SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         helpButton.setOnAction(e1 -> {
             Util.animateButtonClick(helpButton);
-            
+
             SlitherlinkTechniqueDetector detector = new SlitherlinkTechniqueDetector(
-                slitherGrid.getGridNumbers(), 
-                slitherGrid.gridLines, 
-                slitherGrid.getSlitherlinkGrid()
-            );
-            
+                    slitherGrid.getGridNumbers(),
+                    slitherGrid.gridLines,
+                    slitherGrid.getSlitherlinkGrid());
+
             // Trouver la première technique applicable
             Optional<Class<? extends Techniques>> techniqueSuggere = TechniquesPriority.PRIORITY_ORDER.stream()
-                .filter(detector::estTechniqueApplicable)
-                .findFirst();
+                    .filter(detector::estTechniqueApplicable)
+                    .findFirst();
 
             Stage suggestionStage = new Stage();
             suggestionStage.initModality(Modality.APPLICATION_MODAL);
@@ -307,16 +310,16 @@ public class GameScene {
             content.setAlignment(Pos.CENTER);
             content.setPadding(new Insets(30));
             content.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", " + SlitherGrid.LIGHT_COLOR + " 90%);" +
-                "-fx-background-radius: 15;" +
-                "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 15;"
-            );
+                    "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", "
+                            + SlitherGrid.LIGHT_COLOR + " 90%);" +
+                            "-fx-background-radius: 15;" +
+                            "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
+                            "-fx-border-width: 2;" +
+                            "-fx-border-radius: 15;");
 
-            Label titre = new Label(techniqueSuggere.isPresent() 
-                ? "Technique de Résolution" 
-                : "Aucune Technique Disponible");
+            Label titre = new Label(techniqueSuggere.isPresent()
+                    ? "Technique de Résolution"
+                    : "Aucune Technique Disponible");
             titre.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
             titre.setTextFill(Color.web(SlitherGrid.MAIN_COLOR));
 
@@ -325,16 +328,16 @@ public class GameScene {
 
             if (techniqueSuggere.isPresent()) {
                 String nomTechnique = techniqueSuggere.get().getSimpleName();
-                
+
                 Label description = new Label(TechniqueDescriptions.getDescription(nomTechnique));
                 description.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
                 description.setWrapText(true); // Pour que le texte passe à la ligne
-                
+
                 details.getChildren().add(description);
             }
 
-            Button okButton = Util.createStyledButton("Compris", true, 
-                SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+            Button okButton = Util.createStyledButton("Compris", true,
+                    SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
             okButton.setPrefWidth(120);
             okButton.setOnAction(event -> {
                 Util.animateButtonClick(okButton);
@@ -347,7 +350,8 @@ public class GameScene {
             suggestionStage.setScene(scene);
             suggestionStage.show();
         });
-        Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+        Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
+                SlitherGrid.SECONDARY_COLOR);
 
         Text checkCount = new Text(String.valueOf(checkCounter));
         checkCount.setFont(Font.font("Montserrat", FontWeight.BOLD, 22));
@@ -535,6 +539,12 @@ public class GameScene {
         HBox topBarComponent = topBar.createTopBar(scene);
         mainLayer.getChildren().add(0, topBarComponent);
 
+        if (savedElapsedTime > 0) {
+            int minutes = savedElapsedTime / 60;
+            int seconds = savedElapsedTime % 60;
+            topBar.updateChronometer(minutes, seconds);
+        }
+
         primaryStage.setScene(scene);
         primaryStage.setTitle("Slitherlink Game");
         primaryStage.setMaximized(true);
@@ -558,7 +568,6 @@ public class GameScene {
         primaryStage.show();
         slitherGrid.updateGrid(scene.getWidth(), scene.getHeight());
 
-        
     }
 
     private static Node createSeparator() {
@@ -767,6 +776,7 @@ public class GameScene {
     public static String getCurrentGridId() {
         return currentGridId;
     }
+
     /**
      * Returns the current SlitherGrid instance
      * 
@@ -776,31 +786,73 @@ public class GameScene {
         return slitherGrid;
     }
 
-    /*
-     * public static void loadFromSave(Stage primaryStage, String gridId, int elapsedTime, int checkCount, int[][][] gridState) {
-        // Sauvegarder les données de la partie
-        savedGridState = gridState;
-        System.out.println("État chargé depuis la sauvegarde: " + 
-                  (savedGridState != null ? savedGridState.length + "x" + 
-                  savedGridState[0].length + "x" + savedGridState[0][0].length : "null"));
-        
-        // Extraire l'ID réel de la grille (enlever le préfixe "grid-" s'il existe)
-        String actualGridId = gridId;
-        if (gridId.startsWith("grid-")) {
-            actualGridId = gridId.substring(5);  // Enlever "grid-"
+    /**
+     * Extrait le numéro de niveau depuis l'ID de la grille
+     * 
+     * @param gridId L'ID de la grille (ex: "002" ou "grid-002")
+     * @return Le numéro de niveau sous forme de chaîne (ex: "2")
+     */
+    private static String getLevelFromGridId(String gridId) {
+        // Supprimer le préfixe "grid-" s'il est présent
+        String cleanId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
+
+        // Convertir en nombre en supprimant les zéros au début
+        try {
+            int levelNumber = Integer.parseInt(cleanId);
+            return String.valueOf(levelNumber);
+        } catch (NumberFormatException e) {
+            // Si l'ID ne peut pas être analysé comme un nombre, le retourner tel quel
+            return cleanId;
         }
-        
-        // Charger la grille depuis le fichier JSON avec le bon nom
-        // Le format du fichier est toujours "grid-XXX.json"
-        gridNumbers = loadGridFromJson("grids/grid-" + actualGridId + ".json");
-        
-        // Initialiser le compteur et le temps
-        checkCounter = checkCount;
-        savedElapsedTime = elapsedTime;
-        
-        // Afficher la scène de jeu avec l'ID de la grille
-        show(primaryStage, actualGridId);
     }
+
+    /**
+     * Détermine la difficulté en fonction du niveau
+     * 
+     * @param level Le niveau sous forme de chaîne
+     * @return Une description de la difficulté
+     */
+    private static String getDifficultyFromLevel(String level) {
+        try {
+            int levelNum = Integer.parseInt(level);
+            if (levelNum <= 3)
+                return "Facile";
+            if (levelNum <= 6)
+                return "Moyen";
+            if (levelNum <= 9)
+                return "Difficile";
+            return "Expert";
+        } catch (NumberFormatException e) {
+            return "Facile"; // Par défaut
+        }
+    }
+
+    /*
+     * public static void loadFromSave(Stage primaryStage, String gridId, int
+     * elapsedTime, int checkCount, int[][][] gridState) {
+     * // Sauvegarder les données de la partie
+     * savedGridState = gridState;
+     * System.out.println("État chargé depuis la sauvegarde: " +
+     * (savedGridState != null ? savedGridState.length + "x" +
+     * savedGridState[0].length + "x" + savedGridState[0][0].length : "null"));
+     * 
+     * // Extraire l'ID réel de la grille (enlever le préfixe "grid-" s'il existe)
+     * String actualGridId = gridId;
+     * if (gridId.startsWith("grid-")) {
+     * actualGridId = gridId.substring(5); // Enlever "grid-"
+     * }
+     * 
+     * // Charger la grille depuis le fichier JSON avec le bon nom
+     * // Le format du fichier est toujours "grid-XXX.json"
+     * gridNumbers = loadGridFromJson("grids/grid-" + actualGridId + ".json");
+     * 
+     * // Initialiser le compteur et le temps
+     * checkCounter = checkCount;
+     * savedElapsedTime = elapsedTime;
+     * 
+     * // Afficher la scène de jeu avec l'ID de la grille
+     * show(primaryStage, actualGridId);
+     * }
      */
 
 }

@@ -98,21 +98,25 @@ public class SlitherGrid {
         updateHistoryButtons();
     }
 
-    public void reset(){
+    public void reset() {
+        // Clear all graphical elements
+        slitherlinkGrid.getChildren().clear();
         
-        while (currentMoveIndex > -1) {
-            navigateHistory(-1);
-        }
+        // Clear all state maps
         originalLineStates.clear();
         savedLineStates.clear();
         savedCrossStates.clear();
-
-        // Réinitialise le mode hypothèse
+        gridLines.clear();  // Add this to ensure all grid lines are recreated
+        
+        // Reset flags
         isHypothesisActive = false;
-
-        // Réinitialiser l'historique des mouvements
+        
+        // Reset history
         moveHistory.clear();
         currentMoveIndex = -1;
+        
+        // Force a full graphical update on next cycle
+        System.out.println("Grid completely reset");
     }
 
     public void updateHistoryButtons() {

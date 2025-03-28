@@ -31,7 +31,6 @@ public class TopBar {
     private Runnable chronoResetCallback;
     private Runnable gridResetCallback;
     private SlitherGrid slitherGrid;
-    
 
     // Constantes de couleurs du Menu (même palette que GameScene)
     private static final String MAIN_COLOR = "#3A7D44"; // Vert principal
@@ -39,12 +38,11 @@ public class TopBar {
     private static final String ACCENT_COLOR = "#BC4749"; // Rouge-brique
     private static final String DARK_COLOR = "#386641"; // Vert foncé
     private static final String LIGHT_COLOR = "#A7C957"; // Vert clair
-    
+
     // Constantes pour stylizé la barre
     private static final double BASE_FONT_SIZE = 14;
     private static final double MIN_FONT_SIZE = 12;
     private static final double MAX_FONT_SIZE = 20;
-    
 
     /**
      * Crée une instance de TopBar
@@ -97,15 +95,16 @@ public class TopBar {
     public HBox createTopBar(Scene scene) {
         // Main container
         topBarContainer = new HBox();
-        
+
         // Utilisez un dégradé linéaire comme dans GameScene
-        String gradientStyle = "-fx-background-color: linear-gradient(to right, " + DARK_COLOR + ", " + MAIN_COLOR + ");";
-        
+        String gradientStyle = "-fx-background-color: linear-gradient(to right, " + DARK_COLOR + ", " + MAIN_COLOR
+                + ");";
+
         topBarContainer.setStyle(
-                gradientStyle + 
-                "-fx-background-radius: 0 0 15 15;" +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);");
-        
+                gradientStyle +
+                        "-fx-background-radius: 0 0 15 15;" +
+                        "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);");
+
         topBarContainer.setPadding(new Insets(12, 20, 12, 20));
         topBarContainer.setSpacing(15);
         topBarContainer.setAlignment(Pos.CENTER_LEFT);
@@ -176,7 +175,7 @@ public class TopBar {
         chronoLabel = new Label("00:00");
         chronoLabel.setFont(Font.font("Montserrat", FontWeight.BOLD, 22));
         chronoLabel.setTextFill(Color.WHITE);
-        
+
         // Ajoutez un effet plus visible pour le chronomètre
         DropShadow chronoShadow = new DropShadow();
         chronoShadow.setColor(Color.web("#000000", 0.5));
@@ -185,18 +184,17 @@ public class TopBar {
         Glow glow = new Glow(0.3);
         glow.setInput(chronoShadow);
         chronoLabel.setEffect(glow);
-        
+
         // Conteneur pour le chronomètre avec un style comme dans GameScene
         HBox chronoContainer = new HBox(chronoLabel);
         chronoContainer.setAlignment(Pos.CENTER);
         chronoContainer.setPadding(new Insets(5, 15, 5, 15));
         chronoContainer.setStyle(
-            "-fx-background-color: rgba(255, 255, 255, 0.2);" +
-            "-fx-background-radius: 15;" +
-            "-fx-border-color: rgba(255, 255, 255, 0.4);" +
-            "-fx-border-width: 1;" +
-            "-fx-border-radius: 15;"
-        );
+                "-fx-background-color: rgba(255, 255, 255, 0.2);" +
+                        "-fx-background-radius: 15;" +
+                        "-fx-border-color: rgba(255, 255, 255, 0.4);" +
+                        "-fx-border-width: 1;" +
+                        "-fx-border-radius: 15;");
 
         // Create action buttons - même style que GameScene
         Button retryButton = createActionButton("Réessayer");
@@ -206,31 +204,31 @@ public class TopBar {
         retryButton.setOnAction(e -> {
             // Animation de clic
             Util.animateButtonClick(retryButton);
-            
+
             // Constants for dialog styling (match GameScene's style)
             String MAIN_COLOR = "#3A7D44"; // Vert principal
             String SECONDARY_COLOR = "#F2E8CF"; // Beige clair
             String ACCENT_COLOR = "#BC4749"; // Rouge-brique
             String DARK_COLOR = "#386641"; // Vert foncé
-        
+
             // Create a custom confirmation dialog
             Stage dialog = new Stage();
             dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             dialog.initOwner(primaryStage);
             dialog.setTitle("Confirmation");
-        
+
             // Create dialog title
             Label titleLabel = new Label("Recommencer le niveau");
             titleLabel.setFont(Font.font("Montserrat", FontWeight.BOLD, 20));
             titleLabel.setTextFill(Color.web(DARK_COLOR));
-        
+
             // Add shadow effect to title
             javafx.scene.effect.DropShadow shadow = new javafx.scene.effect.DropShadow();
             shadow.setColor(Color.web("#000000", 0.3));
             shadow.setRadius(3);
             shadow.setOffsetY(2);
             titleLabel.setEffect(shadow);
-        
+
             // Create message
             Label messageLabel = new Label(
                     "Voulez-vous vraiment recommencer ce niveau?\nToute progression non sauvegardée sera perdue.");
@@ -238,7 +236,7 @@ public class TopBar {
             messageLabel.setTextFill(Color.web(DARK_COLOR));
             messageLabel.setAlignment(Pos.CENTER);
             messageLabel.setWrapText(true);
-        
+
             // Create buttons
             Button yesButton = new Button("Oui");
             yesButton.setFont(Font.font("Montserrat", FontWeight.BOLD, 16));
@@ -251,7 +249,7 @@ public class TopBar {
                             "-fx-border-radius: 30;" +
                             "-fx-padding: 8 20;" +
                             "-fx-cursor: hand;");
-        
+
             Button noButton = new Button("Non");
             noButton.setFont(Font.font("Montserrat", FontWeight.BOLD, 16));
             noButton.setTextFill(Color.web(DARK_COLOR));
@@ -263,7 +261,7 @@ public class TopBar {
                             "-fx-border-radius: 30;" +
                             "-fx-padding: 8 20;" +
                             "-fx-cursor: hand;");
-        
+
             // Add shadow effect to buttons
             javafx.scene.effect.DropShadow buttonShadow = new javafx.scene.effect.DropShadow();
             buttonShadow.setColor(Color.web("#000000", 0.2));
@@ -271,7 +269,7 @@ public class TopBar {
             buttonShadow.setOffsetY(2);
             yesButton.setEffect(buttonShadow);
             noButton.setEffect(buttonShadow);
-        
+
             // Add hover effects for buttons
             yesButton.setOnMouseEntered(ev -> {
                 yesButton.setStyle(
@@ -282,7 +280,7 @@ public class TopBar {
                                 "-fx-border-radius: 30;" +
                                 "-fx-padding: 8 20;" +
                                 "-fx-cursor: hand;");
-        
+
                 // Animation de mise à l'échelle
                 javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
                         javafx.util.Duration.millis(200), yesButton);
@@ -290,7 +288,7 @@ public class TopBar {
                 scaleTransition.setToY(1.05);
                 scaleTransition.play();
             });
-        
+
             yesButton.setOnMouseExited(ev -> {
                 yesButton.setStyle(
                         "-fx-background-color: " + MAIN_COLOR + ";" +
@@ -300,14 +298,14 @@ public class TopBar {
                                 "-fx-border-radius: 30;" +
                                 "-fx-padding: 8 20;" +
                                 "-fx-cursor: hand;");
-                
+
                 javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
                         javafx.util.Duration.millis(200), yesButton);
                 scaleTransition.setToX(1.0);
                 scaleTransition.setToY(1.0);
                 scaleTransition.play();
             });
-            
+
             noButton.setOnMouseEntered(ev -> {
                 noButton.setStyle(
                         "-fx-background-color: " + MAIN_COLOR + ";" +
@@ -318,14 +316,14 @@ public class TopBar {
                                 "-fx-padding: 8 20;" +
                                 "-fx-cursor: hand;");
                 noButton.setTextFill(Color.WHITE);
-                
+
                 javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
                         javafx.util.Duration.millis(200), noButton);
                 scaleTransition.setToX(1.05);
                 scaleTransition.setToY(1.05);
                 scaleTransition.play();
             });
-            
+
             noButton.setOnMouseExited(ev -> {
                 noButton.setStyle(
                         "-fx-background-color: " + SECONDARY_COLOR + ";" +
@@ -336,19 +334,19 @@ public class TopBar {
                                 "-fx-padding: 8 20;" +
                                 "-fx-cursor: hand;");
                 noButton.setTextFill(Color.web(DARK_COLOR));
-                
+
                 javafx.animation.ScaleTransition scaleTransition = new javafx.animation.ScaleTransition(
                         javafx.util.Duration.millis(200), noButton);
                 scaleTransition.setToX(1.0);
                 scaleTransition.setToY(1.0);
                 scaleTransition.play();
             });
-        
+
             // Button container
             HBox buttonBox = new HBox(20, noButton, yesButton);
             buttonBox.setAlignment(Pos.CENTER);
             buttonBox.setPadding(new Insets(10, 0, 0, 0));
-        
+
             // Dialog container
             VBox dialogVBox = new VBox(15, titleLabel, messageLabel, buttonBox);
             dialogVBox.setAlignment(Pos.CENTER);
@@ -359,45 +357,47 @@ public class TopBar {
                             "-fx-border-color: " + MAIN_COLOR + ";" +
                             "-fx-border-width: 2;" +
                             "-fx-border-radius: 15;");
-        
+
             // Create scene with the dialog layout
             Scene dialogScene = new Scene(dialogVBox, 400, 250);
             dialog.setScene(dialogScene);
-        
+
             // Button actions
+            // In TopBar.java, modify the yesButton.setOnAction handler (around line 290)
             yesButton.setOnAction(event -> {
                 // Animation for button click
                 javafx.animation.ScaleTransition scaleDown = new javafx.animation.ScaleTransition(
                         javafx.util.Duration.millis(100), yesButton);
                 scaleDown.setToX(0.95);
                 scaleDown.setToY(0.95);
-                
+
                 javafx.animation.ScaleTransition scaleUp = new javafx.animation.ScaleTransition(
                         javafx.util.Duration.millis(100), yesButton);
                 scaleUp.setToX(1.0);
                 scaleUp.setToY(1.0);
-                
+
                 scaleDown.setOnFinished(e2 -> {
                     scaleUp.play();
-                    
+
                     // Reset the game
                     System.out.println("Resetting game level...");
-                    
+
                     // Reset the timer to 00:00
                     updateChronometer(0, 0);
-                    
+
+                    // Reset the grid completely
                     slitherGrid.reset();
-                    
+
                     // Reset the chronometer logic if callback exists
                     if (chronoResetCallback != null) {
                         chronoResetCallback.run();
                     }
-                    
-                    // Ajoutez ceci : Reset the grid if callback exists
+
+                    // Completely rebuild the grid from scratch
                     if (gridResetCallback != null) {
                         gridResetCallback.run();
                     }
-                    
+
                     // Close with fade animation
                     javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
                             javafx.util.Duration.millis(300), dialogVBox);
@@ -408,22 +408,22 @@ public class TopBar {
                 });
                 scaleDown.play();
             });
-        
+
             noButton.setOnAction(event -> {
                 // Animation for button click
                 javafx.animation.ScaleTransition scaleDown = new javafx.animation.ScaleTransition(
                         javafx.util.Duration.millis(100), noButton);
                 scaleDown.setToX(0.95);
                 scaleDown.setToY(0.95);
-                
+
                 javafx.animation.ScaleTransition scaleUp = new javafx.animation.ScaleTransition(
                         javafx.util.Duration.millis(100), noButton);
                 scaleUp.setToX(1.0);
                 scaleUp.setToY(1.0);
-                
+
                 scaleDown.setOnFinished(e2 -> {
                     scaleUp.play();
-                    
+
                     // Close with fade animation
                     javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
                             javafx.util.Duration.millis(300), dialogVBox);
@@ -434,7 +434,7 @@ public class TopBar {
                 });
                 scaleDown.play();
             });
-        
+
             // Fade in animation when showing the dialog
             dialogVBox.setOpacity(0);
             javafx.animation.FadeTransition fadeIn = new javafx.animation.FadeTransition(
@@ -442,7 +442,7 @@ public class TopBar {
             fadeIn.setFromValue(0);
             fadeIn.setToValue(1);
             fadeIn.play();
-        
+
             dialog.show();
             System.out.println("Game retry requested");
         });
@@ -450,7 +450,7 @@ public class TopBar {
         pauseButton.setOnAction(e -> {
             // Animation de clic
             Util.animateButtonClick(pauseButton);
-            
+
             // Extraire les minutes et secondes du chronoLabel (format "MM:SS")
             String timeText = chronoLabel.getText();
             String[] parts = timeText.split(":");
@@ -489,12 +489,11 @@ public class TopBar {
         container.setAlignment(Pos.CENTER_LEFT);
         container.setPadding(new Insets(5, 10, 5, 10));
         container.setStyle(
-            "-fx-background-color: rgba(255, 255, 255, 0.15);" +
-            "-fx-background-radius: 10;" +
-            "-fx-border-color: rgba(255, 255, 255, 0.3);" +
-            "-fx-border-width: 1;" +
-            "-fx-border-radius: 10;"
-        );
+                "-fx-background-color: rgba(255, 255, 255, 0.15);" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-border-color: rgba(255, 255, 255, 0.3);" +
+                        "-fx-border-width: 1;" +
+                        "-fx-border-radius: 10;");
 
         Label titleLabel = new Label(title);
         titleLabel.setFont(Font.font("Montserrat", FontWeight.NORMAL, BASE_FONT_SIZE - 2));
@@ -503,7 +502,7 @@ public class TopBar {
         Label valueLabel = new Label(value);
         valueLabel.setFont(Font.font("Montserrat", FontWeight.BOLD, BASE_FONT_SIZE + 2));
         valueLabel.setTextFill(Color.WHITE);
-        
+
         // Effet d'ombre sur le texte de valeur
         DropShadow textShadow = new DropShadow();
         textShadow.setColor(Color.web("#000000", 0.5));
@@ -529,13 +528,13 @@ public class TopBar {
         // Style comme les boutons de GameScene
         button.setStyle(
                 "-fx-background-color: " + SECONDARY_COLOR + ";" +
-                "-fx-background-radius: 20;" +
-                "-fx-border-color: " + MAIN_COLOR + ";" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 20;" +
-                "-fx-padding: 8 15;" +
-                "-fx-cursor: hand;");
-        
+                        "-fx-background-radius: 20;" +
+                        "-fx-border-color: " + MAIN_COLOR + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 20;" +
+                        "-fx-padding: 8 15;" +
+                        "-fx-cursor: hand;");
+
         // Ajouter un effet d'ombre
         DropShadow buttonShadow = new DropShadow();
         buttonShadow.setColor(Color.web("#000000", 0.3));
@@ -546,15 +545,15 @@ public class TopBar {
         // Hover effect
         button.setOnMouseEntered(e -> {
             button.setStyle(
-                "-fx-background-color: " + MAIN_COLOR + ";" +
-                "-fx-background-radius: 20;" +
-                "-fx-border-color: " + DARK_COLOR + ";" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 20;" +
-                "-fx-padding: 8 15;" +
-                "-fx-cursor: hand;");
+                    "-fx-background-color: " + MAIN_COLOR + ";" +
+                            "-fx-background-radius: 20;" +
+                            "-fx-border-color: " + DARK_COLOR + ";" +
+                            "-fx-border-width: 2;" +
+                            "-fx-border-radius: 20;" +
+                            "-fx-padding: 8 15;" +
+                            "-fx-cursor: hand;");
             button.setTextFill(Color.WHITE);
-            
+
             // Animation d'échelle
             ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), button);
             scaleTransition.setToX(1.05);
@@ -564,15 +563,15 @@ public class TopBar {
 
         button.setOnMouseExited(e -> {
             button.setStyle(
-                "-fx-background-color: " + SECONDARY_COLOR + ";" +
-                "-fx-background-radius: 20;" +
-                "-fx-border-color: " + MAIN_COLOR + ";" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 20;" +
-                "-fx-padding: 8 15;" +
-                "-fx-cursor: hand;");
+                    "-fx-background-color: " + SECONDARY_COLOR + ";" +
+                            "-fx-background-radius: 20;" +
+                            "-fx-border-color: " + MAIN_COLOR + ";" +
+                            "-fx-border-width: 2;" +
+                            "-fx-border-radius: 20;" +
+                            "-fx-padding: 8 15;" +
+                            "-fx-cursor: hand;");
             button.setTextFill(Color.web(DARK_COLOR));
-            
+
             // Animation d'échelle inverse
             ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(200), button);
             scaleTransition.setToX(1.0);

@@ -9,7 +9,7 @@ public class TechniquesPriority {
     public static final List<Class<? extends Techniques>> PRIORITY_ORDER = Arrays.asList(
         // Règles de base et simples en premier
         Tech_0Rule.class,           // Règle du 0 : aucune ligne autour d'un 0
-        Tech_CornerRule.class,       // Règles des coins
+        //Tech_CornerRule.class,       // Règles des coins
         
         // Techniques impliquant des chiffres spécifiques
         Tech_ThreeRule.class,        // Règle du 3
