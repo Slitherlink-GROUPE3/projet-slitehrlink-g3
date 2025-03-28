@@ -98,8 +98,11 @@ public class SlitherGrid {
         updateHistoryButtons();
     }
 
-    public void reset() {
-        slitherlinkGrid.getChildren().clear();
+    public void reset(){
+        
+        while (currentMoveIndex > -1) {
+            navigateHistory(-1);
+        }
         originalLineStates.clear();
         savedLineStates.clear();
         savedCrossStates.clear();

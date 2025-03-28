@@ -61,41 +61,67 @@ public class Tech_CornerRule implements Techniques {
     }
 
     @Override
-    public void appliquer(Grille grille) {
-        // Vérifie la technique
-        if (!estApplicable(grille)) return;
-
-        // Pose la marque sur tous les coordsSlotsCible
-        for (int[] coord : coordsSlotsCible) {
-            if (grille.estValide(coord[0], coord[1])) {
-                Cellule cell = grille.getCellule(coord[0], coord[1]);
-                if (cell instanceof Slot s) {
-                    s.setMarque(marqueCible);
-                }
-            }
-        }
-
-        // Reset complet
-        reset();
-    }
-
-    /**
-     * Détecte tous les coins (x,y) où x,y est un coin logique
-     * et la case a valeur dans [0..3].
-     * @return liste [ {x,y,valCase} ... ]
-     */
-    private List<int[]> detecterTousLesCoins(Grille grille) {
-        List<int[]> result = new ArrayList<>();
-        int w = grille.getLargeur(), h = grille.getHauteur();
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                Cellule cell = grille.getCellule(x, y);
-                if (cell instanceof Case c) {
-                    int val = c.getValeur();
-                    if (val >= 0 && val <= 3) {
-                        String coinType = getTypeDeCoin(x, y, grille);
-                        if (!coinType.equals("aucun")) {
-                            result.add(new int[]{x, y, val});
+    public boolean estApplicable(Grille grille) {
+        // Récupère les dimensions de la grille
+        int rows = gridNumbers.length;
+        int cols = gridNumbers[0].length;
+        
+        // Vérifie les 4 coins de la grille
+        int[][] cornerCoords = {
+            {0, 0},             // Coin supérieur gauche
+            {0, cols - 1},      // Coin supérieur droit
+            {rows - 1, 0},      // Coin inférieur gauche
+            {rows - 1, cols - 1} // Coin inférieur droit
+        };
+        
+        for (int[] corner : cornerCoords) {
+            int i = corner[0];
+            int j = corner[1];
+            
+            if (gridNumbers[i][j] != -1) { // -1 indique une case vide
+                int value = gridNumbers[i][j];
+                
+                // Pour les coins, les règles sont spécifiques selon la valeur
+                if (value == 0 || value == 1 || value == 2) {
+                    // Identifie les segments adjacents au coin
+                    String[] adjacentSegments = new String[2];
+                    
+                    if (i == 0 && j == 0) { // Coin supérieur gauche
+                        adjacentSegments[0] = "H_0_0"; // Haut
+                        adjacentSegments[1] = "V_0_0"; // Gauche
+                    } else if (i == 0 && j == cols - 1) { // Coin supérieur droit
+                        adjacentSegments[0] = "H_0_" + j; // Haut
+                        adjacentSegments[1] = "V_0_" + (j+1); // Droite
+                    } else if (i == rows - 1 && j == 0) { // Coin inférieur gauche
+                        adjacentSegments[0] = "H_" + (i+1) + "_0"; // Bas
+                        adjacentSegments[1] = "V_" + i + "_0"; // Gauche
+                    } else if(i == rows - 1 && j == cols - 1){ // Coin inférieur droit
+                        adjacentSegments[0] = "H_" + (i+1) + "_" + j; // Bas
+                        adjacentSegments[1] = "V_0_" + (j+1); // Droite
+                    }
+                    
+                    // Vérifie si au moins un segment est neutre
+                    int lineCount = 0;
+                    int neutralCount = 0;
+                    
+                    for (String segmentKey : adjacentSegments) {
+                        Line segment = gridLines.get(segmentKey);
+                        if (segment != null) {
+                            if (segment.getStroke() != Color.TRANSPARENT) {
+                                lineCount++;
+                            } else {
+                                boolean hasCross = false;
+                                for (javafx.scene.Node node : slitherlinkGrid.getChildren()) {
+                                    if (node instanceof Line && node.getUserData() == segment) {
+                                        hasCross = true;
+                                        break;
+                                    }
+                                }
+                                
+                                if (!hasCross) {
+                                    neutralCount++;
+                                }
+                            }
                         }
                     }
                 }

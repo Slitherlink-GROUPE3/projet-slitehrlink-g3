@@ -39,7 +39,7 @@
               </filters>
               <transformers>
                 <transformer>
-                  <mainClass>com.menu.Main</mainClass>
+                  <mainClass>com.menu.javafx.Menu</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -59,16 +59,16 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>com.menu.Main</mainClass>
+          <mainClass>com.menu.javafx.Menu</mainClass>
         </configuration>
       </plugin>
     </plugins>
   </build>
   <properties>
+    <maven.compiler.target>16</maven.compiler.target>
+    <maven.compiler.source>16</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <javafx.version>16</javafx.version>
-    <maven.compiler.target>16</maven.compiler.target>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>16</maven.compiler.source>
   </properties>
 </project>
