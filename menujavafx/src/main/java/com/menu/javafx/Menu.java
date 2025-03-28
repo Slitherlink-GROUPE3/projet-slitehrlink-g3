@@ -37,6 +37,8 @@ public class Menu extends Application {
     private static final String DARK_COLOR = "#386641"; // Vert foncé
     private static final String LIGHT_COLOR = "#A7C957"; // Vert clair
 
+    private static boolean saveCheckPerformed = false;
+
     private static Image loadImage(String resourcePath) {
         try {
             InputStream inputStream = Menu.class.getResourceAsStream(resourcePath);
@@ -72,10 +74,18 @@ public class Menu extends Application {
 
     public static void show(Stage primaryStage) {
 
-        // Modification du titre pour inclure le nom d'utilisateur
+        // Récupérer le nom d'utilisateur actuel
         String username = UserManager.getCurrentUser();
         primaryStage.setTitle("Slitherlink - " + (username != null ? username : "Menu Principal"));
 
+        // Only check for saves if we haven't done it already since login
+        if (!saveCheckPerformed && username != null) {
+            System.out.println("Vérification des sauvegardes pour " + username);
+            boolean saveLoaded = com.menu.javafx.SaveGameLoader.loadUserSave(primaryStage);
+            System.out.println(
+                    "Résultat de la vérification: " + (saveLoaded ? "Sauvegarde chargée" : "Pas de sauvegarde chargée"));
+            saveCheckPerformed = true;
+        }
         if (primaryStage.getIcons().isEmpty()) {
             Image icon = loadImage("/amir.jpeg");
             if (icon != null) {
@@ -154,11 +164,11 @@ public class Menu extends Application {
 
         Tooltip tooltipExitButton = new Tooltip("Quittez le jeu !");
         Tooltip.install(exitButton, tooltipExitButton);
-        
+
         // Actions des boutons
         adventureButton.setOnAction(e -> {
             Util.animateButtonClick(adventureButton);
-            //GameScene.show(primaryStage);
+            // GameScene.show(primaryStage);
             GridScene.show(primaryStage);
 
         });
@@ -331,6 +341,10 @@ public class Menu extends Application {
 
             fadeOut.play();
         }
+    }
+
+    public static void resetSaveCheckFlag() {
+        saveCheckPerformed = false;
     }
 
     public static void main(String[] args) {

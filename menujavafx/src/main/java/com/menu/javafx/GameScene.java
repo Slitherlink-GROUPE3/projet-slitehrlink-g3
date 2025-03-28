@@ -34,17 +34,17 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.util.Duration;
 import com.tpgr3.Techniques.Techniques;
 import com.menu.javafx.TechniqueDescriptions;
 import javafx.scene.effect.DropShadow;
 import javafx.geometry.Insets;
 
-
 public class GameScene {
     // Add at the top of the GameScene class, replacing your current color
     // constants:
-    
+
     // Light theme constants
     private static final String LIGHT_MAIN_COLOR = "#3A7D44"; // Vert principal
     private static final String LIGHT_SECONDARY_COLOR = "#F2E8CF"; // Beige clair
@@ -59,15 +59,21 @@ public class GameScene {
     private static final String DARK_DARK_COLOR = "#2d3b2d"; // Vert très foncé
     private static final String DARK_LIGHT_COLOR = "#6a8844";
 
-
     private static double CELL_SIZE;
     private static StackPane gridContainer;
     private static HBox root;
     private static VBox mainLayer;
 
+    private static String gridId = "001"; // Valeur par défaut
+
+    // Variables pour gérer les états sauvegardés
+    private static int[][][] savedGridState = null;
+    private static int savedElapsedTime = 0;
     private static SlitherGrid slitherGrid;
     private static GameMatrix gameMatrix;
     private static int checkCounter;
+
+    private static String currentGridId = "001"; // Store the current grid ID for saving/loading
 
     // Add a method to apply the current theme:
     private static void applyTheme() {
@@ -88,7 +94,7 @@ public class GameScene {
     }
 
     // Méthode pour charger la grille depuis un fichier JSON
-    private static int[][] loadGridFromJson(String filePath) {
+    public static int[][] loadGridFromJson(String filePath) {
         JSONParser parser = new JSONParser();
         int maxRow = 0;
         int maxCol = 0;
@@ -140,13 +146,47 @@ public class GameScene {
         return new int[0][0];
     }
 
-    public static void show(Stage primaryStage) {
-        checkCounter = 3;
-        applyTheme();
+    /**
+     * Affiche la scène de jeu avec un état sauvegardé
+     * 
+     * @param primaryStage Le stage principal
+     * @param gridId       L'ID de la grille
+     * @param gridState    L'état sauvegardé de la grille
+     * @param elapsedTime  Le temps écoulé à restaurer
+     */
+    public static void showWithSavedState(Stage primaryStage, String gridId, int[][][] gridState, int elapsedTime) {
+        System.out.println("Chargement avec état sauvegardé - Grille: " + gridId);
+        System.out.println("État: "
+                + (gridState != null ? gridState.length + "x" + gridState[0].length + "x" + gridState[0][0].length
+                        : "null"));
+        System.out.println("Temps écoulé: " + elapsedTime + " secondes");
 
         // Charger la grille depuis le fichier JSON
-        slitherGrid = new SlitherGrid(loadGridFromJson("gridLvl5.json"));
+        savedGridState = gridState;
+        savedElapsedTime = elapsedTime;
+
+        // Afficher la scène de jeu normalement, elle utilisera l'état sauvegardé si
+        // disponible
+        show(primaryStage, gridId); 
+    }
+
+    public static void show(Stage primaryStage, String... newGridId) {
+        applyTheme();
+
+        // Update the current grid ID if provided
+        if (newGridId != null && newGridId.length > 0 && newGridId[0] != null) {
+            currentGridId = newGridId[0];
+            gridId = newGridId[0]; 
+        }
+
+        String gridIdForLoading = gridId.startsWith("grid-") ? gridId : "grid-" + gridId;
+        
+        // Charger la grille depuis le fichier JSON
+        int[][] gridNumbers = loadGridFromJson("grids/" + gridIdForLoading + ".json");
+        slitherGrid = new SlitherGrid(gridNumbers);
         gameMatrix = slitherGrid.getGameMatrix();
+
+        
 
         mainLayer = new VBox();
         mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
@@ -201,6 +241,20 @@ public class GameScene {
             slitherGrid.updateHistoryButtons();
         });
 
+        // Si un état sauvegardé est disponible, l'appliquer à la grille
+        if (savedGridState != null) {
+            Platform.runLater(() -> {
+                try {
+                    System.out.println("Applying saved state from GameScene.show()");
+                    SaveGameLoader.applyGridState(savedGridState);
+                    savedGridState = null; // Clear the saved state to avoid reapplying
+                } catch (Exception e) {
+                    System.err.println("Error applying saved state: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        }
+
         root = new HBox();
 
         slitherGrid.setSlitherlinkGrid(new Pane());
@@ -230,8 +284,9 @@ public class GameScene {
         controlsTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
         controlsTitle.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
 
-        Button helpButton = Util.createStyledButton("   AIDE   ?  ", false, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
-        helpButton.setOnAction(e -> {
+        Button helpButton = Util.createStyledButton("   AIDE   ?  ", false, SlitherGrid.MAIN_COLOR,
+                SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+        helpButton.setOnAction(e1 -> {
             Util.animateButtonClick(helpButton);
             
             SlitherlinkTechniqueDetector detector = new SlitherlinkTechniqueDetector(
@@ -324,7 +379,8 @@ public class GameScene {
         HBox checkContainer = new HBox(15, checkButton, countContainer);
         checkContainer.setAlignment(Pos.CENTER);
 
-        Button hypothesisButton = Util.createStyledButton("Hypothèse", false, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+        Button hypothesisButton = Util.createStyledButton("Hypothèse", false, SlitherGrid.MAIN_COLOR,
+                SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         hypothesisButton.setOnAction(e -> {
             Util.animateButtonClick(hypothesisButton);
             if (slitherGrid.isHypothesisInactive()) {
@@ -346,8 +402,10 @@ public class GameScene {
                 dialogTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 18));
                 dialogTitle.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
 
-                Button confirmButton = Util.createStyledButton("Confirmer", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
-                Button cancelButton = Util.createStyledButton("Annuler", false, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+                Button confirmButton = Util.createStyledButton("Confirmer", true, SlitherGrid.MAIN_COLOR,
+                        SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+                Button cancelButton = Util.createStyledButton("Annuler", false, SlitherGrid.MAIN_COLOR,
+                        SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
 
                 VBox dialogVBox = new VBox(20);
                 dialogVBox.setAlignment(Pos.CENTER);
@@ -387,8 +445,6 @@ public class GameScene {
                                     "-fx-padding: 10 20;" +
                                     "-fx-cursor: hand;");
 
-
-
                     FadeTransition fadeOut = new FadeTransition(Duration.millis(300), dialogVBox);
                     fadeOut.setFromValue(1);
                     fadeOut.setToValue(0);
@@ -415,7 +471,6 @@ public class GameScene {
                                     "-fx-padding: 10 20;" +
                                     "-fx-cursor: hand;");
 
-
                     FadeTransition fadeOut = new FadeTransition(Duration.millis(300), dialogVBox);
                     fadeOut.setFromValue(1);
                     fadeOut.setToValue(0);
@@ -427,12 +482,38 @@ public class GameScene {
             }
         });
 
+        Button saveButton = Util.createStyledButton("Sauvegarder", false, SlitherGrid.MAIN_COLOR,
+                SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+        saveButton.setOnAction(e -> {
+            Util.animateButtonClick(saveButton);
+            if (GameSaveManager.saveGame("grid-" + gridId, secondsElapsed[0], checkCounter, false)) {
+                GameSaveManager.showSaveNotification(slitherGrid.getSlitherlinkGrid());
+            }
+        });
+
+        // Si un état sauvegardé est disponible, l'appliquer à la grille APRÈS que tout
+        // soit initialisé
+        if (savedGridState != null) {
+            // Utiliser Platform.runLater pour s'assurer que la grille est complètement
+            // initialisée
+            Platform.runLater(() -> {
+                try {
+                    System.out.println("Application différée de l'état sauvegardé");
+                    SaveGameLoader.applyGridState(savedGridState);
+                    savedGridState = null; // Réinitialiser pour éviter de réappliquer
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de l'application différée de l'état: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        }
+
         // Conteneur pour les boutons de navigation
         HBox historyContainer = new HBox(15, slitherGrid.getPrevButton(), slitherGrid.getNextButton());
         historyContainer.setAlignment(Pos.CENTER);
 
         buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpButton, checkContainer, hypothesisButton,
-                createSeparator(), historyContainer);
+                saveButton, createSeparator(), historyContainer);
 
         gridContainer.setPadding(new Insets(20));
         gridContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.65));
@@ -442,7 +523,8 @@ public class GameScene {
         root.getChildren().addAll(gridContainer, buttonBox);
 
         root.setStyle(
-                "-fx-background-color: linear-gradient(to bottom right, " + SlitherGrid.SECONDARY_COLOR + ", " + SlitherGrid.LIGHT_COLOR
+                "-fx-background-color: linear-gradient(to bottom right, " + SlitherGrid.SECONDARY_COLOR + ", "
+                        + SlitherGrid.LIGHT_COLOR
                         + " 70%);" +
                         "-fx-background-radius: 0;" +
                         "-fx-padding: 20px;");
@@ -463,18 +545,21 @@ public class GameScene {
         fadeIn.setToValue(1);
         fadeIn.play();
 
-        scene.widthProperty().addListener((obs, oldVal, newVal) -> slitherGrid.updateGrid(scene.getWidth(), scene.getHeight()));
-        scene.heightProperty().addListener((obs, oldVal, newVal) -> slitherGrid.updateGrid(scene.getWidth(), scene.getHeight()));
+        scene.widthProperty()
+                .addListener((obs, oldVal, newVal) -> slitherGrid.updateGrid(scene.getWidth(), scene.getHeight()));
+        scene.heightProperty()
+                .addListener((obs, oldVal, newVal) -> slitherGrid.updateGrid(scene.getWidth(), scene.getHeight()));
         primaryStage.maximizedProperty()
                 .addListener((obs, oldVal, isMaximized) -> slitherGrid.updateGrid(scene.getWidth(), scene.getHeight()));
         primaryStage.fullScreenProperty()
-                .addListener((obs, oldVal, isFullScreen) -> slitherGrid.updateGrid(scene.getWidth(), scene.getHeight()));
+                .addListener(
+                        (obs, oldVal, isFullScreen) -> slitherGrid.updateGrid(scene.getWidth(), scene.getHeight()));
 
         primaryStage.show();
         slitherGrid.updateGrid(scene.getWidth(), scene.getHeight());
+
+        
     }
-
-
 
     private static Node createSeparator() {
         Rectangle separator = new Rectangle();
@@ -554,7 +639,8 @@ public class GameScene {
                             "-fx-border-radius: 15;");
 
             // Bouton OK
-            Button okButton = Util.createStyledButton("Continuer", false, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+            Button okButton = Util.createStyledButton("Continuer", false, SlitherGrid.MAIN_COLOR,
+                    SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
             okButton.setPrefWidth(120);
 
             okButton.setOnAction(e -> {
@@ -587,7 +673,8 @@ public class GameScene {
         checkStage.setTitle("Vérification réussie");
 
         // Bouton OK
-        Button okButton = Util.createStyledButton("Super !", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+        Button okButton = Util.createStyledButton("Super !", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
+                SlitherGrid.SECONDARY_COLOR);
         okButton.setPrefWidth(120);
 
         okButton.setOnAction(e -> {
@@ -606,7 +693,8 @@ public class GameScene {
         checkBox.setAlignment(Pos.CENTER);
         checkBox.setPadding(new Insets(30));
         checkBox.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", " + SlitherGrid.LIGHT_COLOR + " 90%);" +
+                "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", "
+                        + SlitherGrid.LIGHT_COLOR + " 90%);" +
                         "-fx-background-radius: 15;" +
                         "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
                         "-fx-border-width: 2;" +
@@ -636,8 +724,10 @@ public class GameScene {
         if (root != null) {
             // Update background colors
             String gradientStyle = SettingScene.isDarkModeEnabled()
-                    ? "linear-gradient(to bottom right, " + SlitherGrid.SECONDARY_COLOR + ", " + SlitherGrid.DARK_COLOR + " 70%);"
-                    : "linear-gradient(to bottom right, " + SlitherGrid.SECONDARY_COLOR + ", " + SlitherGrid.LIGHT_COLOR + " 70%);";
+                    ? "linear-gradient(to bottom right, " + SlitherGrid.SECONDARY_COLOR + ", " + SlitherGrid.DARK_COLOR
+                            + " 70%);"
+                    : "linear-gradient(to bottom right, " + SlitherGrid.SECONDARY_COLOR + ", " + SlitherGrid.LIGHT_COLOR
+                            + " 70%);";
 
             root.setStyle(
                     "-fx-background-color: " + gradientStyle +
@@ -651,5 +741,66 @@ public class GameScene {
             slitherGrid.updateGrid(root.getScene().getWidth(), root.getScene().getHeight());
         }
     }
+
+    /**
+     * Retourne une représentation simplifiée de la matrice de jeu actuelle.
+     * Cette méthode est utilisée par GameSaveManager pour créer des sauvegardes.
+     * 
+     * @return Une matrice 3D représentant l'état du jeu
+     */
+    public static int[][][] getSimplifiedGameMatrix() {
+        // Si nous avons une SlitherGrid active
+        if (slitherGrid != null) {
+            return slitherGrid.getSimplifiedGameMatrix();
+        }
+        return null;
+    }
+
+    public int getcheckCounter() {
+        return checkCounter;
+    }
+
+    public static void setcheckCounter(int checkCounter) {
+        GameScene.checkCounter = checkCounter;
+    }
+
+    public static String getCurrentGridId() {
+        return currentGridId;
+    }
+    /**
+     * Returns the current SlitherGrid instance
+     * 
+     * @return The current SlitherGrid instance
+     */
+    public static SlitherGrid getSlitherGrid() {
+        return slitherGrid;
+    }
+
+    /*
+     * public static void loadFromSave(Stage primaryStage, String gridId, int elapsedTime, int checkCount, int[][][] gridState) {
+        // Sauvegarder les données de la partie
+        savedGridState = gridState;
+        System.out.println("État chargé depuis la sauvegarde: " + 
+                  (savedGridState != null ? savedGridState.length + "x" + 
+                  savedGridState[0].length + "x" + savedGridState[0][0].length : "null"));
+        
+        // Extraire l'ID réel de la grille (enlever le préfixe "grid-" s'il existe)
+        String actualGridId = gridId;
+        if (gridId.startsWith("grid-")) {
+            actualGridId = gridId.substring(5);  // Enlever "grid-"
+        }
+        
+        // Charger la grille depuis le fichier JSON avec le bon nom
+        // Le format du fichier est toujours "grid-XXX.json"
+        gridNumbers = loadGridFromJson("grids/grid-" + actualGridId + ".json");
+        
+        // Initialiser le compteur et le temps
+        checkCounter = checkCount;
+        savedElapsedTime = elapsedTime;
+        
+        // Afficher la scène de jeu avec l'ID de la grille
+        show(primaryStage, actualGridId);
+    }
+     */
 
 }
