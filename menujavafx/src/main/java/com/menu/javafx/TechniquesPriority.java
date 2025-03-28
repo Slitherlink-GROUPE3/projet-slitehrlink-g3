@@ -18,7 +18,7 @@ public class TechniquesPriority {
         
         // Techniques de boucle avancées
         Tech_Two3Adjacent.class,     // Deux 3 adjacents
-        Tech_Two3Diagonal.class,     // Deux 3 en diagonale
+        //Tech_Two3Diagonal.class,     // Deux 3 en diagonale
         
         // Techniques de détection de loop avancées
         Tech_LoopReaching1.class,    // Détection de loop pour les 1

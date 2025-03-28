@@ -20,7 +20,7 @@ public class MenuBoxComponent {
 
                 switch (item) {
                     case "CLASSIQUE":
-                        GameScene.show(stage);
+                        GameScene.show(stage, GameScene.getCurrentGridId());
                         break;
                     case "PARAMETRES":
                         SettingScene.show(stage);
