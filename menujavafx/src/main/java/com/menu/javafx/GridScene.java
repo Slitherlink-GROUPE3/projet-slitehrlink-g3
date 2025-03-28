@@ -64,11 +64,9 @@ public class GridScene {
         titleLabel.setEffect(glow);
         
         // Bouton de réinitialisation (en haut à droite)
-        Button resetButton = createResetButton();
         HBox titleContainer = new HBox(titleLabel);
-        titleContainer.setAlignment(Pos.CENTER_RIGHT);
-        titleContainer.getChildren().add(resetButton);
-        HBox.setMargin(resetButton, new Insets(0, 0, 0, 20));
+        titleContainer.setAlignment(Pos.CENTER);
+
 
         // Grille de sélection de niveau
         GridPane gridPane = createLevelGrid(primaryStage);
@@ -209,52 +207,7 @@ public class GridScene {
         return 5;
     }
 
-    private static Button createResetButton() {
-        Button resetButton = new Button("⟳"); // Utiliser un caractère Unicode de rotation
-        resetButton.setFont(Font.font(20)); // Taille de police plus grande
-        
-        resetButton.setStyle(
-            "-fx-background-color: white;" +
-            "-fx-background-radius: 30;" +
-            "-fx-border-color: " + MAIN_COLOR + ";" +
-            "-fx-border-width: 2;" +
-            "-fx-border-radius: 30;" +
-            "-fx-text-fill: " + MAIN_COLOR + ";" +
-            "-fx-padding: 5 10;"
-        );
-        
-        // Ajouter des effets de survol
-        resetButton.setOnMouseEntered(e -> {
-            resetButton.setStyle(
-                "-fx-background-color: " + MAIN_COLOR + ";" +
-                "-fx-background-radius: 30;" +
-                "-fx-border-color: white;" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 30;" +
-                "-fx-text-fill: white;" +
-                "-fx-padding: 5 10;"
-            );
-        });
-        
-        resetButton.setOnMouseExited(e -> {
-            resetButton.setStyle(
-                "-fx-background-color: white;" +
-                "-fx-background-radius: 30;" +
-                "-fx-border-color: " + MAIN_COLOR + ";" +
-                "-fx-border-width: 2;" +
-                "-fx-border-radius: 30;" +
-                "-fx-text-fill: " + MAIN_COLOR + ";" +
-                "-fx-padding: 5 10;"
-            );
-        });
-        
-        resetButton.setOnAction(e -> {
-            // Logique de réinitialisation (à implémenter)
-            System.out.println("Réinitialisation des niveaux");
-        });
-
-        return resetButton;
-    }
+    
 
     private static HBox createNavigationButtons(Stage primaryStage) {
         HBox navigationBox = new HBox(20);
