@@ -495,22 +495,7 @@ public class GameScene {
             }
         });
 
-        // Si un état sauvegardé est disponible, l'appliquer à la grille APRÈS que tout
-        // soit initialisé
-        if (savedGridState != null) {
-            // Utiliser Platform.runLater pour s'assurer que la grille est complètement
-            // initialisée
-            Platform.runLater(() -> {
-                try {
-                    System.out.println("Application différée de l'état sauvegardé");
-                    SaveGameLoader.applyGridState(savedGridState);
-                    savedGridState = null; // Réinitialiser pour éviter de réappliquer
-                } catch (Exception e) {
-                    System.err.println("Erreur lors de l'application différée de l'état: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            });
-        }
+        
 
         // Conteneur pour les boutons de navigation
         HBox historyContainer = new HBox(15, slitherGrid.getPrevButton(), slitherGrid.getNextButton());
@@ -826,6 +811,7 @@ public class GameScene {
             return "Facile"; // Par défaut
         }
     }
+    
 
     /*
      * public static void loadFromSave(Stage primaryStage, String gridId, int
