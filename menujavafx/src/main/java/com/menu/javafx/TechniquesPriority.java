@@ -9,7 +9,7 @@ public class TechniquesPriority {
     public static final List<Class<? extends Techniques>> PRIORITY_ORDER = Arrays.asList(
         // Règles de base et simples en premier
         Tech_0Rule.class,           // Règle du 0 : aucune ligne autour d'un 0
-        //Tech_CornerRule.class,       // Règles des coins
+        Tech_CornerRule.class,       // Règles des coins
         
         // Techniques impliquant des chiffres spécifiques
         Tech_ThreeRule.class,        // Règle du 3
@@ -18,7 +18,7 @@ public class TechniquesPriority {
         
         // Techniques de boucle avancées
         Tech_Two3Adjacent.class,     // Deux 3 adjacents
-        Tech_Two3Diagonal.class,     // Deux 3 en diagonale
+        //Tech_Two3Diagonal.class,     // Deux 3 en diagonale
         
         // Techniques de détection de loop avancées
         Tech_LoopReaching1.class,    // Détection de loop pour les 1
