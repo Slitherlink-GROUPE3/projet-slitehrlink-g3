@@ -174,6 +174,7 @@ public class GameScene {
         // Update the current grid ID if provided
         if (newGridId != null && newGridId.length > 0 && newGridId[0] != null) {
             currentGridId = newGridId[0];
+            gridId = newGridId[0]; 
         }
 
         String gridIdForLoading = gridId.startsWith("grid-") ? gridId : "grid-" + gridId;
@@ -238,8 +239,16 @@ public class GameScene {
 
         // Si un état sauvegardé est disponible, l'appliquer à la grille
         if (savedGridState != null) {
-            SaveGameLoader.applyGridState(savedGridState);
-            savedGridState = null; // Réinitialiser pour éviter de réappliquer
+            Platform.runLater(() -> {
+                try {
+                    System.out.println("Applying saved state from GameScene.show()");
+                    SaveGameLoader.applyGridState(savedGridState);
+                    savedGridState = null; // Clear the saved state to avoid reapplying
+                } catch (Exception e) {
+                    System.err.println("Error applying saved state: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
         }
 
         root = new HBox();
