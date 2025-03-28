@@ -1,4 +1,10 @@
+// Common imports for Technique classes
 package com.tpgr3.Techniques;
+
+import java.util.Map;
+import javafx.scene.shape.Line;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 import com.tpgr3.Grille;
 import com.tpgr3.Case;
