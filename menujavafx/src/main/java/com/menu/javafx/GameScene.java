@@ -25,6 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -153,7 +154,7 @@ public class GameScene {
         String username = UserManager.getCurrentUser();
         System.out.println("Logged in as: " + username);
 
-        TopBar topBar = new TopBar(primaryStage, username, "5", "Facile");
+        TopBar topBar = new TopBar(primaryStage, username, "5", "Facile", slitherGrid);
 
         java.util.Timer timer = new java.util.Timer();
         final int[] secondsElapsed = { 0 };
@@ -189,7 +190,9 @@ public class GameScene {
         // Configuration du callback pour réinitialiser la grille
         topBar.setGridResetCallback(() -> {
             // Recréer la grille de jeu
-            slitherGrid.reset();
+            slitherGrid.getSlitherlinkGrid().getChildren()
+                .removeIf(node -> node instanceof Line );
+            System.out.println(slitherGrid.getSlitherlinkGrid());
 
             // Reconstruire la grille
             slitherGrid.updateGrid(root.getScene().getWidth(), root.getScene().getHeight());

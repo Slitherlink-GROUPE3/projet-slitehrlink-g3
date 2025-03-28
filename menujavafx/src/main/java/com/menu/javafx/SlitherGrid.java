@@ -100,7 +100,11 @@ public class SlitherGrid {
     }
 
     public void reset(){
-        slitherlinkGrid.getChildren().clear();
+        
+        while (currentMoveIndex > -1) {
+            navigateHistory(-1);
+        }
+
         originalLineStates.clear();
         savedLineStates.clear();
         savedCrossStates.clear();

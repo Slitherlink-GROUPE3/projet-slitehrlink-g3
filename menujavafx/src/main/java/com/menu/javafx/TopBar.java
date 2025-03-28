@@ -30,6 +30,7 @@ public class TopBar {
     private Label chronoLabel;
     private Runnable chronoResetCallback;
     private Runnable gridResetCallback;
+    private SlitherGrid slitherGrid;
     
 
     // Constantes de couleurs du Menu (même palette que GameScene)
@@ -43,6 +44,7 @@ public class TopBar {
     private static final double BASE_FONT_SIZE = 14;
     private static final double MIN_FONT_SIZE = 12;
     private static final double MAX_FONT_SIZE = 20;
+    
 
     /**
      * Crée une instance de TopBar
@@ -52,11 +54,12 @@ public class TopBar {
      * @param niveau       Le niveau du jeu
      * @param difficulte   La difficulté du jeu
      */
-    public TopBar(Stage primaryStage, String pseudoJoueur, String niveau, String difficulte) {
+    public TopBar(Stage primaryStage, String pseudoJoueur, String niveau, String difficulte, SlitherGrid slitherGrid) {
         this.primaryStage = primaryStage;
         this.pseudoJoueur = pseudoJoueur;
         this.niveau = niveau;
         this.difficulte = difficulte;
+        this.slitherGrid = slitherGrid;
     }
 
     // Ajouter une méthode pour définir la fonction de réinitialisation
@@ -382,6 +385,8 @@ public class TopBar {
                     
                     // Reset the timer to 00:00
                     updateChronometer(0, 0);
+                    
+                    slitherGrid.reset();
                     
                     // Reset the chronometer logic if callback exists
                     if (chronoResetCallback != null) {

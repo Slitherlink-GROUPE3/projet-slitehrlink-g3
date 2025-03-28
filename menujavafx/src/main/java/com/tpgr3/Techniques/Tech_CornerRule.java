@@ -66,9 +66,9 @@ public class Tech_CornerRule implements Techniques {
                     } else if (i == rows - 1 && j == 0) { // Coin inférieur gauche
                         adjacentSegments[0] = "H_" + (i+1) + "_0"; // Bas
                         adjacentSegments[1] = "V_" + i + "_0"; // Gauche
-                    } else { // Coin inférieur droit
+                    } else if(i == rows - 1 && j == cols - 1){ // Coin inférieur droit
                         adjacentSegments[0] = "H_" + (i+1) + "_" + j; // Bas
-                        adjacentSegments[1] = "V_" + i + "_" + (j+1); // Droite
+                        adjacentSegments[1] = "V_0_" + (j+1); // Droite
                     }
                     
                     // Vérifie si au moins un segment est neutre
