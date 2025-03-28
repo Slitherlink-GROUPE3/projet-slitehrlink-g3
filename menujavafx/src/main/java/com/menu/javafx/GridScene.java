@@ -104,8 +104,14 @@ public class GridScene {
                 // Format the level number as 3 digits (e.g., 001, 002, etc.)
                 String levelString = String.format("%03d", levelNumber);
                 levelButton.setOnMouseClicked(e -> {
-                    // Pass the formatted level number to GameScene
-                    GameScene.show(primaryStage, levelString);
+                    String gridId = "grid-" + levelString;
+                    if (GameSaveManager.hasSavedGame(gridId)) {
+                        // Charger la sauvegarde existante
+                        GameSaveManager.loadGame(primaryStage, gridId);
+                    } else {
+                        // Lancer un nouveau niveau
+                        GameScene.show(primaryStage, levelString);
+                    }
                 });
             } else {
                 // Niveaux verrouillés
