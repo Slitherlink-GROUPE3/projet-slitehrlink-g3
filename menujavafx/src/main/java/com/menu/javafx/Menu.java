@@ -57,7 +57,7 @@ public class Menu extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Image icon = loadImage("/amir.jpeg");
+        Image icon = loadImage("/logo.jpeg");
         if (icon != null) {
             primaryStage.getIcons().add(icon);
         } else {
@@ -87,7 +87,7 @@ public class Menu extends Application {
             saveCheckPerformed = true;
         }
         if (primaryStage.getIcons().isEmpty()) {
-            Image icon = loadImage("/amir.jpeg");
+            Image icon = loadImage("/logo.jpeg");
             if (icon != null) {
                 primaryStage.getIcons().add(icon);
             }
@@ -120,7 +120,7 @@ public class Menu extends Application {
         titleBox.setAlignment(Pos.CENTER);
 
         ImageView logoView = null;
-        Image logo = loadImage("/amir.jpeg");
+        Image logo = loadImage("/logo.jpeg");
         if (logo != null) {
             logoView = new ImageView(logo);
             logoView.setFitHeight(60);

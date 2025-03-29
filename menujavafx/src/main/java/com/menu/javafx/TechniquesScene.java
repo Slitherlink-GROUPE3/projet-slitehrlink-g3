@@ -60,8 +60,9 @@ public class TechniquesScene {
 
     public static void show(Stage primaryStage) {
         BorderPane root = new BorderPane();
+        TechniquesScene.currentStep = 0; // Réinitialiser l'étape
         root.setStyle("-fx-background-color: " + SECONDARY_COLOR + ";");
-        primaryStage = primaryStage; // Stocker la référence au stage
+        TechniquesScene.primaryStage = primaryStage; // Stocker la référence au stage
 
         // Titre du tutoriel
         Text title = new Text("Tutoriel Slitherlink");
@@ -426,7 +427,6 @@ public class TechniquesScene {
                 addInstructionParagraph("Vous pouvez maintenant appliquer ces règles pour résoudre des puzzles Slitherlink.");
                 addInstructionParagraph("N'oubliez pas de vérifier votre solution en vous assurant que:");
                 addInstructionParagraph("• Tous les chiffres sont respectés");
-                addInstructionParagraph("• Votre solution forme un circuit fermé unique");
                 
                 Button startGameButton = createStyledButton("Commencer à jouer", true);
                 startGameButton.setOnAction(e -> GameScene.show(primaryStage));
