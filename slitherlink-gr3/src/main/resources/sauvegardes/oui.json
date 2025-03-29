@@ -1,0 +1,7 @@
+{
+  "progression": [
+    { "fichier": "niveaux/grille1.json", "termine": false },
+    { "fichier": "niveaux/grille2.json", "termine": false },
+    { "fichier": "niveaux/grille3.json", "termine": false }
+  ]
+}

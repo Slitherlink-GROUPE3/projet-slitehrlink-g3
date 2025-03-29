@@ -1,0 +1,22 @@
+{
+  "niveau": 1,
+  "valeurs": [
+    [ 1 , 1 , 1 ],
+    [ 1 , 0 , 1 ],
+    [ 1 , 1 , 1 ]
+  ],
+  "solution": [
+    { "x": 0, "y": 0, "marque": "Baton" },
+    { "x": 0, "y": 1, "marque": "Baton" },
+    { "x": 0, "y": 2, "marque": "Baton" },
+    { "x": 1, "y": 2, "marque": "Baton" },
+    { "x": 2, "y": 2, "marque": "Baton" },
+    { "x": 2, "y": 1, "marque": "Baton" },
+    { "x": 2, "y": 0, "marque": "Baton" },
+    { "x": 1, "y": 0, "marque": "Baton" }
+  ],
+  "joues": [
+    { "x": 2, "y": 3, "marque": "Croix" },
+    { "x": 6, "y": 1, "marque": "Baton" }
+  ]
+}
