@@ -84,10 +84,11 @@ public class TechniquesScene {
         currentStep = 0;
         gridLines.clear();
         gridCrosses.clear();
-        primaryStage = stage;
+        TechniquesScene.primaryStage = stage;
         
         // Créer le conteneur principal
         BorderPane root = new BorderPane();
+        TechniquesScene.currentStep = 0; // Réinitialiser l'étape
         root.setStyle("-fx-background-color: " + SECONDARY_COLOR + ";");
         
         // En-tête avec titre et bouton retour
