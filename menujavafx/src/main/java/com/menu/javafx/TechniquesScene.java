@@ -88,6 +88,7 @@ public class TechniquesScene {
         
         // Créer le conteneur principal
         BorderPane root = new BorderPane();
+        TechniquesScene.currentStep = 0; // Réinitialiser l'étape
         root.setStyle("-fx-background-color: " + SECONDARY_COLOR + ";");
         
         // En-tête avec titre et bouton retour
