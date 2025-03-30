@@ -137,6 +137,7 @@ public class SlitherlinkTechniqueDetector {
             case "Tech_Two3InCorner" -> "Deux 3 dans un angle";
             case "Tech_LoopReaching1" -> "Détection de boucle pour 1";
             case "Tech_LoopReaching3" -> "Détection de boucle pour 3";
+            case "Tech_2InAngle" -> "2 en diagonal d'un chemin";
             default -> techniqueName;
         };
     }

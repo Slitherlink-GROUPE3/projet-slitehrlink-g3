@@ -52,14 +52,14 @@ public class GameScene {
     private static final String LIGHT_MAIN_COLOR = "#3A7D44"; // Vert principal
     private static final String LIGHT_SECONDARY_COLOR = "#F2E8CF"; // Beige clair
     private static final String LIGHT_ACCENT_COLOR = "#BC4749"; // Rouge-brique
-    private static final String LIGHT_DARK_COLOR = "#386641"; // Vert foncé
+    public static final String LIGHT_DARK_COLOR = "#386641"; // Vert foncé
     private static final String LIGHT_LIGHT_COLOR = "#A7C957"; // Vert clair
 
     // Dark theme constants
     private static final String DARK_MAIN_COLOR = "#4c8b5d"; // Vert principal (plus lumineux)
     private static final String DARK_SECONDARY_COLOR = "#1a1a1a"; // Gris très foncé
     private static final String DARK_ACCENT_COLOR = "#e05d5f"; // Rouge-brique (plus lumineux)
-    private static final String DARK_DARK_COLOR = "#2d3b2d"; // Vert très foncé
+    public static final String DARK_DARK_COLOR = "#2d3b2d"; // Vert très foncé
     private static final String DARK_LIGHT_COLOR = "#6a8844";
 
     private static double CELL_SIZE;
