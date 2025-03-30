@@ -32,8 +32,21 @@ import org.json.simple.parser.ParseException;
  */
 public class GameSaveManager {
 
-    private static final String SAVE_DIRECTORY = "saves";
-    private static final String USER_SAVES_FORMAT = SAVE_DIRECTORY + "/%s"; // %s = nom d'utilisateur
+    private static final String USER_DIRECTORY = "users";
+    private static final String SAVES_DIRECTORY = "saves";
+    
+    /**
+     * Obtient le chemin du répertoire de sauvegarde pour l'utilisateur actuel
+     * @return Le répertoire de sauvegarde
+     */
+    private static File getSaveDirectory() {
+        String username = UserManager.getCurrentUser();
+        if (username == null || username.isEmpty()) {
+            return null;
+        }
+        
+        return new File(USER_DIRECTORY + File.separator + username + File.separator + SAVES_DIRECTORY);
+    }
 
     /**
      * Vérifie si une sauvegarde existe pour l'ID de grille spécifié
@@ -48,8 +61,8 @@ public class GameSaveManager {
         }
 
         // Vérifier les sauvegardes manuelles
-        File saveDir = new File(SAVE_DIRECTORY + File.separator + username);
-        if (!saveDir.exists()) {
+        File saveDir = getSaveDirectory();
+        if (saveDir == null || !saveDir.exists()) {
             return false;
         }
 
@@ -136,8 +149,8 @@ public class GameSaveManager {
 
             // 7. Chemin complet du fichier avec File.separator pour compatibilité
             // cross-platform
-            String userSaveDir = SAVE_DIRECTORY + File.separator + username;
-            File saveFile = new File(userSaveDir, fileName);
+            File saveDir = getSaveDirectory();
+            File saveFile = new File(saveDir, fileName);
 
             // 8. Écrire les données JSON dans le fichier avec vérification explicite
             try (FileWriter writer = new FileWriter(saveFile)) {
@@ -167,17 +180,24 @@ public class GameSaveManager {
 
     private static boolean createSaveDirectoriesSafely(String username) {
         try {
-            // Créer le répertoire principal des sauvegardes
-            File mainDir = new File(SAVE_DIRECTORY);
+            // Créer le répertoire principal des utilisateurs
+            File mainDir = new File(USER_DIRECTORY);
             if (!mainDir.exists() && !mainDir.mkdir()) {
-                System.err.println("Impossible de créer le répertoire: " + SAVE_DIRECTORY);
+                System.err.println("Impossible de créer le répertoire: " + USER_DIRECTORY);
                 return false;
             }
 
             // Créer le répertoire spécifique à l'utilisateur
-            File userDir = new File(SAVE_DIRECTORY + File.separator + username);
+            File userDir = new File(USER_DIRECTORY + File.separator + username);
             if (!userDir.exists() && !userDir.mkdir()) {
                 System.err.println("Impossible de créer le répertoire: " + userDir.getPath());
+                return false;
+            }
+            
+            // Créer le répertoire de sauvegardes
+            File savesDir = new File(userDir, SAVES_DIRECTORY);
+            if (!savesDir.exists() && !savesDir.mkdir()) {
+                System.err.println("Impossible de créer le répertoire: " + savesDir.getPath());
                 return false;
             }
 
@@ -261,67 +281,67 @@ public class GameSaveManager {
     }
 
     /**
- * Charge une sauvegarde et lance le jeu avec cet état
- * 
- * @param primaryStage Le stage principal
- * @param gridId L'ID de la grille à charger (format "grid-XXX")
- */
-public static void loadGame(Stage primaryStage, String gridId) {
-    String username = UserManager.getCurrentUser();
-    if (username == null || username.isEmpty()) {
-        // Aucun utilisateur connecté, lancer un nouveau jeu
-        String actualGridId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
-        GameScene.show(primaryStage, actualGridId);
-        return;
-    }
-    
-    try {
-        // Trouver le répertoire des sauvegardes de l'utilisateur
-        File saveDir = new File(SAVE_DIRECTORY + File.separator + username);
-        if (!saveDir.exists() || !saveDir.isDirectory()) {
-            // Répertoire de sauvegarde introuvable, lancer un nouveau jeu
+     * Charge une sauvegarde et lance le jeu avec cet état
+     * 
+     * @param primaryStage Le stage principal
+     * @param gridId L'ID de la grille à charger (format "grid-XXX")
+     */
+    public static void loadGame(Stage primaryStage, String gridId) {
+        String username = UserManager.getCurrentUser();
+        if (username == null || username.isEmpty()) {
+            // Aucun utilisateur connecté, lancer un nouveau jeu
             String actualGridId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
             GameScene.show(primaryStage, actualGridId);
             return;
         }
         
-        // Trouver toutes les sauvegardes pour cette grille
-        final String gridIdSearch = gridId; // Version finale pour le lambda
-        File[] saveFiles = saveDir.listFiles((dir, name) -> name.contains(gridIdSearch) && name.endsWith(".json"));
-        
-        if (saveFiles == null || saveFiles.length == 0) {
-            // Aucune sauvegarde trouvée, lancer un nouveau jeu
+        try {
+            // Trouver le répertoire des sauvegardes de l'utilisateur
+            File saveDir = getSaveDirectory();
+            if (saveDir == null || !saveDir.exists() || !saveDir.isDirectory()) {
+                // Répertoire de sauvegarde introuvable, lancer un nouveau jeu
+                String actualGridId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
+                GameScene.show(primaryStage, actualGridId);
+                return;
+            }
+            
+            // Trouver toutes les sauvegardes pour cette grille
+            final String gridIdSearch = gridId; // Version finale pour le lambda
+            File[] saveFiles = saveDir.listFiles((dir, name) -> name.contains(gridIdSearch) && name.endsWith(".json"));
+            
+            if (saveFiles == null || saveFiles.length == 0) {
+                // Aucune sauvegarde trouvée, lancer un nouveau jeu
+                String actualGridId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
+                GameScene.show(primaryStage, actualGridId);
+                return;
+            }
+            
+            // Trier les sauvegardes par date de dernière modification (la plus récente en premier)
+            java.util.Arrays.sort(saveFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
+            
+            // Charger la sauvegarde la plus récente
+            File mostRecentSave = saveFiles[0];
+            System.out.println("Chargement de la sauvegarde: " + mostRecentSave.getAbsolutePath());
+            
+            // Utiliser la méthode existante pour charger le fichier de sauvegarde
+            boolean loadSuccess = loadGame(mostRecentSave.getAbsolutePath(), primaryStage);
+            
+            if (!loadSuccess) {
+                // Échec du chargement, lancer un nouveau jeu
+                System.err.println("Échec du chargement de la sauvegarde, lancement d'un nouveau jeu");
+                String actualGridId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
+                GameScene.show(primaryStage, actualGridId);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la recherche de sauvegardes: " + e.getMessage());
+            e.printStackTrace();
+            
+            // En cas d'erreur, lancer un nouveau jeu
             String actualGridId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
             GameScene.show(primaryStage, actualGridId);
-            return;
         }
-        
-        // Trier les sauvegardes par date de dernière modification (la plus récente en premier)
-        java.util.Arrays.sort(saveFiles, (a, b) -> Long.compare(b.lastModified(), a.lastModified()));
-        
-        // Charger la sauvegarde la plus récente
-        File mostRecentSave = saveFiles[0];
-        System.out.println("Chargement de la sauvegarde: " + mostRecentSave.getAbsolutePath());
-        
-        // Utiliser la méthode existante pour charger le fichier de sauvegarde
-        boolean loadSuccess = loadGame(mostRecentSave.getAbsolutePath(), primaryStage);
-        
-        if (!loadSuccess) {
-            // Échec du chargement, lancer un nouveau jeu
-            System.err.println("Échec du chargement de la sauvegarde, lancement d'un nouveau jeu");
-            String actualGridId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
-            GameScene.show(primaryStage, actualGridId);
-        }
-        
-    } catch (Exception e) {
-        System.err.println("Erreur lors de la recherche de sauvegardes: " + e.getMessage());
-        e.printStackTrace();
-        
-        // En cas d'erreur, lancer un nouveau jeu
-        String actualGridId = gridId.startsWith("grid-") ? gridId.substring(5) : gridId;
-        GameScene.show(primaryStage, actualGridId);
     }
-}
 
     /**
      * Liste toutes les sauvegardes disponibles pour l'utilisateur actuel.
@@ -329,20 +349,14 @@ public static void loadGame(Stage primaryStage, String gridId) {
      * @return Liste des métadonnées de sauvegarde
      */
     public static List<SaveMetadata> listSaves() {
-        String username = UserManager.getCurrentUser();
-        if (username == null || username.isEmpty()) {
-            return new ArrayList<>();
-        }
-
         List<SaveMetadata> saveList = new ArrayList<>();
-        String userSaveDir = String.format(USER_SAVES_FORMAT, username);
-        File saveFolder = new File(userSaveDir);
-
-        if (!saveFolder.exists() || !saveFolder.isDirectory()) {
+        
+        File saveDir = getSaveDirectory();
+        if (saveDir == null || !saveDir.exists() || !saveDir.isDirectory()) {
             return saveList;
         }
 
-        File[] saveFiles = saveFolder.listFiles((dir, name) -> name.endsWith(".json"));
+        File[] saveFiles = saveDir.listFiles((dir, name) -> name.endsWith(".json"));
         if (saveFiles == null) {
             return saveList;
         }
@@ -363,8 +377,7 @@ public static void loadGame(Stage primaryStage, String gridId) {
                 saveList.add(metadata);
 
             } catch (IOException | ParseException e) {
-                System.err
-                        .println("Erreur lors de la lecture du fichier " + saveFile.getName() + ": " + e.getMessage());
+                System.err.println("Erreur lors de la lecture du fichier " + saveFile.getName() + ": " + e.getMessage());
             }
         }
 
@@ -379,16 +392,22 @@ public static void loadGame(Stage primaryStage, String gridId) {
      */
     private static void createSaveDirectories(String username) {
         try {
-            // Créer le répertoire principal des sauvegardes
-            Path mainDir = Paths.get(SAVE_DIRECTORY);
+            // Créer le répertoire principal des utilisateurs
+            Path mainDir = Paths.get(USER_DIRECTORY);
             if (!Files.exists(mainDir)) {
                 Files.createDirectory(mainDir);
             }
 
             // Créer le répertoire spécifique à l'utilisateur
-            Path userDir = Paths.get(String.format(USER_SAVES_FORMAT, username));
+            Path userDir = Paths.get(USER_DIRECTORY, username);
             if (!Files.exists(userDir)) {
                 Files.createDirectory(userDir);
+            }
+            
+            // Créer le répertoire de sauvegardes
+            Path savesDir = Paths.get(USER_DIRECTORY, username, SAVES_DIRECTORY);
+            if (!Files.exists(savesDir)) {
+                Files.createDirectory(savesDir);
             }
         } catch (IOException e) {
             System.err.println("Erreur lors de la création des répertoires de sauvegarde: " + e.getMessage());
