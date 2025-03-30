@@ -4,63 +4,78 @@ public class TechniqueDescriptions {
     public static String getDescription(String techniqueName) {
         return switch(techniqueName) {
             case "Tech_0Rule" -> 
-                "La règle du 0 est une technique fondamentale dans la résolution des puzzles Slitherlink. " +
-                "Lorsqu'une case contient un 0, cela signifie qu'aucun segment ne doit être tracé autour de cette case. " +
-                "Vous devez donc marquer tous les segments adjacents à cette case avec une croix, " +
-                "indiquant qu'ils ne font pas partie de la boucle finale.";
+                "Règle du 0 : Aucun segment ne doit entourer une case contenant un 0. " +
+                "Marquez tous les segments adjacents avec une croix.";
             
             case "Tech_CornerRule" -> 
-                "La règle des coins est cruciale pour la résolution des puzzles Slitherlink. " +
-                "Dans les coins de la grille, le nombre de segments possibles est limité. " +
-                "Cette technique examine les contraintes spécifiques aux cases situées dans les coins, " +
-                "en tenant compte du nombre de segments déjà tracés et des possibilités restantes.";
+                "Règle des coins : Dans les coins de la grille, le nombre de segments est limité " +
+                "selon la valeur de la case (0, 1, 2 ou 3).";
             
             case "Tech_ThreeRule" -> 
-                "La règle du 3 est une technique de résolution puissante dans les puzzles Slitherlink. " +
-                "Lorsqu'une case contient un 3, cela indique que trois segments doivent obligatoirement " +
-                "être tracés autour de cette case. Cette règle permet de déduire avec certitude " +
-                "l'emplacement des segments de la boucle dans les cases présentant un 3.";
+                "Règle du 3 : Exactement trois segments doivent entourer une case contenant un 3.";
             
-            case "Tech_0And3Adjacent" -> 
-                "Cette technique examine les relations entre les cases contenant 0 et 3 qui sont adjacentes. " +
-                "Quand un 0 et un 3 sont côte à côte, leurs positions relatives peuvent fournir des " +
-                "informations cruciales sur le placement des segments. La proximité de ces cases " +
-                "permet de déduire avec précision quels segments doivent être tracés ou marqués.";
+            case "Tech_3InCorner" -> 
+                "3 dans un angle : Lorsqu'un 3 est dans un coin, il faut tracer les deux segments " +
+                "dans l'angle plus un troisième.";
+            
+            case "Tech_2InCorner" -> 
+                "2 dans un angle : Lorsqu'un 2 est dans un coin, placez deux bâtons à l'opposé de l'angle.";
+            
+            case "Tech_1OnSide" -> 
+                "1 sur un côté : Si un bâton est déjà placé sur un bord à côté d'un 1, " +
+                "le segment opposé doit être marqué d'une croix.";
+            
+            case "Tech_0And3" -> 
+                "0 et 3 adjacents : Quand un 0 et un 3 sont côte à côte, placez une croix sur le segment " +
+                "entre eux et trois bâtons autour du 3.";
             
             case "Tech_0And3Diagonal" -> 
-                "Cette technique avancée analyse les relations entre les cases 0 et 3 qui sont en diagonale. " +
-                "Lorsque ces cases sont positionnées en diagonale, leurs interactions peuvent révéler " +
-                "des indices subtils sur la configuration de la boucle. Elle permet de déduire des " +
-                "placements de segments qui ne seraient pas évidents avec d'autres techniques.";
+                "0 et 3 en diagonale : Placez des croix autour du 0 et placez des bâtons sur deux " +
+                "côtés spécifiques du 3.";
+            
+            case "Tech_0And2OnSide" -> 
+                "0 et 2 sur un côté : Placez un bâton à l'opposé du bord et un autre à l'opposé du 0, " +
+                "puis ajoutez deux bâtons aux extrémités.";
+            
+            case "Tech_3And0OnSide" -> 
+                "3 et 0 sur un côté : Placez deux bâtons - un contre le côté de la grille et " +
+                "un du côté opposé au 0.";
             
             case "Tech_Two3Adjacent" -> 
-                "La technique des deux 3 adjacents est une méthode de résolution stratégique. " +
-                "Lorsque deux cases contenant un 3 sont côte à côte, leurs contraintes combinées " +
-                "peuvent considérablement réduire les possibilités de placement des segments. " +
-                "Cette technique permet de déduire avec précision l'emplacement de certains segments.";
+                "Deux 3 adjacents : Placez les segments extérieurs des deux cases 3 et " +
+                "laissez le segment commun vide.";
             
             case "Tech_Two3Diagonal" -> 
-                "Cette technique complexe examine les relations entre deux cases à 3 qui sont en diagonale. " +
-                "La position diagonale de ces cases peut créer des contraintes uniques sur la configuration " +
-                "de la boucle. Elle permet de déduire des placements de segments qui nécessitent une " +
-                "analyse géométrique plus approfondie.";
+                "Deux 3 en diagonale : Placez quatre bâtons aux positions spécifiques pour éviter " +
+                "de créer des angles entre les deux 3.";
+            
+            case "Tech_1And0InCorner" -> 
+                "1 et 0 dans un angle : Avec un 1 dans l'angle à côté d'un 0, placez un bâton unique " +
+                "dans la direction appropriée et deux autres bâtons en continuité.";
+            
+            case "Tech_1And2InCorner" -> 
+                "1 et 2 dans un angle : Avec un 1 dans l'angle à côté d'un 2, placez des croix " +
+                "dans l'angle car il sera impossible de respecter la condition du 1.";
+            
+            case "Tech_2And1InCorner" -> 
+                "2 et 1 dans un angle : Utilisez la règle du 2 dans l'angle pour placer deux bâtons, " +
+                "puis placez un bâton supplémentaire à côté du 1.";
+            
+            case "Tech_Two3InCorner" -> 
+                "Deux 3 dans un angle : Combinez les techniques des 3 côte à côte et du 3 dans l'angle " +
+                "pour déduire des placements obligatoires.";
             
             case "Tech_LoopReaching1" -> 
-                "La technique de détection de boucle pour les cases à 1 se concentre sur les contraintes " +
-                "spécifiques autour des cases contenant un 1. Comme un seul segment doit être tracé, " +
-                "cette technique permet d'identifier avec précision les possibilités de placement " +
-                "du segment unique autour de la case.";
+                "Détection de boucle pour 1 : Lorsqu'un bâton est déjà placé à côté d'un 1, " +
+                "les autres segments autour doivent être marqués d'une croix.";
             
             case "Tech_LoopReaching3" -> 
-                "La technique de détection de boucle pour les cases à 3 est une méthode avancée. " +
-                "Elle analyse en profondeur les contraintes autour des cases à 3, en utilisant " +
-                "les informations sur les segments existants pour déduire le placement précis " +
-                "des segments manquants pour compléter la configuration.";
+                "Détection de boucle pour 3 : Analyse les contraintes autour des cases à 3 " +
+                "pour déterminer les segments manquants.";
             
             default -> 
-                "Technique de résolution spécifique pour les puzzles Slitherlink. " +
-                "Cette technique offre des stratégies pour déduire le placement des segments " +
-                "en fonction des contraintes numériques de la grille.";
+                "Technique de résolution qui utilise les contraintes des chiffres pour " +
+                "déduire le placement correct des segments.";
         };
     }
 }

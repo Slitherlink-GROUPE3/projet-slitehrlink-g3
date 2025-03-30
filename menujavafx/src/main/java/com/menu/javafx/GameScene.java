@@ -805,11 +805,11 @@ public class GameScene {
     private static String getDifficultyFromLevel(String level) {
         try {
             int levelNum = Integer.parseInt(level);
-            if (levelNum <= 3)
+            if (levelNum <= 5)
                 return "Facile";
-            if (levelNum <= 6)
+            if (levelNum <= 10)
                 return "Moyen";
-            if (levelNum <= 9)
+            if (levelNum <= 15)
                 return "Difficile";
             return "Expert";
         } catch (NumberFormatException e) {

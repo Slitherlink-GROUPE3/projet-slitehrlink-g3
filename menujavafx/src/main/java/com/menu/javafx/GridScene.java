@@ -69,11 +69,9 @@ public class GridScene {
         titleLabel.setEffect(glow);
 
         // Bouton de réinitialisation (en haut à droite)
-        Button resetButton = createResetButton();
         HBox titleContainer = new HBox(titleLabel);
-        titleContainer.setAlignment(Pos.CENTER_RIGHT);
-        titleContainer.getChildren().add(resetButton);
-        HBox.setMargin(resetButton, new Insets(0, 0, 0, 20));
+        titleContainer.setAlignment(Pos.CENTER);
+
 
         // Grille de sélection de niveau
         GridPane gridPane = createLevelGrid(primaryStage);

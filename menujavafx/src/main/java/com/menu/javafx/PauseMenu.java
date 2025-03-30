@@ -75,11 +75,20 @@ public class PauseMenu {
             }
         });
 
+        // Bouton Choix Grille
+        Button choixGrilleButton = createStyledButton("Choix Grille");
+        choixGrilleButton.setTooltip(new javafx.scene.control.Tooltip("Reprendre le jeu"));
+        choixGrilleButton.setOnAction(e -> {
+            Util.animateButtonClick(choixGrilleButton);
+            GridScene.show(primaryStage);
+        });
+
         // Bouton "Tutoriel"
         Button tutorialButton = createStyledButton("Tutoriel");
         tutorialButton.setTooltip(new javafx.scene.control.Tooltip("Voir le tutoriel"));
         tutorialButton.setOnAction(e -> {
-            hintScene.show(primaryStage);
+            Util.animateButtonClick(tutorialButton);
+            TechniquesScene.show(primaryStage);
         });
 
         // Bouton "Paramètres"
@@ -99,7 +108,7 @@ public class PauseMenu {
         });
 
         // Ajouter le titre et les boutons au menu de pause
-        pauseMenu.getChildren().addAll(pauseTitle, resumeButton, settingsButton, tutorialButton, quitButton);
+        pauseMenu.getChildren().addAll(pauseTitle, resumeButton, choixGrilleButton,settingsButton, tutorialButton, quitButton);
 
         // Créer une scène pour le menu de pause avec des transitions et des styles
         Scene pauseScene = new Scene(pauseMenu, 400, 400);

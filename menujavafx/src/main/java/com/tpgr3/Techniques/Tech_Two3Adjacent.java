@@ -1,155 +1,173 @@
-// Common imports for Technique classes
 package com.tpgr3.Techniques;
 
 import java.util.Map;
-import javafx.scene.shape.Line;
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.animation.FadeTransition;
+import javafx.scene.effect.Glow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.util.Duration;
 
-import com.tpgr3.*;
-import com.tpgr3.Marque.*;
+import com.tpgr3.Grille;
 
+/**
+ * Implémentation de la technique des 3 adjacents dans Slitherlink.
+ * Quand deux cases contenant un 3 sont adjacentes, il y a une configuration 
+ * spécifique obligatoire pour éviter les conflits.
+ */
 public class Tech_Two3Adjacent implements Techniques {
 
     private int[][] gridNumbers;
     private Map<String, Line> gridLines;
     private Pane slitherlinkGrid;
+    private List<String> segmentsToHighlight;
 
     /**
-     * Constructeur avec les informations nécessaires pour l'analyse.
-     * 
-     * @param gridNumbers Tableau 2D représentant les chiffres de la grille
-     * @param gridLines Map des lignes de la grille
-     * @param slitherlinkGrid Pane contenant la grille de Slitherlink
+     * Constructeur par défaut pour l'instanciation réflexive.
+     */
+    public Tech_Two3Adjacent() {
+        segmentsToHighlight = new ArrayList<>();
+    }
+
+    /**
+     * Constructeur avec paramètres.
+     *
+     * @param gridNumbers La grille de nombres
+     * @param gridLines Les segments de la grille
+     * @param slitherlinkGrid Le panneau contenant la grille
      */
     public Tech_Two3Adjacent(int[][] gridNumbers, Map<String, Line> gridLines, Pane slitherlinkGrid) {
         this.gridNumbers = gridNumbers;
         this.gridLines = gridLines;
         this.slitherlinkGrid = slitherlinkGrid;
+        this.segmentsToHighlight = new ArrayList<>();
     }
 
+    /**
+     * Vérifie si la technique des 3 adjacents est applicable sur la grille actuelle.
+     *
+     * @param grille La grille de jeu Slitherlink
+     * @return true si la technique est applicable, false sinon
+     */
     @Override
     public boolean estApplicable(Grille grille) {
-        for (int i = 0; i < gridNumbers.length; i++) {
-            for (int j = 0; j < gridNumbers[i].length; j++) {
-                // Cherche un 3 dans la grille
-                if (gridNumbers[i][j] == 3) {
-                    // Vérifie s'il y a un autre 3 adjacent
-                    int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}; // Gauche, Droite, Haut, Bas
-                    
-                    for (int[] dir : directions) {
-                        int xB = i + dir[0];
-                        int yB = j + dir[1];
-                        
-                        // Vérifie si la position voisine est valide
-                        if (xB >= 0 && xB < gridNumbers.length && 
-                            yB >= 0 && yB < gridNumbers[i].length) {
-                            // Vérifie si le voisin est une case avec la valeur 3
-                            if (gridNumbers[xB][yB] == 3) {
-                                // Calcule les positions des slots à vérifier
-                                int dx = (xB - i) / 2;
-                                int dy = (yB - j) / 2;
 
-                                // Détermine le segment entre les deux 3
-                                String segmentBetweenThrees = "";
-                                if (dx != 0) { // Horizontalement
-                                    segmentBetweenThrees = (dx > 0) 
-                                        ? "V_" + i + "_" + (j+1)  // Droite
-                                        : "V_" + i + "_" + j;    // Gauche
-                                } else { // Verticalement
-                                    segmentBetweenThrees = (dy > 0) 
-                                        ? "H_" + (i+1) + "_" + j  // Bas
-                                        : "H_" + i + "_" + j;    // Haut
-                                }
-                                
-                                Line segmentBetween = gridLines.get(segmentBetweenThrees);
-                                
-                                // Vérifie si le segment entre les deux 3 est neutre (pas encore décidé)
-                                if (segmentBetween != null && segmentBetween.getStroke() == Color.TRANSPARENT) {
-                                    boolean hasCross = false;
-                                    for (javafx.scene.Node node : slitherlinkGrid.getChildren()) {
-                                        if (node instanceof Line && node.getUserData() == segmentBetween) {
-                                            hasCross = true;
-                                            break;
-                                        }
-                                    }
-                                    
-                                    if (!hasCross) {
-                                        // Le segment entre les deux 3 est neutre, la technique est applicable
-                                        return true;
-                                    }
-                                }
-                            }
+        if (gridNumbers == null) {
+            gridNumbers = grille.valeurs;
+        }
+        
+        segmentsToHighlight.clear();
+        boolean applicationPossible = false;
+        
+        // Parcourir toutes les cellules de la grille pour trouver des 3 adjacents horizontalement
+        for (int i = 0; i < gridNumbers.length; i++) {
+            for (int j = 0; j < gridNumbers[i].length - 1; j++) {
+                if (gridNumbers[i][j] == 3 && gridNumbers[i][j+1] == 3) {
+                    // Deux 3 adjacents horizontalement
+                    
+                    // Déterminer les segments à marquer comme bâtons
+                    String[] segmentsForBaton = {
+
+                        "V_" + i + "_" + j,          // Gauche du premier 3
+                        "V_" + i + "_" + (j+1),      // entre les deux 3
+                        "V_" + i + "_" + (j+2)       // Droite du second 3
+                    };
+                    
+                    // Vérifier si les segments sont disponibles pour être marqués
+                    for (String segmentKey : segmentsForBaton) {
+                        Line segment = gridLines.get(segmentKey);
+                        if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
+                            segmentsToHighlight.add(segmentKey + ":baton");
+                            applicationPossible = true;
                         }
                     }
                 }
             }
         }
-        return false;
-    }
-
-    @Override
-    public void appliquer(Grille grille) {
-        for (int y = 0; y < gridNumbers.length; y++) {
-            for (int x = 0; x < gridNumbers[y].length; x++) {
-                // Cherche un 3 dans la grille
-                if (gridNumbers[y][x] == 3) {
-                    // Vérifie s'il y a un autre 3 adjacent
-                    int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}; // Gauche, Droite, Haut, Bas
+        
+        // Parcourir toutes les cellules de la grille pour trouver des 3 adjacents verticalement
+        for (int i = 0; i < gridNumbers.length - 1; i++) {
+            for (int j = 0; j < gridNumbers[i].length; j++) {
+                if (gridNumbers[i][j] == 3 && gridNumbers[i+1][j] == 3) {
+                    // Deux 3 adjacents verticalement
                     
-                    for (int[] dir : directions) {
-                        int xB = y + dir[0];
-                        int yB = x + dir[1];
-                        
-                        // Vérifie si la position voisine est valide
-                        if (xB >= 0 && xB < gridNumbers.length && 
-                            yB >= 0 && yB < gridNumbers[y].length) {
-                            // Vérifie si le voisin est une case avec la valeur 3
-                            if (gridNumbers[xB][yB] == 3) {
-                                // Calcule les positions des slots à vérifier
-                                int dx = (xB - y) / 2;
-                                int dy = (yB - x) / 2;
-
-                                // Déterminer les segments à marquer
-                                String[] batonCoords = new String[3];
-                                
-                                // Segment entre les deux 3
-                                if (dx != 0) { // Horizontalement
-                                    batonCoords[0] = (dx > 0) 
-                                        ? "V_" + y + "_" + (x+1)  // Droite
-                                        : "V_" + y + "_" + x;    // Gauche
-                                } else { // Verticalement
-                                    batonCoords[0] = (dy > 0) 
-                                        ? "H_" + (y+1) + "_" + x  // Bas
-                                        : "H_" + y + "_" + x;    // Haut
-                                }
-                                
-                                // Segments opposés de chaque case 3
-                                String[] oppositeSegments = {
-                                    (dx != 0) ? 
-                                        ((dx > 0) ? "V_" + y + "_" + x : "V_" + y + "_" + (x+1)) :
-                                        ((dy > 0) ? "H_" + y + "_" + x : "H_" + (y+1) + "_" + x)
-                                };
-                                
-                                // Ajouter les segments opposés
-                                batonCoords[1] = oppositeSegments[0];
-                                batonCoords[2] = (dx != 0) ? 
-                                    ((dx > 0) ? "V_" + xB + "_" + yB : "V_" + xB + "_" + (yB+1)) :
-                                    ((dy > 0) ? "H_" + xB + "_" + x : "H_" + (xB+1) + "_" + x);
-
-                                // Marquer les segments appropriés
-                                for (String segmentKey : batonCoords) {
-                                    Line segment = gridLines.get(segmentKey);
-                                    if (segment != null) {
-                                        segment.setStroke(Color.BLACK); // Marquer comme ligne
-                                    }
-                                }
-
-                                return; // Une seule application par détection
-                            }
+                    // Déterminer les segments à marquer comme bâtons
+                    String[] segmentsForBaton = {
+                        "H_" + i + "_" + j,          // Haut du premier 3
+                        "H_" + (i+1) + "_" + j,       // Entre les deux 3
+                        "H_" + (i+2) + "_" + j       // Bas du second 3
+                    };
+                    
+                    // Vérifier si les segments sont disponibles pour être marqués
+                    for (String segmentKey : segmentsForBaton) {
+                        Line segment = gridLines.get(segmentKey);
+                        if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
+                            segmentsToHighlight.add(segmentKey + ":baton");
+                            applicationPossible = true;
                         }
                     }
                 }
+            }
+        }
+        
+        return applicationPossible;
+    }
+    
+    /**
+     * Vérifie si un segment a déjà une croix.
+     *
+     * @param line Le segment à vérifier
+     * @return true si le segment a une croix, false sinon
+     */
+    private boolean aCroix(Line line) {
+        if (line == null || slitherlinkGrid == null) return false;
+        
+        for (javafx.scene.Node node : slitherlinkGrid.getChildren()) {
+            if (node instanceof Line && node.getUserData() == line) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Applique la technique en mettant en surbrillance les segments qui doivent être marqués.
+     *
+     * @param grille La grille de jeu Slitherlink
+     */
+    @Override
+    public void appliquer(Grille grille) {
+        if (!estApplicable(grille)) {
+            return;
+        }
+        
+        for (String segment : segmentsToHighlight) {
+            String[] parts = segment.split(":");
+            String lineId = parts[0];
+            
+            Line line = gridLines.get(lineId);
+            if (line != null) {
+                Glow glow = new Glow(0.8);
+                line.setEffect(glow);
+                line.setStroke(Color.GREEN);
+                line.setOpacity(0.7);
+                
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(500), line);
+                fadeIn.setFromValue(0.3);
+                fadeIn.setToValue(0.9);
+                fadeIn.setCycleCount(3);
+                fadeIn.setAutoReverse(true);
+                fadeIn.play();
+                
+                fadeIn.setOnFinished(event -> {
+                    line.setEffect(null);
+                    line.setStroke(Color.TRANSPARENT);
+                    line.setOpacity(1.0);
+                });
             }
         }
     }

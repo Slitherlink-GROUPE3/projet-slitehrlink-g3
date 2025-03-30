@@ -14,10 +14,11 @@ import javafx.util.Duration;
 import com.tpgr3.Grille;
 
 /**
- * Implémentation de la technique de détection de boucle pour les cases contenant un 1.
- * Lorsqu'un bâton est déjà placé à côté d'un 1, les autres segments autour doivent être marqués d'une croix.
+ * Implémentation de la technique du 2 dans un angle de la grille.
+ * On ne peut faire qu'une seule boucle conformément aux règles du jeu.
+ * On peut donc déduire que deux bâtons doivent être posés à l'opposé de l'angle.
  */
-public class Tech_LoopReaching1 implements Techniques {
+public class Tech_2InCorner implements Techniques {
 
     private int[][] gridNumbers;
     private Map<String, Line> gridLines;
@@ -27,7 +28,7 @@ public class Tech_LoopReaching1 implements Techniques {
     /**
      * Constructeur par défaut pour l'instanciation réflexive.
      */
-    public Tech_LoopReaching1() {
+    public Tech_2InCorner() {
         segmentsToHighlight = new ArrayList<>();
     }
 
@@ -38,7 +39,7 @@ public class Tech_LoopReaching1 implements Techniques {
      * @param gridLines Les segments de la grille
      * @param slitherlinkGrid Le panneau contenant la grille
      */
-    public Tech_LoopReaching1(int[][] gridNumbers, Map<String, Line> gridLines, Pane slitherlinkGrid) {
+    public Tech_2InCorner(int[][] gridNumbers, Map<String, Line> gridLines, Pane slitherlinkGrid) {
         this.gridNumbers = gridNumbers;
         this.gridLines = gridLines;
         this.slitherlinkGrid = slitherlinkGrid;
@@ -46,7 +47,7 @@ public class Tech_LoopReaching1 implements Techniques {
     }
 
     /**
-     * Vérifie si la technique de détection de boucle pour les cases contenant un 1 est applicable.
+     * Vérifie si la technique du 2 dans un angle est applicable sur la grille actuelle.
      *
      * @param grille La grille de jeu Slitherlink
      * @return true si la technique est applicable, false sinon
@@ -61,43 +62,58 @@ public class Tech_LoopReaching1 implements Techniques {
         
         boolean applicationPossible = false;
         
-        // Parcourir toutes les cellules de la grille
-        for (int i = 0; i < gridNumbers.length; i++) {
-            for (int j = 0; j < gridNumbers[i].length; j++) {
-                // Si la cellule contient un 1
-                if (gridNumbers[i][j] == 1) {
-                    // Identifier les segments autour de la cellule
-                    String[] adjacentSegments = {
-                        "H_" + i + "_" + j,        // Haut
-                        "H_" + (i+1) + "_" + j,    // Bas
-                        "V_" + i + "_" + j,        // Gauche
-                        "V_" + i + "_" + (j+1)     // Droite
+        int rows = gridNumbers.length;
+        int cols = gridNumbers[0].length;
+        
+        // Vérifier les quatre coins de la grille
+        int[][] corners = {
+            {0, 0},                 // Coin supérieur gauche
+            {0, cols - 1},          // Coin supérieur droit
+            {rows - 1, 0},          // Coin inférieur gauche
+            {rows - 1, cols - 1}    // Coin inférieur droit
+        };
+        
+        for (int[] corner : corners) {
+            int i = corner[0];
+            int j = corner[1];
+            
+            if (gridNumbers[i][j] == 2) {
+                // Un 2 dans un coin
+                
+                String[] segmentsToMark;
+                
+                if (i == 0 && j == 0) {
+                    // Coin supérieur gauche
+                    segmentsToMark = new String[]{
+                        "H_0_1",    // Segment horizontal bas-gauche
+                        "V_1_0"     // Segment vertical haut-droit
                     };
-                    
-                    // Compter le nombre de bâtons déjà placés
-                    int batonCount = 0;
-                    String segmentWithBaton = null;
-                    
-                    for (String segmentKey : adjacentSegments) {
-                        Line segment = gridLines.get(segmentKey);
-                        if (segment != null && segment.getStroke() != Color.TRANSPARENT && !aCroix(segment)) {
-                            batonCount++;
-                            segmentWithBaton = segmentKey;
-                        }
-                    }
-                    
-                    // Si exactement un bâton est déjà placé
-                    if (batonCount == 1) {
-                        // Marquer les autres segments avec des croix
-                        for (String segmentKey : adjacentSegments) {
-                            if (!segmentKey.equals(segmentWithBaton)) {
-                                Line segment = gridLines.get(segmentKey);
-                                if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                                    segmentsToHighlight.add(segmentKey + ":croix");
-                                    applicationPossible = true;
-                                }
-                            }
-                        }
+                } else if (i == 0 && j == cols - 1) {
+                    // Coin supérieur droit
+                    segmentsToMark = new String[]{
+                        "H_0_" + (j-1),       // Segment horizontal bas-droit
+                        "V_1_" + (j+1)  // Segment vertical haut-gauche
+                    };
+                } else if (i == rows - 1 && j == 0) {
+                    // Coin inférieur gauche
+                    segmentsToMark = new String[]{
+                        "H_" + (i + 1) + "_1",  // Segment horizontal haut-gauche
+                        "V_" + (j - 1) + "_0"         // Segment vertical bas-droit
+                    };
+                } else {
+                    // Coin inférieur droit
+                    segmentsToMark = new String[]{
+                        "H_" + (i + 1) + "_" + (j - 1),    // Segment horizontal haut-droit
+                        "V_" + (i - 1) + "_" + (j + 1)     // Segment vertical bas-gauche
+                    };
+                }
+                
+                // Vérifier si les segments sont disponibles pour être marqués
+                for (String segmentKey : segmentsToMark) {
+                    Line segment = gridLines.get(segmentKey);
+                    if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
+                        segmentsToHighlight.add(segmentKey + ":baton");
+                        applicationPossible = true;
                     }
                 }
             }
@@ -138,13 +154,12 @@ public class Tech_LoopReaching1 implements Techniques {
         for (String segment : segmentsToHighlight) {
             String[] parts = segment.split(":");
             String lineId = parts[0];
-            boolean isBaton = parts[1].equals("baton");
             
             Line line = gridLines.get(lineId);
             if (line != null) {
                 Glow glow = new Glow(0.8);
                 line.setEffect(glow);
-                line.setStroke(isBaton ? Color.GREEN : Color.RED);
+                line.setStroke(Color.GREEN);
                 line.setOpacity(0.7);
                 
                 FadeTransition fadeIn = new FadeTransition(Duration.millis(500), line);
