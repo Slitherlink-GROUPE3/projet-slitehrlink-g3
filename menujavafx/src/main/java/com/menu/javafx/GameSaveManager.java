@@ -74,13 +74,14 @@ public class GameSaveManager {
     /**
      * Sauvegarde l'état actuel du jeu pour l'utilisateur courant.
      * 
-     * @param gridId       Identifiant de la grille (numéro dans le mode aventure)
-     * @param seconds      Temps écoulé en secondes
-     * @param checkCounter Nombre de vérifications restantes
-     * @param saveAuto     True si sauvegarde automatique, false si manuelle
+     * @param gridId        Identifiant de la grille (numéro dans le mode aventure)
+     * @param seconds       Temps écoulé en secondes
+     * @param checkCounter  Nombre de vérifications restantes
+     * @param techniqueCounter Nombre de techniques restantes
+     * @param saveAuto      True si sauvegarde automatique, false si manuelle
      * @return True si la sauvegarde a réussi, false sinon
      */
-    public static boolean saveGame(String gridId, int seconds, int checkCounter, boolean saveAuto) {
+    public static boolean saveGame(String gridId, int seconds, int checkCounter, int techniqueCounter, boolean saveAuto) {
         // 1. Vérifier si un utilisateur est connecté
         String username = UserManager.getCurrentUser();
         if (username == null || username.isEmpty()) {
@@ -115,6 +116,7 @@ public class GameSaveManager {
             saveData.put("timestamp", System.currentTimeMillis());
             saveData.put("elapsedTime", seconds);
             saveData.put("remainingChecks", checkCounter);
+            saveData.put("remainingTechniques", techniqueCounter);
             saveData.put("autoSave", saveAuto);
 
             // Date formatée pour affichage
@@ -227,6 +229,10 @@ public class GameSaveManager {
             String gridId = (String) saveData.get("gridId");
             long elapsedTime = (Long) saveData.get("elapsedTime");
             long remainingChecks = (Long) saveData.get("remainingChecks");
+            
+            // Récupérer le compteur de techniques (3 par défaut si non présent)
+            long remainingTechniques = saveData.containsKey("remainingTechniques") ? 
+                (Long) saveData.get("remainingTechniques") : 3;
 
             // Debug logs for save data
             System.out.println("=== Debug: Game Loading Details ===");
@@ -234,6 +240,7 @@ public class GameSaveManager {
             System.out.println("- Grid ID: " + gridId);
             System.out.println("- Elapsed Time: " + elapsedTime + " seconds");
             System.out.println("- Remaining Checks: " + remainingChecks);
+            System.out.println("- Remaining Techniques: " + remainingTechniques);
             System.out.println("- Current user: " + UserManager.getCurrentUser());
 
             // Debug the grid state before parsing
@@ -267,6 +274,9 @@ public class GameSaveManager {
 
             // Charger l'état de la grille
             int[][][] gridState = parseGridState(gridStateArray);
+
+            // Définir le compteur de techniques
+            GameScene.setTechniqueCounter((int) remainingTechniques);
 
             // Utiliser SaveGameLoader pour charger la partie sauvegardée
             SaveGameLoader.loadFromSave(primaryStage, gridId, (int) elapsedTime, (int) remainingChecks, gridState);
@@ -373,6 +383,10 @@ public class GameSaveManager {
                 metadata.setElapsedTime((Long) saveData.get("elapsedTime"));
                 metadata.setSaveDate((String) saveData.get("saveDate"));
                 metadata.setAutoSave(saveData.containsKey("autoSave") ? (Boolean) saveData.get("autoSave") : false);
+                
+                // Récupérer le nombre de techniques restantes (3 par défaut si non présent)
+                metadata.setRemainingTechniques(saveData.containsKey("remainingTechniques") ? 
+                    ((Long) saveData.get("remainingTechniques")).intValue() : 3);
 
                 saveList.add(metadata);
 
@@ -507,6 +521,7 @@ public class GameSaveManager {
         private long elapsedTime;
         private String saveDate;
         private boolean isAutoSave;
+        private int remainingTechniques = 3; // Valeur par défaut
 
         // Getters et setters
         public String getFilePath() {
@@ -555,6 +570,14 @@ public class GameSaveManager {
 
         public void setAutoSave(boolean autoSave) {
             isAutoSave = autoSave;
+        }
+        
+        public int getRemainingTechniques() {
+            return remainingTechniques;
+        }
+        
+        public void setRemainingTechniques(int remainingTechniques) {
+            this.remainingTechniques = remainingTechniques;
         }
 
         public String getFormattedTime() {
