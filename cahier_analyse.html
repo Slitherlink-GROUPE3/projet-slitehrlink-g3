@@ -681,21 +681,17 @@ sauvegarde pas si on recommence la partie (garde la grille finie)</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Fonctionnement</strong>: Le système de sauvegarde est géré
-par <code>GameSaveManager.java</code> qui utilise la bibliothèque JSON
-Simple pour créer et lire des fichiers de sauvegarde. La méthode
-<code>saveGame(String gridId, int seconds, int checkCounter, boolean saveAuto)</code>
-crée un fichier JSON contenant toutes les données nécessaires:
-l’identifiant de la grille, le nom d’utilisateur, le temps écoulé, le
-nombre d’aides restantes, et l’état complet de la grille (via
-<code>GameScene.getSimplifiedGameMatrix()</code>). Les sauvegardes sont
-organisées dans des dossiers par utilisateur
-(<code>saves/username/</code>). La sauvegarde automatique est supportée
-via le paramètre <code>saveAuto</code> qui détermine le nom du fichier,
-mais elle n’est pas déclenchée automatiquement après chaque coup. La
-méthode <code>loadGame()</code> permet de restaurer une partie à partir
-d’un fichier de sauvegarde, en recréant l’état exact de la grille au
-moment de la sauvegarde.</p>
+<p><strong>Fonctionnement</strong>: Les sauvegardes sont organisées dans
+des dossiers par utilisateur <code>(saves/username/)</code>. remplace
+par Les sauvegardes sont organisées dans les dossiers des utilisateurs
+<code>(users/username/saves/)</code>. Fonctionnement: La gestion des
+utilisateurs est implémentée dans <code>UserManager.java</code> qui
+utilise un fichier texte simple <code>slitherlink_users.txt</code> pour
+stocker les noms d’utilisateurs. Remplace par Fonctionnement: La gestion
+des utilisateurs est implémentée dans <code>UserManager</code>.java
+lorsque un nouvel utilisateur se connecte un dossier contenant sa
+progression ainsi que ses futurs sauvegardes est crée dans le dossier
+<code>users/</code></p>
 <h3 id="bf-05-vérification-et-retour">BF 05 : Vérification et
 retour</h3>
 <table>
