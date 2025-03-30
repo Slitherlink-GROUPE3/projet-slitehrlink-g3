@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 import javafx.stage.Stage;
@@ -362,8 +363,6 @@ public class TopBar {
             Scene dialogScene = new Scene(dialogVBox, 400, 250);
             dialog.setScene(dialogScene);
 
-            // Button actions
-            // In TopBar.java, modify the yesButton.setOnAction handler (around line 290)
             yesButton.setOnAction(event -> {
                 // Animation for button click
                 javafx.animation.ScaleTransition scaleDown = new javafx.animation.ScaleTransition(
@@ -398,13 +397,22 @@ public class TopBar {
                         gridResetCallback.run();
                     }
 
-                    // Close with fade animation
-                    javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
-                            javafx.util.Duration.millis(300), dialogVBox);
-                    fadeOut.setFromValue(1);
-                    fadeOut.setToValue(0);
-                    fadeOut.setOnFinished(ev -> dialog.close());
-                    fadeOut.play();
+                    // Reset le compteur de techniques
+                    GameScene.resetTechniqueCounter();
+
+                    // Fermer la fenêtre après un court délai pour laisser le temps à l'animation de
+                    // se terminer
+                    PauseTransition delay = new PauseTransition(Duration.millis(100));
+                    delay.setOnFinished(ev -> {
+                        // La fenêtre de dialogue se fermera avec l'animation
+                        javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
+                                javafx.util.Duration.millis(300), dialogVBox);
+                        fadeOut.setFromValue(1);
+                        fadeOut.setToValue(0);
+                        fadeOut.setOnFinished(e3 -> dialog.close());
+                        fadeOut.play();
+                    });
+                    delay.play();
                 });
                 scaleDown.play();
             });
@@ -456,6 +464,19 @@ public class TopBar {
             String[] parts = timeText.split(":");
             int minutes = Integer.parseInt(parts[0]);
             int seconds = Integer.parseInt(parts[1]);
+
+            // Calculer le nombre total de secondes écoulées
+            int totalSeconds = minutes * 60 + seconds;
+
+            // Sauvegarde automatique avant la mise en pause
+            String gridId = GameScene.getCurrentGridId();
+            int techniqueCount = GameScene.getTechniqueCounter();
+
+            // Sauvegarder l'état du jeu avec le paramètre saveAuto à true
+            GameSaveManager.saveGame("grid-" + gridId, totalSeconds, techniqueCount, true);
+
+            // Afficher une notification de sauvegarde automatique discrète
+            System.out.println("Sauvegarde automatique effectuée: " + gridId + ", Temps: " + totalSeconds + "s");
 
             // Sauvegarder l'état du jeu avant de passer au menu pause
             PauseMenu.saveGameState(primaryStage.getScene(), minutes, seconds, this);

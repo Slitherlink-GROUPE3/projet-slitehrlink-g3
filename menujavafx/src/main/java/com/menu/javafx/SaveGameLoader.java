@@ -43,10 +43,9 @@ public class SaveGameLoader {
      * @param primaryStage Le stage principal
      * @param gridId       Identifiant de la grille
      * @param elapsedTime  Temps écoulé en secondes
-     * @param checkCount   Nombre de vérifications restantes
      * @param gridState    État de la grille
      */
-    public static void loadFromSave(Stage primaryStage, String gridId, int elapsedTime, int checkCount,
+    public static void loadFromSave(Stage primaryStage, String gridId, int elapsedTime,
             int[][][] gridState) {
         // Sauvegarder les données de la partie
         savedGridState = gridState;
@@ -61,7 +60,6 @@ public class SaveGameLoader {
         }
     
         // Initialiser le compteur et le temps
-        GameScene.setcheckCounter(checkCount);
         savedElapsedTime = elapsedTime;
 
         // Afficher la scène de jeu avec les données chargées
