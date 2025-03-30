@@ -396,7 +396,7 @@ public class TopBar {
                     if (gridResetCallback != null) {
                         gridResetCallback.run();
                     }
-                    
+
                     // Reset le compteur de techniques
                     GameScene.resetTechniqueCounter();
 
@@ -464,6 +464,19 @@ public class TopBar {
             String[] parts = timeText.split(":");
             int minutes = Integer.parseInt(parts[0]);
             int seconds = Integer.parseInt(parts[1]);
+
+            // Calculer le nombre total de secondes écoulées
+            int totalSeconds = minutes * 60 + seconds;
+
+            // Sauvegarde automatique avant la mise en pause
+            String gridId = GameScene.getCurrentGridId();
+            int techniqueCount = GameScene.getTechniqueCounter();
+
+            // Sauvegarder l'état du jeu avec le paramètre saveAuto à true
+            GameSaveManager.saveGame("grid-" + gridId, totalSeconds, techniqueCount, true);
+
+            // Afficher une notification de sauvegarde automatique discrète
+            System.out.println("Sauvegarde automatique effectuée: " + gridId + ", Temps: " + totalSeconds + "s");
 
             // Sauvegarder l'état du jeu avant de passer au menu pause
             PauseMenu.saveGameState(primaryStage.getScene(), minutes, seconds, this);
