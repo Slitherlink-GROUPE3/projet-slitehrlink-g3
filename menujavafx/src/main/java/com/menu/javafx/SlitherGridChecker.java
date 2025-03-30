@@ -19,6 +19,7 @@ public class SlitherGridChecker {
             boolean isCorrect = checkGrid();
             if (isCorrect) {
                 Util.showWinMessage();
+                UserManager.setGridCompleted(GameScene.getCurrentGridId());
             }
         }
     }

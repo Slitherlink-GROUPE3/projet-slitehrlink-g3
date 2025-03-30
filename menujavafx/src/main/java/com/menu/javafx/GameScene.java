@@ -73,6 +73,8 @@ public class GameScene {
     private static GameMatrix gameMatrix;
     private static int checkCounter;
 
+    private static java.util.Timer gameTimer;
+
     private static String currentGridId = "001"; // Store the current grid ID for saving/loading
 
     // Add a method to apply the current theme:
@@ -173,6 +175,8 @@ public class GameScene {
     public static void show(Stage primaryStage, String... newGridId) {
         applyTheme();
 
+        PauseMenu.setGamePaused(false); 
+
         // Update the current grid ID if provided
         if (newGridId != null && newGridId.length > 0 && newGridId[0] != null) {
             currentGridId = newGridId[0];
@@ -196,10 +200,13 @@ public class GameScene {
         String difficulty = getDifficultyFromLevel(level); // Voir la fonction ci-dessous
         TopBar topBar = new TopBar(primaryStage, username, level, difficulty, slitherGrid);
 
-        java.util.Timer timer = new java.util.Timer();
+        cleanup();
+
+        // Créer un nouveau timer
+        gameTimer = new java.util.Timer();
         final int[] secondsElapsed = { savedElapsedTime > 0 ? savedElapsedTime : 0 };
 
-        timer.scheduleAtFixedRate(new java.util.TimerTask() {
+        gameTimer.scheduleAtFixedRate(new java.util.TimerTask() {
             @Override
             public void run() {
                 // Vérifier si le jeu est en pause
@@ -494,8 +501,6 @@ public class GameScene {
                 GameSaveManager.showSaveNotification(slitherGrid.getSlitherlinkGrid());
             }
         });
-
-        
 
         // Conteneur pour les boutons de navigation
         HBox historyContainer = new HBox(15, slitherGrid.getPrevButton(), slitherGrid.getNextButton());
@@ -811,7 +816,31 @@ public class GameScene {
             return "Facile"; // Par défaut
         }
     }
-    
+
+    /**
+     * Nettoie les ressources du jeu (à appeler avant de quitter)
+     */
+    public static void cleanup() {
+        if (gameTimer != null) {
+            try {
+                gameTimer.cancel();
+                gameTimer.purge();
+            } catch (Exception e) {
+                System.err.println("Erreur lors du nettoyage du timer: " + e.getMessage());
+            } finally {
+                gameTimer = null;
+            }
+        }
+        // Réinitialiser l'état de pause
+        try {
+            PauseMenu.setGamePaused(false);
+        } catch (Exception e) {
+            System.err.println("Erreur lors de la réinitialisation de l'état de pause: " + e.getMessage());
+        }
+
+        // Réinitialiser l'état sauvegardé
+        savedElapsedTime = 0;
+    }
 
     /*
      * public static void loadFromSave(Stage primaryStage, String gridId, int
