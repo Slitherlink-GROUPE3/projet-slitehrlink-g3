@@ -76,12 +76,11 @@ public class GameSaveManager {
      * 
      * @param gridId        Identifiant de la grille (numéro dans le mode aventure)
      * @param seconds       Temps écoulé en secondes
-     * @param checkCounter  Nombre de vérifications restantes
      * @param techniqueCounter Nombre de techniques restantes
      * @param saveAuto      True si sauvegarde automatique, false si manuelle
      * @return True si la sauvegarde a réussi, false sinon
      */
-    public static boolean saveGame(String gridId, int seconds, int checkCounter, int techniqueCounter, boolean saveAuto) {
+    public static boolean saveGame(String gridId, int seconds, int techniqueCounter, boolean saveAuto) {
         // 1. Vérifier si un utilisateur est connecté
         String username = UserManager.getCurrentUser();
         if (username == null || username.isEmpty()) {
@@ -115,7 +114,6 @@ public class GameSaveManager {
             saveData.put("gridId", actualGridId);
             saveData.put("timestamp", System.currentTimeMillis());
             saveData.put("elapsedTime", seconds);
-            saveData.put("remainingChecks", checkCounter);
             saveData.put("remainingTechniques", techniqueCounter);
             saveData.put("autoSave", saveAuto);
 
@@ -228,7 +226,6 @@ public class GameSaveManager {
             String username = (String) saveData.get("username");
             String gridId = (String) saveData.get("gridId");
             long elapsedTime = (Long) saveData.get("elapsedTime");
-            long remainingChecks = (Long) saveData.get("remainingChecks");
             
             // Récupérer le compteur de techniques (3 par défaut si non présent)
             long remainingTechniques = saveData.containsKey("remainingTechniques") ? 
@@ -239,7 +236,6 @@ public class GameSaveManager {
             System.out.println("- Username: " + username);
             System.out.println("- Grid ID: " + gridId);
             System.out.println("- Elapsed Time: " + elapsedTime + " seconds");
-            System.out.println("- Remaining Checks: " + remainingChecks);
             System.out.println("- Remaining Techniques: " + remainingTechniques);
             System.out.println("- Current user: " + UserManager.getCurrentUser());
 
@@ -279,7 +275,7 @@ public class GameSaveManager {
             GameScene.setTechniqueCounter((int) remainingTechniques);
 
             // Utiliser SaveGameLoader pour charger la partie sauvegardée
-            SaveGameLoader.loadFromSave(primaryStage, gridId, (int) elapsedTime, (int) remainingChecks, gridState);
+            SaveGameLoader.loadFromSave(primaryStage, gridId, (int) elapsedTime, gridState);
 
             return true;
 

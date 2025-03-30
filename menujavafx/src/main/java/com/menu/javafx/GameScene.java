@@ -74,8 +74,8 @@ public class GameScene {
     private static int savedElapsedTime = 0;
     private static SlitherGrid slitherGrid;
     private static GameMatrix gameMatrix;
-    private static int checkCounter;
     private static int techniqueCounter = 3; // Compteur de techniques limité à 3
+    private static Text techniqueCountDisplay;
 
     private static java.util.Timer gameTimer;
 
@@ -178,11 +178,8 @@ public class GameScene {
 
     public static void show(Stage primaryStage, String... newGridId) {
         applyTheme();
-        
-        // Réinitialiser le compteur de techniques
-        resetTechniqueCounter();
 
-        PauseMenu.setGamePaused(false); 
+        PauseMenu.setGamePaused(false);
 
         // Update the current grid ID if provided
         if (newGridId != null && newGridId.length > 0 && newGridId[0] != null) {
@@ -308,6 +305,7 @@ public class GameScene {
         Text techniqueCount = new Text(String.valueOf(techniqueCounter));
         techniqueCount.setFont(Font.font("Montserrat", FontWeight.BOLD, 22));
         techniqueCount.setFill(Color.web(SlitherGrid.DARK_COLOR));
+        techniqueCountDisplay = techniqueCount; // Stocker la référence
 
         StackPane techniqueCountContainer = new StackPane(techniqueCount);
         techniqueCountContainer.setMinSize(40, 40);
@@ -351,7 +349,7 @@ public class GameScene {
                     : "Aucune Technique Disponible");
             titre.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
             titre.setTextFill(Color.web(SlitherGrid.MAIN_COLOR));
-            
+
             // Afficher le compteur de techniques restantes
             Label counterLabel = new Label("Aides restantes : " + techniqueCounter);
             counterLabel.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
@@ -364,8 +362,9 @@ public class GameScene {
             Button applyButton = Util.createStyledButton("Appliquer", true,
                     SlitherGrid.ACCENT_COLOR, SlitherGrid.ACCENT_COLOR, SlitherGrid.SECONDARY_COLOR);
             applyButton.setPrefWidth(120);
-            
-            // Désactiver le bouton Appliquer si pas de techniques disponibles OU compteur à zéro
+
+            // Désactiver le bouton Appliquer si pas de techniques disponibles OU compteur à
+            // zéro
             applyButton.setDisable(!techniqueSuggere.isPresent() || techniqueCounter <= 0);
 
             if (techniqueSuggere.isPresent()) {
@@ -380,46 +379,44 @@ public class GameScene {
 
             applyButton.setOnAction(event -> {
                 Util.animateButtonClick(applyButton);
-                
+
                 if (techniqueSuggere.isPresent() && techniqueCounter > 0) {
                     try {
                         // Décrémenter le compteur lorsqu'une technique est appliquée
                         techniqueCounter--;
                         techniqueCount.setText(String.valueOf(techniqueCounter));
-                        
+
                         // Mettre à jour l'affichage du compteur
                         counterLabel.setText("Aides restantes : " + techniqueCounter);
-                        
+
                         // Créer une instance de la technique trouvée
                         Techniques technique = techniqueSuggere.get().getDeclaredConstructor(
-                            int[][].class, 
-                            Map.class, 
-                            Pane.class
-                        ).newInstance(
-                            slitherGrid.getGridNumbers(),
-                            slitherGrid.gridLines,
-                            slitherGrid.getSlitherlinkGrid()
-                        );
-                        
+                                int[][].class,
+                                Map.class,
+                                Pane.class).newInstance(
+                                        slitherGrid.getGridNumbers(),
+                                        slitherGrid.gridLines,
+                                        slitherGrid.getSlitherlinkGrid());
+
                         // Créer une instance de Grille à partir des données de SlitherGrid
                         com.tpgr3.Grille grille = new com.tpgr3.Grille(slitherGrid.getGridNumbers());
-                        
+
                         // Appliquer la technique
                         technique.appliquer(grille);
-                        
+
                         // Afficher une confirmation
                         Label confirmLabel = new Label("Technique appliquée avec succès !");
                         confirmLabel.setTextFill(Color.web(SlitherGrid.MAIN_COLOR));
                         confirmLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 16));
-                        
+
                         // Désactiver le bouton Appliquer si plus de techniques disponibles
                         if (techniqueCounter <= 0) {
                             applyButton.setDisable(true);
-                            
+
                             Label warningLabel = new Label("Vous avez utilisé toutes vos aides disponibles.");
                             warningLabel.setTextFill(Color.web(SlitherGrid.ACCENT_COLOR));
                             warningLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 14));
-                            
+
                             details.getChildren().clear();
                             details.getChildren().addAll(confirmLabel, warningLabel);
                         } else {
@@ -429,12 +426,12 @@ public class GameScene {
                     } catch (Exception ex) {
                         System.err.println("Erreur lors de l'application de la technique: " + ex.getMessage());
                         ex.printStackTrace();
-                        
+
                         // Restaurer le compteur en cas d'erreur
                         techniqueCounter++;
                         techniqueCount.setText(String.valueOf(techniqueCounter));
                         counterLabel.setText("Aides restantes : " + techniqueCounter);
-                        
+
                         // Afficher une alerte en cas d'erreur
                         Label errorLabel = new Label("Erreur lors de l'application de la technique");
                         errorLabel.setTextFill(Color.RED);
@@ -450,7 +447,7 @@ public class GameScene {
                 Util.animateButtonClick(okButton);
                 suggestionStage.close();
             });
-            
+
             // Mettre les boutons côte à côte dans un HBox
             HBox buttonsBox = new HBox(15, okButton, applyButton);
             buttonsBox.setAlignment(Pos.CENTER);
@@ -461,43 +458,10 @@ public class GameScene {
             suggestionStage.setScene(scene);
             suggestionStage.show();
         });
-        
+
         // Container pour le bouton d'aide et son compteur
         HBox helpContainer = new HBox(15, helpButton, techniqueCountContainer);
         helpContainer.setAlignment(Pos.CENTER);
-        
-        Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
-                SlitherGrid.SECONDARY_COLOR);
-
-        Text checkCount = new Text(String.valueOf(checkCounter));
-        checkCount.setFont(Font.font("Montserrat", FontWeight.BOLD, 22));
-        checkCount.setFill(Color.web(SlitherGrid.DARK_COLOR));
-
-        StackPane countContainer = new StackPane(checkCount);
-        countContainer.setMinSize(40, 40);
-        countContainer.setMaxSize(40, 40);
-        countContainer.setStyle(
-                "-fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";" +
-                        "-fx-background-radius: 20;" +
-                        "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
-                        "-fx-border-width: 2;" +
-                        "-fx-border-radius: 20;");
-
-        checkButton.setOnAction(e -> {
-            Util.animateButtonClick(checkButton);
-            if (checkCounter > 0) {
-                checkCounter--;
-                checkCount.setText(String.valueOf(checkCounter));
-                if (checkCounter == 0) {
-                    checkButton.setDisable(true);
-                    checkButton.setOpacity(0.7);
-                }
-                handleCheckButton();
-            }
-        });
-
-        HBox checkContainer = new HBox(15, checkButton, countContainer);
-        checkContainer.setAlignment(Pos.CENTER);
 
         Button hypothesisButton = Util.createStyledButton("Hypothèse", false, SlitherGrid.MAIN_COLOR,
                 SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
@@ -606,7 +570,8 @@ public class GameScene {
                 SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         saveButton.setOnAction(e -> {
             Util.animateButtonClick(saveButton);
-            if (GameSaveManager.saveGame("grid-" + gridId, secondsElapsed[0], checkCounter, techniqueCounter, false)) {
+            System.out.println("Nombre de techniqueCounter" + techniqueCounter);
+            if (GameSaveManager.saveGame("grid-" + gridId, secondsElapsed[0], techniqueCounter, false)) {
                 GameSaveManager.showSaveNotification(slitherGrid.getSlitherlinkGrid());
             }
         });
@@ -615,7 +580,8 @@ public class GameScene {
         HBox historyContainer = new HBox(15, slitherGrid.getPrevButton(), slitherGrid.getNextButton());
         historyContainer.setAlignment(Pos.CENTER);
 
-        buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpContainer, checkContainer, hypothesisButton,
+        buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpContainer,
+                hypothesisButton,
                 saveButton, createSeparator(), historyContainer);
 
         gridContainer.setPadding(new Insets(20));
@@ -685,143 +651,6 @@ public class GameScene {
     }
 
     /**
-     * Méthode à appeler lors d'un clic sur le bouton "Check"
-     */
-    private static void handleCheckButton() {
-        boolean isCorrect = slitherGrid.checkGrid();
-
-        // Créer une fenêtre personnalisée au lieu d'une Alert standard
-        Stage checkStage = new Stage();
-        checkStage.initModality(Modality.APPLICATION_MODAL);
-
-        // Titre stylisé
-        Label checkTitle = new Label(isCorrect ? "Félicitations !" : "Solution incorrecte");
-        checkTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
-
-        // Couleur du titre selon le résultat
-        checkTitle.setTextFill(isCorrect ? Color.web(SlitherGrid.MAIN_COLOR) : Color.web(SlitherGrid.ACCENT_COLOR));
-
-        // Effet d'ombre pour le titre
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(Color.web("#000000", 0.3));
-        shadow.setRadius(3);
-        shadow.setOffsetY(2);
-        checkTitle.setEffect(shadow);
-
-        // Message
-        Label messageLabel;
-        if (isCorrect) {
-            messageLabel = new Label("Votre solution est correcte !");
-            messageLabel.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
-            messageLabel.setFont(Font.font("Calibri", 16));
-        } else {
-            // Utiliser un VBox pour formater les points de vérification
-            VBox errorDetails = new VBox(8);
-            errorDetails.setAlignment(Pos.CENTER_LEFT);
-
-            Label mainError = new Label("Votre solution ne respecte pas les règles du Slitherlink.");
-            mainError.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
-            mainError.setFont(Font.font("Calibri", FontWeight.BOLD, 16));
-
-            Label check1 = new Label("• Les chiffres doivent correspondre exactement au nombre de segments adjacents");
-            Label check2 = new Label("• Toutes les lignes doivent former un circuit unique fermé");
-            Label check3 = new Label("• Il ne doit pas y avoir de branches ou d'intersections");
-
-            check1.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
-            check2.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
-            check3.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
-
-            errorDetails.getChildren().addAll(mainError, check1, check2, check3);
-
-            checkStage.setTitle("Erreur de vérification");
-
-            // Créer un conteneur pour tout le contenu
-            VBox contentBox = new VBox(20, checkTitle, errorDetails);
-            contentBox.setAlignment(Pos.CENTER);
-            contentBox.setPadding(new Insets(30));
-            contentBox.setStyle(
-                    "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", white);" +
-                            "-fx-background-radius: 15;" +
-                            "-fx-border-color: " + SlitherGrid.ACCENT_COLOR + ";" +
-                            "-fx-border-width: 2;" +
-                            "-fx-border-radius: 15;");
-
-            // Bouton OK
-            Button okButton = Util.createStyledButton("Continuer", false, SlitherGrid.MAIN_COLOR,
-                    SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
-            okButton.setPrefWidth(120);
-
-            okButton.setOnAction(e -> {
-                Util.animateButtonClick(okButton);
-
-                // Animation de fermeture
-                FadeTransition fadeOut = new FadeTransition(Duration.millis(300), contentBox);
-                fadeOut.setFromValue(1);
-                fadeOut.setToValue(0);
-                fadeOut.setOnFinished(event -> checkStage.close());
-                fadeOut.play();
-            });
-
-            contentBox.getChildren().add(okButton);
-
-            Scene checkScene = new Scene(contentBox, 500, 350);
-            checkStage.setScene(checkScene);
-
-            // Animation d'entrée
-            contentBox.setOpacity(0);
-            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), contentBox);
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1);
-            fadeIn.play();
-
-            checkStage.show();
-            return;
-        }
-
-        checkStage.setTitle("Vérification réussie");
-
-        // Bouton OK
-        Button okButton = Util.createStyledButton("Super !", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
-                SlitherGrid.SECONDARY_COLOR);
-        okButton.setPrefWidth(120);
-
-        okButton.setOnAction(e -> {
-            Util.animateButtonClick(okButton);
-
-            // Animation de fermeture
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), checkStage.getScene().getRoot());
-            fadeOut.setFromValue(1);
-            fadeOut.setToValue(0);
-            fadeOut.setOnFinished(event -> checkStage.close());
-            fadeOut.play();
-        });
-
-        // Organisation des éléments
-        VBox checkBox = new VBox(20, checkTitle, messageLabel, okButton);
-        checkBox.setAlignment(Pos.CENTER);
-        checkBox.setPadding(new Insets(30));
-        checkBox.setStyle(
-                "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", "
-                        + SlitherGrid.LIGHT_COLOR + " 90%);" +
-                        "-fx-background-radius: 15;" +
-                        "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
-                        "-fx-border-width: 2;" +
-                        "-fx-border-radius: 15;");
-
-        Scene checkScene = new Scene(checkBox, 400, 250);
-        checkStage.setScene(checkScene);
-
-        // Animation d'entrée
-        checkBox.setOpacity(0);
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), checkBox);
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1);
-        fadeIn.play();
-
-        checkStage.show();
-    }
-
-    /**
      * Updates the UI with the current theme settings
      * Can be called from SettingScene when theme changes
      */
@@ -862,14 +691,25 @@ public class GameScene {
     }
 
     /**
-     * Réinitialise le compteur de techniques disponibles
+     * Met à jour l'affichage du compteur de techniques
      */
+    public static void updateTechniqueCountDisplay() {
+        if (techniqueCountDisplay != null) {
+            Platform.runLater(() -> {
+                techniqueCountDisplay.setText(String.valueOf(techniqueCounter));
+            });
+        }
+    }
+
+    // Modifier la méthode resetTechniqueCounter pour mettre à jour l'affichage
     public static void resetTechniqueCounter() {
         techniqueCounter = 3;
+        updateTechniqueCountDisplay();
     }
 
     /**
      * Obtient le nombre de techniques restantes
+     * 
      * @return Le nombre de techniques restantes
      */
     public static int getTechniqueCounter() {
@@ -878,18 +718,11 @@ public class GameScene {
 
     /**
      * Définit le nombre de techniques restantes
+     * 
      * @param count Le nombre de techniques
      */
     public static void setTechniqueCounter(int count) {
         techniqueCounter = count;
-    }
-
-    public int getcheckCounter() {
-        return checkCounter;
-    }
-
-    public static void setcheckCounter(int checkCounter) {
-        GameScene.checkCounter = checkCounter;
     }
 
     public static String getCurrentGridId() {
