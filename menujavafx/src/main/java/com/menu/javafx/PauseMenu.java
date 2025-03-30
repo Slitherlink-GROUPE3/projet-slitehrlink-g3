@@ -102,7 +102,8 @@ public class PauseMenu {
         Button quitButton = createStyledButton("Quitter la partie");
         quitButton.setTooltip(new javafx.scene.control.Tooltip("Quitter la partie et revenir au menu principal"));
         quitButton.setOnAction(e -> {
-            // Revient au menu principal sans fermer l'application
+            // Revient au menu principal sans fermer l'application et nettoie le timer
+            GameScene.cleanup();
             Menu.show(primaryStage);
         });
 
@@ -181,5 +182,9 @@ public class PauseMenu {
         });
         
         return button;
+    }
+
+    public static void setGamePaused(boolean paused) {
+        isGamePaused = paused;
     }
 }
