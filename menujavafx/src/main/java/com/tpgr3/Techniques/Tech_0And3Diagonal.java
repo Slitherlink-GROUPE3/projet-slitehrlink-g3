@@ -70,83 +70,33 @@ public class Tech_0And3Diagonal implements Techniques {
                                 
                                 // Déterminer les segments appropriés en fonction de la position relative
                                 List<String> segmentsForBaton = new ArrayList<>();
-                                List<String> segmentsForCroix = new ArrayList<>();
                                 
                                 // Déterminer la direction diagonale
                                 if (ni > i && nj > j) { // Bas-droite
                                     // Segments pour lignes (bâtons) autour du 3
                                     segmentsForBaton.add("H_" + (i+1) + "_" + j); // Bas du 3
                                     segmentsForBaton.add("V_" + i + "_" + (j+1)); // Droite du 3
-                                    
-                                    // Segments pour croix autour du 3
-                                    segmentsForCroix.add("H_" + i + "_" + j); // Haut du 3
-                                    segmentsForCroix.add("V_" + i + "_" + j); // Gauche du 3
-                                    
-                                    // Segments pour croix autour du 0
-                                    segmentsForCroix.add("H_" + ni + "_" + nj); // Haut du 0
-                                    segmentsForCroix.add("V_" + ni + "_" + (nj+1)); // Droite du 0
-                                    segmentsForCroix.add("H_" + (ni+1) + "_" + nj); // Bas du 0
-                                    segmentsForCroix.add("V_" + ni + "_" + nj); // Gauche du 0
                                 }
                                 else if (ni > i && nj < j) { // Bas-gauche
                                     // Segments pour lignes (bâtons) autour du 3
                                     segmentsForBaton.add("H_" + (i+1) + "_" + j); // Bas du 3
                                     segmentsForBaton.add("V_" + i + "_" + j); // Gauche du 3
-                                    
-                                    // Segments pour croix autour du 3
-                                    segmentsForCroix.add("H_" + i + "_" + j); // Haut du 3
-                                    segmentsForCroix.add("V_" + i + "_" + (j+1)); // Droite du 3
-                                    
-                                    // Segments pour croix autour du 0
-                                    segmentsForCroix.add("H_" + ni + "_" + nj); // Haut du 0
-                                    segmentsForCroix.add("V_" + ni + "_" + (nj+1)); // Droite du 0
-                                    segmentsForCroix.add("H_" + (ni+1) + "_" + nj); // Bas du 0
-                                    segmentsForCroix.add("V_" + ni + "_" + nj); // Gauche du 0
                                 }
                                 else if (ni < i && nj > j) { // Haut-droite
                                     // Segments pour lignes (bâtons) autour du 3
                                     segmentsForBaton.add("H_" + i + "_" + j); // Haut du 3
                                     segmentsForBaton.add("V_" + i + "_" + (j+1)); // Droite du 3
-                                    
-                                    // Segments pour croix autour du 3
-                                    segmentsForCroix.add("H_" + (i+1) + "_" + j); // Bas du 3
-                                    segmentsForCroix.add("V_" + i + "_" + j); // Gauche du 3
-                                    
-                                    // Segments pour croix autour du 0
-                                    segmentsForCroix.add("H_" + ni + "_" + nj); // Haut du 0
-                                    segmentsForCroix.add("V_" + ni + "_" + (nj+1)); // Droite du 0
-                                    segmentsForCroix.add("H_" + (ni+1) + "_" + nj); // Bas du 0
-                                    segmentsForCroix.add("V_" + ni + "_" + nj); // Gauche du 0
                                 }
                                 else if (ni < i && nj < j) { // Haut-gauche
                                     // Segments pour lignes (bâtons) autour du 3
                                     segmentsForBaton.add("H_" + i + "_" + j); // Haut du 3
                                     segmentsForBaton.add("V_" + i + "_" + j); // Gauche du 3
-                                    
-                                    // Segments pour croix autour du 3
-                                    segmentsForCroix.add("H_" + (i+1) + "_" + j); // Bas du 3
-                                    segmentsForCroix.add("V_" + i + "_" + (j+1)); // Droite du 3
-                                    
-                                    // Segments pour croix autour du 0
-                                    segmentsForCroix.add("H_" + ni + "_" + nj); // Haut du 0
-                                    segmentsForCroix.add("V_" + ni + "_" + (nj+1)); // Droite du 0
-                                    segmentsForCroix.add("H_" + (ni+1) + "_" + nj); // Bas du 0
-                                    segmentsForCroix.add("V_" + ni + "_" + nj); // Gauche du 0
                                 }
-                                
                                 // Ajouter les segments appropriés à la liste pour la mise en évidence
                                 for (String segmentKey : segmentsForBaton) {
                                     Line segment = gridLines.get(segmentKey);
                                     if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                                         segmentsToHighlight.add(segmentKey + ":baton");
-                                        applicationPossible = true;
-                                    }
-                                }
-                                
-                                for (String segmentKey : segmentsForCroix) {
-                                    Line segment = gridLines.get(segmentKey);
-                                    if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                                        segmentsToHighlight.add(segmentKey + ":croix");
                                         applicationPossible = true;
                                     }
                                 }

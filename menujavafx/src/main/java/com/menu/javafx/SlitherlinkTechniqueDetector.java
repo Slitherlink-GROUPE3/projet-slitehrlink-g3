@@ -125,7 +125,7 @@ public class SlitherlinkTechniqueDetector {
             case "Tech_3InCorner" -> "3 dans un angle";
             case "Tech_2InCorner" -> "2 dans un angle";
             case "Tech_1OnSide" -> "1 sur un côté";
-            case "Tech_0And3Adjacent" -> "0 et 3 adjacents";
+            case "Tech_0And3" -> "0 et 3 adjacents";
             case "Tech_0And3Diagonal" -> "0 et 3 en diagonale";
             case "Tech_0And2OnSide" -> "0 et 2 sur un côté";
             case "Tech_3And0OnSide" -> "3 et 0 sur un côté";

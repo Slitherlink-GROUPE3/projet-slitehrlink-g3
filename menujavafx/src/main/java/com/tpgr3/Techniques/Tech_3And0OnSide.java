@@ -68,17 +68,27 @@ public class Tech_3And0OnSide implements Techniques {
         // Vérifier les paires 3-0 horizontalement sur les bords
         
         // Bord supérieur
-        for (int j = 0; j < cols - 1; j++) {
-            if ((gridNumbers[0][j] == 3 && gridNumbers[0][j+1] == 0) ||
-                (gridNumbers[0][j] == 0 && gridNumbers[0][j+1] == 3)) {
+        for (int j = 0; j < cols - 2; j++) {
+            if ((gridNumbers[0][j] == 3 && gridNumbers[0][j+2] == 0) ||
+                (gridNumbers[0][j] == 0 && gridNumbers[0][j+2] == 3)) {
                 
                 int index3 = gridNumbers[0][j] == 3 ? j : j+1;
+
+                String[] batonSegments;
                 
-                // Segments à marquer comme bâtons
-                String[] batonSegments = {
-                    "H_0_" + index3,        // Segment du haut (côté de la grille)
-                    "V_0_" + (index3 + (gridNumbers[0][j] == 3 ? 1 : 0))  // Segment opposé au 0
-                };
+                if(gridNumbers[0][j] == 3){
+                    // Segments à marquer comme bâtons
+                    batonSegments = new String[]{
+                        "H_0_" + index3,        // Segment du haut (côté de la grille)
+                        "V_0_" + (index3 + 1)  // Segment opposé au 0
+                    };
+                }
+                else{
+                    batonSegments = new String[]{
+                        "H_0_" + (index3+1),        // Segment du haut (côté de la grille)
+                        "V_0_" + (index3+1)  // Segment opposé au 0
+                    };
+                }
                 
                 for (String batonKey : batonSegments) {
                     Line segment = gridLines.get(batonKey);
@@ -91,17 +101,27 @@ public class Tech_3And0OnSide implements Techniques {
         }
         
         // Bord inférieur
-        for (int j = 0; j < cols - 1; j++) {
-            if ((gridNumbers[rows-1][j] == 3 && gridNumbers[rows-1][j+1] == 0) ||
-                (gridNumbers[rows-1][j] == 0 && gridNumbers[rows-1][j+1] == 3)) {
+        for (int j = 0; j < cols - 2; j++) {
+            if ((gridNumbers[rows-1][j] == 3 && gridNumbers[rows-1][j+2] == 0) ||
+                (gridNumbers[rows-1][j] == 0 && gridNumbers[rows-1][j+2] == 3)) {
                 
                 int index3 = gridNumbers[rows-1][j] == 3 ? j : j+1;
+
+                String[] batonSegments;
                 
-                // Segments à marquer comme bâtons
-                String[] batonSegments = {
-                    "H_" + rows + "_" + index3,   // Segment du bas (côté de la grille)
-                    "V_" + (rows-1) + "_" + (index3 + (gridNumbers[rows-1][j] == 3 ? 1 : 0))  // Segment opposé au 0
-                };
+                if(gridNumbers[rows-1][j] == 3){
+                    batonSegments = new String[]{
+                        "H_" + rows + "_" + index3,   // Segment du bas (côté de la grille)
+                        "V_" + (rows-1) + "_" + (index3 + 1)  // Segment opposé au 0
+                    };
+                }
+                else{
+                    batonSegments = new String[]{
+                        "H_" + rows + "_" + (index3 + 1),   // Segment du bas (côté de la grille)
+                        "V_" + (rows-1) + "_" + (index3+1)  // Segment opposé au 0
+                    };
+                }
+                    
                 
                 for (String batonKey : batonSegments) {
                     Line segment = gridLines.get(batonKey);
@@ -116,17 +136,28 @@ public class Tech_3And0OnSide implements Techniques {
         // Vérifier les paires 3-0 verticalement sur les bords
         
         // Bord gauche
-        for (int i = 0; i < rows - 1; i++) {
-            if ((gridNumbers[i][0] == 3 && gridNumbers[i+1][0] == 0) ||
-                (gridNumbers[i][0] == 0 && gridNumbers[i+1][0] == 3)) {
+        for (int i = 0; i < rows - 2; i++) {
+            if ((gridNumbers[i][0] == 3 && gridNumbers[i+2][0] == 0) ||
+                (gridNumbers[i][0] == 0 && gridNumbers[i+2][0] == 3)) {
                 
                 int index3 = gridNumbers[i][0] == 3 ? i : i+1;
+
+                String[] batonSegments;
                 
-                // Segments à marquer comme bâtons
-                String[] batonSegments = {
-                    "V_" + index3 + "_0",        // Segment de gauche (côté de la grille)
-                    "H_" + (index3 + (gridNumbers[i][0] == 3 ? 1 : 0)) + "_0"  // Segment opposé au 0
-                };
+                if(gridNumbers[i][0] == 3){
+                    // Segments à marquer comme bâtons
+                    batonSegments = new String[]{
+                        "V_" + index3 + "_0",        // Segment de gauche (côté de la grille)
+                        "H_" + (index3 + 1) + "_0"  // Segment opposé au 0
+                    };
+                }
+                else{
+                    // Segments à marquer comme bâtons
+                    batonSegments = new String[]{
+                        "V_" + (index3+1) + "_0",        // Segment de gauche (côté de la grille)
+                        "H_" + (index3+1) + "_0"  // Segment opposé au 0
+                    };
+                }
                 
                 for (String batonKey : batonSegments) {
                     Line segment = gridLines.get(batonKey);
@@ -139,18 +170,29 @@ public class Tech_3And0OnSide implements Techniques {
         }
         
         // Bord droit
-        for (int i = 0; i < rows - 1; i++) {
-            if ((gridNumbers[i][cols-1] == 3 && gridNumbers[i+1][cols-1] == 0) ||
-                (gridNumbers[i][cols-1] == 0 && gridNumbers[i+1][cols-1] == 3)) {
+        for (int i = 0; i < rows - 2; i++) {
+            if ((gridNumbers[i][cols-1] == 3 && gridNumbers[i+2][cols-1] == 0) ||
+                (gridNumbers[i][cols-1] == 0 && gridNumbers[i+2][cols-1] == 3)) {
                 
                 int index3 = gridNumbers[i][cols-1] == 3 ? i : i+1;
                 
-                // Segments à marquer comme bâtons
-                String[] batonSegments = {
-                    "V_" + index3 + "_" + cols,   // Segment de droite (côté de la grille)
-                    "H_" + (index3 + (gridNumbers[i][cols-1] == 3 ? 1 : 0)) + "_" + (cols-1)  // Segment opposé au 0
-                };
-                
+                String[] batonSegments;
+
+                if(gridNumbers[i][cols-1] == 3){
+                    // Segments à marquer comme bâtons
+                    batonSegments = new String[]{
+                        "V_" + index3 + "_" + cols,   // Segment de droite (côté de la grille)
+                        "H_" + (index3 + 1) + "_" + (cols - 1)  // Segment opposé au 0
+                    };
+                }
+                else{
+
+                    batonSegments = new String[]{
+                        "V_" + (index3 + 1) + "_" + cols,   // Segment de droite (côté de la grille)
+                        "H_" + (index3+1) + "_" + (cols - 1)  // Segment opposé au 0
+                    };
+                }
+
                 for (String batonKey : batonSegments) {
                     Line segment = gridLines.get(batonKey);
                     if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {

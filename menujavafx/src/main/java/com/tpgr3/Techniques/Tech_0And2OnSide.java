@@ -82,16 +82,16 @@ public class Tech_0And2OnSide implements Techniques {
                     batonSegments = new String[]{
                         "H_1_" + j,        // Segment du bas du 2
                         "V_0_" + j,        // Segment de gauche du 2 (opposé au 0)
-                        "V_0_" + (j-1),    // Segment à l'extrémité gauche
-                        "V_1_" + j         // Segment en bas à gauche
+                        "H_0_" + (j-1),    // Segment à l'extrémité gauche
+                        "V_1_" + (j+1)         // Segment en bas à gauche
                     };
                 } else {
                     // Le 2 est à droite du 0
                     batonSegments = new String[]{
                         "H_1_" + (j+1),     // Segment du bas du 2
                         "V_0_" + (j+2),     // Segment de droite du 2 (opposé au 0)
-                        "V_0_" + (j+3),     // Segment à l'extrémité droite
-                        "V_1_" + (j+2)      // Segment en bas à droite
+                        "H_0_" + (j+2),     // Segment à l'extrémité droite
+                        "V_1_" + (j+1)      // Segment en bas à droite
                     };
                 }
                 
@@ -120,16 +120,16 @@ public class Tech_0And2OnSide implements Techniques {
                     batonSegments = new String[]{
                         "H_" + (rows-1) + "_" + j,    // Segment du haut du 2
                         "V_" + (rows-1) + "_" + j,    // Segment de gauche du 2 (opposé au 0)
-                        "V_" + (rows-1) + "_" + (j-1),// Segment à l'extrémité gauche
-                        "V_" + (rows-2) + "_" + j     // Segment en haut à gauche
+                        "H_" + rows + "_" + (j-1),// Segment à l'extrémité gauche
+                        "V_" + (rows-2) + "_" + (j+1)     // Segment en haut à gauche
                     };
                 } else {
                     // Le 2 est à droite du 0
                     batonSegments = new String[]{
                         "H_" + (rows-1) + "_" + (j+1),     // Segment du haut du 2
                         "V_" + (rows-1) + "_" + (j+2),     // Segment de droite du 2 (opposé au 0)
-                        "V_" + (rows-1) + "_" + (j+3),     // Segment à l'extrémité droite
-                        "V_" + (rows-2) + "_" + (j+2)      // Segment en haut à droite
+                        "H_" + rows + "_" + (j+2),     // Segment à l'extrémité droite
+                        "V_" + (rows-2) + "_" + (j+1)      // Segment en haut à droite
                     };
                 }
                 
@@ -160,16 +160,16 @@ public class Tech_0And2OnSide implements Techniques {
                     batonSegments = new String[]{
                         "V_" + i + "_1",        // Segment de droite du 2
                         "H_" + i + "_0",        // Segment du haut du 2 (opposé au 0)
-                        "H_" + (i-1) + "_0",    // Segment à l'extrémité haute
-                        "H_" + (i-1) + "_1"     // Segment en haut à droite
+                        "V_" + (i-1) + "_0",    // Segment à l'extrémité haute
+                        "H_" + (i+1) + "_1"     // Segment en haut à droite
                     };
                 } else {
                     // Le 2 est en bas du 0
                     batonSegments = new String[]{
                         "V_" + (i+1) + "_1",     // Segment de droite du 2
                         "H_" + (i+2) + "_0",     // Segment du bas du 2 (opposé au 0)
-                        "H_" + (i+3) + "_0",     // Segment à l'extrémité basse
-                        "H_" + (i+3) + "_1"      // Segment en bas à droite
+                        "V_" + (i+2) + "_0",     // Segment à l'extrémité basse
+                        "H_" + (i+1) + "_1"      // Segment en bas à droite
                     };
                 }
                 
@@ -198,16 +198,16 @@ public class Tech_0And2OnSide implements Techniques {
                     batonSegments = new String[]{
                         "V_" + i + "_" + (cols-1),    // Segment de gauche du 2
                         "H_" + i + "_" + (cols-1),    // Segment du haut du 2 (opposé au 0)
-                        "H_" + (i-1) + "_" + (cols-1),// Segment à l'extrémité haute
-                        "H_" + (i-1) + "_" + (cols-2) // Segment en haut à gauche
+                        "V_" + (i-1) + "_" + cols,// Segment à l'extrémité haute
+                        "H_" + (i+1) + "_" + (cols-2) // Segment en haut à gauche
                     };
                 } else {
                     // Le 2 est en bas du 0
                     batonSegments = new String[]{
                         "V_" + (i+1) + "_" + (cols-1),     // Segment de gauche du 2
                         "H_" + (i+2) + "_" + (cols-1),     // Segment du bas du 2 (opposé au 0)
-                        "H_" + (i+3) + "_" + (cols-1),     // Segment à l'extrémité basse
-                        "H_" + (i+3) + "_" + (cols-2)      // Segment en bas à gauche
+                        "V_" + (i+2) + "_" + cols,     // Segment à l'extrémité basse
+                        "H_" + (i+1) + "_" + (cols-2)      // Segment en bas à gauche
                     };
                 }
                 

@@ -102,28 +102,7 @@ public class Tech_0And3 implements Techniques {
                             applicationPossible = true;
                         }
                     }
-                    
-                    // Croix autour du 0 (sauf le segment partagé avec le 3)
-                    String[] croixAutour0 = new String[3];
-                    
-                    croixAutour0[0] = "H_" + i + "_" + index0;        // Haut du 0
-                    croixAutour0[1] = "H_" + (i+1) + "_" + index0;    // Bas du 0
-                    
-                    if (index0 < index3) {
-                        // Le 0 est à gauche du 3
-                        croixAutour0[2] = "V_" + i + "_" + index0;    // Gauche du 0
-                    } else {
-                        // Le 0 est à droite du 3
-                        croixAutour0[2] = "V_" + i + "_" + (index0+1);  // Droite du 0
-                    }
-                    
-                    for (String croixKey : croixAutour0) {
-                        segment = gridLines.get(croixKey);
-                        if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                            segmentsToHighlight.add(croixKey + ":croix");
-                            applicationPossible = true;
-                        }
-                    }
+
                 }
             }
         }
@@ -165,28 +144,6 @@ public class Tech_0And3 implements Techniques {
                         segment = gridLines.get(batonKey);
                         if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                             segmentsToHighlight.add(batonKey + ":baton");
-                            applicationPossible = true;
-                        }
-                    }
-                    
-                    // Croix autour du 0 (sauf le segment partagé avec le 3)
-                    String[] croixAutour0 = new String[3];
-                    
-                    croixAutour0[0] = "V_" + index0 + "_" + (j+1);    // Droite du 0
-                    croixAutour0[1] = "V_" + index0 + "_" + j;        // Gauche du 0
-                    
-                    if (index0 < index3) {
-                        // Le 0 est au-dessus du 3
-                        croixAutour0[2] = "H_" + index0 + "_" + j;    // Haut du 0
-                    } else {
-                        // Le 0 est en-dessous du 3
-                        croixAutour0[2] = "H_" + (index0+1) + "_" + j;  // Bas du 0
-                    }
-                    
-                    for (String croixKey : croixAutour0) {
-                        segment = gridLines.get(croixKey);
-                        if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                            segmentsToHighlight.add(croixKey + ":croix");
                             applicationPossible = true;
                         }
                     }

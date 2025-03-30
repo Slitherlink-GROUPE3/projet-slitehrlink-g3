@@ -85,26 +85,26 @@ public class Tech_2InCorner implements Techniques {
                 if (i == 0 && j == 0) {
                     // Coin supérieur gauche
                     segmentsToMark = new String[]{
-                        "H_1_0",    // Segment horizontal bas-gauche
-                        "V_0_1"     // Segment vertical haut-droit
+                        "H_0_1",    // Segment horizontal bas-gauche
+                        "V_1_0"     // Segment vertical haut-droit
                     };
                 } else if (i == 0 && j == cols - 1) {
                     // Coin supérieur droit
                     segmentsToMark = new String[]{
-                        "H_1_" + j,       // Segment horizontal bas-droit
-                        "V_0_" + (j - 1)  // Segment vertical haut-gauche
+                        "H_0_" + (j-1),       // Segment horizontal bas-droit
+                        "V_1_" + (j+1)  // Segment vertical haut-gauche
                     };
                 } else if (i == rows - 1 && j == 0) {
                     // Coin inférieur gauche
                     segmentsToMark = new String[]{
-                        "H_" + (i - 1) + "_0",  // Segment horizontal haut-gauche
-                        "V_" + i + "_1"         // Segment vertical bas-droit
+                        "H_" + (i + 1) + "_1",  // Segment horizontal haut-gauche
+                        "V_" + (j - 1) + "_0"         // Segment vertical bas-droit
                     };
                 } else {
                     // Coin inférieur droit
                     segmentsToMark = new String[]{
-                        "H_" + (i - 1) + "_" + j,    // Segment horizontal haut-droit
-                        "V_" + i + "_" + (j - 1)     // Segment vertical bas-gauche
+                        "H_" + (i + 1) + "_" + (j - 1),    // Segment horizontal haut-droit
+                        "V_" + (i - 1) + "_" + (j + 1)     // Segment vertical bas-gauche
                     };
                 }
                 

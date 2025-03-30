@@ -25,7 +25,7 @@ public class TechniqueDescriptions {
                 "1 sur un côté : Si un bâton est déjà placé sur un bord à côté d'un 1, " +
                 "le segment opposé doit être marqué d'une croix.";
             
-            case "Tech_0And3Adjacent" -> 
+            case "Tech_0And3" -> 
                 "0 et 3 adjacents : Quand un 0 et un 3 sont côte à côte, placez une croix sur le segment " +
                 "entre eux et trois bâtons autour du 3.";
             

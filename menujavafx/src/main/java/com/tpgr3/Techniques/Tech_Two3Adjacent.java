@@ -54,12 +54,12 @@ public class Tech_Two3Adjacent implements Techniques {
      */
     @Override
     public boolean estApplicable(Grille grille) {
+
         if (gridNumbers == null) {
             gridNumbers = grille.valeurs;
         }
         
         segmentsToHighlight.clear();
-        
         boolean applicationPossible = false;
         
         // Parcourir toutes les cellules de la grille pour trouver des 3 adjacents horizontalement
@@ -70,11 +70,9 @@ public class Tech_Two3Adjacent implements Techniques {
                     
                     // Déterminer les segments à marquer comme bâtons
                     String[] segmentsForBaton = {
-                        "H_" + i + "_" + j,          // Haut du premier 3
-                        "H_" + (i+1) + "_" + j,      // Bas du premier 3
-                        "H_" + i + "_" + (j+1),      // Haut du second 3
-                        "H_" + (i+1) + "_" + (j+1),  // Bas du second 3
+
                         "V_" + i + "_" + j,          // Gauche du premier 3
+                        "V_" + i + "_" + (j+1),      // entre les deux 3
                         "V_" + i + "_" + (j+2)       // Droite du second 3
                     };
                     
@@ -98,11 +96,8 @@ public class Tech_Two3Adjacent implements Techniques {
                     
                     // Déterminer les segments à marquer comme bâtons
                     String[] segmentsForBaton = {
-                        "V_" + i + "_" + j,          // Gauche du premier 3
-                        "V_" + i + "_" + (j+1),      // Droite du premier 3
-                        "V_" + (i+1) + "_" + j,      // Gauche du second 3
-                        "V_" + (i+1) + "_" + (j+1),  // Droite du second 3
                         "H_" + i + "_" + j,          // Haut du premier 3
+                        "H_" + (i+1) + "_" + j,       // Entre les deux 3
                         "H_" + (i+2) + "_" + j       // Bas du second 3
                     };
                     

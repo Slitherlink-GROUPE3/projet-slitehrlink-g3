@@ -69,22 +69,17 @@ public class Tech_1And0InCorner implements Techniques {
         
         // Coin supérieur gauche (1) avec un 0 à droite
         if (gridNumbers[0][0] == 1 && gridNumbers[0][1] == 0) {
-            // Segment à marquer comme bâton
-            String batonSegment = "V_0_0";  // Segment de gauche
-            Line segment = gridLines.get(batonSegment);
-            if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                segmentsToHighlight.add(batonSegment + ":baton");
-                applicationPossible = true;
-            }
             
-            // Segments supplémentaires à marquer comme bâtons
-            String[] otherBatonSegments = {
-                "H_1_0",   // Segment du bas
-                "V_1_0"    // Segment en bas à gauche
+            // Déterminer les segments à marquer comme bâtons
+            String[] segmentsForBaton = {
+                "V_1_0",          
+                "V_2_0",     
+                "V_1_1",
+                "H_1_0"      
             };
             
-            for (String segmentKey : otherBatonSegments) {
-                segment = gridLines.get(segmentKey);
+            for (String segmentKey : segmentsForBaton) {
+                Line segment = gridLines.get(segmentKey);
                 if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                     segmentsToHighlight.add(segmentKey + ":baton");
                     applicationPossible = true;
@@ -93,23 +88,17 @@ public class Tech_1And0InCorner implements Techniques {
         }
         
         // Coin supérieur gauche (1) avec un 0 en dessous
-        if (gridNumbers[0][0] == 1 && gridNumbers[1][0] == 0) {
-            // Segment à marquer comme bâton
-            String batonSegment = "H_0_0";  // Segment du haut
-            Line segment = gridLines.get(batonSegment);
-            if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                segmentsToHighlight.add(batonSegment + ":baton");
-                applicationPossible = true;
-            }
-            
-            // Segments supplémentaires à marquer comme bâtons
-            String[] otherBatonSegments = {
-                "V_0_1",   // Segment de droite
-                "H_0_1"    // Segment en haut à droite
+        else if (gridNumbers[0][0] == 1 && gridNumbers[1][0] == 0) {
+            // Déterminer les segments à marquer comme bâtons
+            String[] segmentsForBaton = {
+                "H_0_1",          
+                "H_0_2",     
+                "H_1_1",
+                "V_0_1"      
             };
             
-            for (String segmentKey : otherBatonSegments) {
-                segment = gridLines.get(segmentKey);
+            for (String segmentKey : segmentsForBaton) {
+                Line segment = gridLines.get(segmentKey);
                 if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                     segmentsToHighlight.add(segmentKey + ":baton");
                     applicationPossible = true;
@@ -118,23 +107,17 @@ public class Tech_1And0InCorner implements Techniques {
         }
         
         // Coin supérieur droit (1) avec un 0 à gauche
-        if (gridNumbers[0][cols-1] == 1 && gridNumbers[0][cols-2] == 0) {
-            // Segment à marquer comme bâton
-            String batonSegment = "V_0_" + cols;  // Segment de droite
-            Line segment = gridLines.get(batonSegment);
-            if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                segmentsToHighlight.add(batonSegment + ":baton");
-                applicationPossible = true;
-            }
-            
-            // Segments supplémentaires à marquer comme bâtons
-            String[] otherBatonSegments = {
-                "H_1_" + (cols-1),   // Segment du bas
-                "V_1_" + cols        // Segment en bas à droite
+        else if (gridNumbers[0][cols-1] == 1 && gridNumbers[0][cols-2] == 0) {
+            // Déterminer les segments à marquer comme bâtons
+            String[] segmentsForBaton = {
+                "H_1_" + (cols+1),          
+                "V_1_" + (cols),      
+                "V_1_" + (cols-1),
+                "V_2_" + (cols)      
             };
             
-            for (String segmentKey : otherBatonSegments) {
-                segment = gridLines.get(segmentKey);
+            for (String segmentKey : segmentsForBaton) {
+                Line segment = gridLines.get(segmentKey);
                 if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                     segmentsToHighlight.add(segmentKey + ":baton");
                     applicationPossible = true;
@@ -143,23 +126,17 @@ public class Tech_1And0InCorner implements Techniques {
         }
         
         // Coin supérieur droit (1) avec un 0 en dessous
-        if (gridNumbers[0][cols-1] == 1 && gridNumbers[1][cols-1] == 0) {
-            // Segment à marquer comme bâton
-            String batonSegment = "H_0_" + (cols-1);  // Segment du haut
-            Line segment = gridLines.get(batonSegment);
-            if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                segmentsToHighlight.add(batonSegment + ":baton");
-                applicationPossible = true;
-            }
-            
-            // Segments supplémentaires à marquer comme bâtons
-            String[] otherBatonSegments = {
-                "V_0_" + (cols-1),     // Segment de gauche
-                "H_0_" + (cols-2)      // Segment en haut à gauche
+        else if (gridNumbers[0][cols-1] == 1 && gridNumbers[1][cols-1] == 0) {
+            // Déterminer les segments à marquer comme bâtons
+            String[] segmentsForBaton = {
+                "H_0_" + (cols-2),          
+                "H_0_" + (cols-3),     
+                "H_1_" + (cols-2),
+                "V_0_" + (cols-1)     
             };
             
-            for (String segmentKey : otherBatonSegments) {
-                segment = gridLines.get(segmentKey);
+            for (String segmentKey : segmentsForBaton) {
+                Line segment = gridLines.get(segmentKey);
                 if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                     segmentsToHighlight.add(segmentKey + ":baton");
                     applicationPossible = true;
@@ -168,23 +145,17 @@ public class Tech_1And0InCorner implements Techniques {
         }
         
         // Coin inférieur gauche (1) avec un 0 à droite
-        if (gridNumbers[rows-1][0] == 1 && gridNumbers[rows-1][1] == 0) {
-            // Segment à marquer comme bâton
-            String batonSegment = "V_" + (rows-1) + "_0";  // Segment de gauche
-            Line segment = gridLines.get(batonSegment);
-            if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                segmentsToHighlight.add(batonSegment + ":baton");
-                applicationPossible = true;
-            }
-            
-            // Segments supplémentaires à marquer comme bâtons
-            String[] otherBatonSegments = {
-                "H_" + (rows-1) + "_0",   // Segment du haut
-                "V_" + (rows-2) + "_0"    // Segment en haut à gauche
+        else if (gridNumbers[rows-1][0] == 1 && gridNumbers[rows-1][1] == 0) {
+            // Déterminer les segments à marquer comme bâtons
+            String[] segmentsForBaton = {
+                "V_" + (rows-2) + "_0",   
+                "V_" + (rows-3) + "_0",
+                "V_" + (rows-2) + "_1",
+                "H_" + (rows-1) + "_0"  
             };
             
-            for (String segmentKey : otherBatonSegments) {
-                segment = gridLines.get(segmentKey);
+            for (String segmentKey : segmentsForBaton) {
+                Line segment = gridLines.get(segmentKey);
                 if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                     segmentsToHighlight.add(segmentKey + ":baton");
                     applicationPossible = true;
@@ -193,23 +164,17 @@ public class Tech_1And0InCorner implements Techniques {
         }
         
         // Coin inférieur gauche (1) avec un 0 au-dessus
-        if (gridNumbers[rows-1][0] == 1 && gridNumbers[rows-2][0] == 0) {
-            // Segment à marquer comme bâton
-            String batonSegment = "H_" + rows + "_0";  // Segment du bas
-            Line segment = gridLines.get(batonSegment);
-            if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                segmentsToHighlight.add(batonSegment + ":baton");
-                applicationPossible = true;
-            }
-            
-            // Segments supplémentaires à marquer comme bâtons
-            String[] otherBatonSegments = {
-                "V_" + (rows-1) + "_1",   // Segment de droite
-                "H_" + rows + "_1"        // Segment en bas à droite
+        else if (gridNumbers[rows-1][0] == 1 && gridNumbers[rows-2][0] == 0) {
+            // Déterminer les segments à marquer comme bâtons
+            String[] segmentsForBaton = {
+                "V_" + (rows+1) +"_1",       
+                "H_" + rows +"_1",      
+                "H_" + (rows-1) +"_1",
+                "H_" + rows +"_2"
             };
             
-            for (String segmentKey : otherBatonSegments) {
-                segment = gridLines.get(segmentKey);
+            for (String segmentKey : segmentsForBaton) {
+                Line segment = gridLines.get(segmentKey);
                 if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                     segmentsToHighlight.add(segmentKey + ":baton");
                     applicationPossible = true;
@@ -218,23 +183,17 @@ public class Tech_1And0InCorner implements Techniques {
         }
         
         // Coin inférieur droit (1) avec un 0 à gauche
-        if (gridNumbers[rows-1][cols-1] == 1 && gridNumbers[rows-1][cols-2] == 0) {
-            // Segment à marquer comme bâton
-            String batonSegment = "V_" + (rows-1) + "_" + cols;  // Segment de droite
-            Line segment = gridLines.get(batonSegment);
-            if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                segmentsToHighlight.add(batonSegment + ":baton");
-                applicationPossible = true;
-            }
-            
-            // Segments supplémentaires à marquer comme bâtons
-            String[] otherBatonSegments = {
-                "H_" + (rows-1) + "_" + (cols-1),   // Segment du haut
-                "V_" + (rows-2) + "_" + cols        // Segment en haut à droite
+        else if (gridNumbers[rows-1][cols-1] == 1 && gridNumbers[rows-1][cols-2] == 0) {
+            // Déterminer les segments à marquer comme bâtons
+            String[] segmentsForBaton = {
+                "V_" + (rows-2) + "_" + cols,   
+                "V_" + (rows-3) + "_" + cols,
+                "V_" + (rows-2) + "_" + (cols-1),
+                "H_" + (rows-1) + "_" + (cols-1)    
             };
             
-            for (String segmentKey : otherBatonSegments) {
-                segment = gridLines.get(segmentKey);
+            for (String segmentKey : segmentsForBaton) {
+                Line segment = gridLines.get(segmentKey);
                 if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                     segmentsToHighlight.add(segmentKey + ":baton");
                     applicationPossible = true;
@@ -243,30 +202,23 @@ public class Tech_1And0InCorner implements Techniques {
         }
         
         // Coin inférieur droit (1) avec un 0 au-dessus
-        if (gridNumbers[rows-1][cols-1] == 1 && gridNumbers[rows-2][cols-1] == 0) {
-            // Segment à marquer comme bâton
-            String batonSegment = "H_" + rows + "_" + (cols-1);  // Segment du bas
-            Line segment = gridLines.get(batonSegment);
-            if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
-                segmentsToHighlight.add(batonSegment + ":baton");
-                applicationPossible = true;
-            }
-            
-            // Segments supplémentaires à marquer comme bâtons
-            String[] otherBatonSegments = {
-                "V_" + (rows-1) + "_" + (cols-1),   // Segment de gauche
-                "H_" + rows + "_" + (cols-2)        // Segment en bas à gauche
+        else if (gridNumbers[rows-1][cols-1] == 1 && gridNumbers[rows-2][cols-1] == 0) {
+            // Déterminer les segments à marquer comme bâtons
+            String[] segmentsForBaton = {
+                "H_" + rows + "_" + (cols-2),   
+                "H_" + rows + "_" + (cols-3),
+                "H_" + (rows-1) + "_" + (cols-2),
+                "V_" + (rows-1) + "_" + (cols-1)    
             };
             
-            for (String segmentKey : otherBatonSegments) {
-                segment = gridLines.get(segmentKey);
+            for (String segmentKey : segmentsForBaton) {
+                Line segment = gridLines.get(segmentKey);
                 if (segment != null && segment.getStroke() == Color.TRANSPARENT && !aCroix(segment)) {
                     segmentsToHighlight.add(segmentKey + ":baton");
                     applicationPossible = true;
                 }
             }
         }
-        
         return applicationPossible;
     }
     
