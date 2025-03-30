@@ -84,7 +84,7 @@ public class Tech_Two3Diagonal implements Techniques {
                     return applicationPossible;
                 }       
             }
-        }/* 
+        }
         for (int i = 0; i < gridNumbers.length-1; i++) {
             for (int j = 1; j < gridNumbers[i].length-1; j++) {
                 if(gridNumbers[i][j] == 3 && gridNumbers[i+1][j-1] == 3){
@@ -108,7 +108,7 @@ public class Tech_Two3Diagonal implements Techniques {
                     return applicationPossible;
                 }
             }
-        }*/
+        }
         return applicationPossible;
     }
 
