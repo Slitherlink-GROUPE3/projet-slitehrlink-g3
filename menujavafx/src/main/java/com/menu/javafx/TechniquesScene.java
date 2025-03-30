@@ -1027,7 +1027,7 @@ public class TechniquesScene {
  * @param lineId Identifiant de la ligne
  * @return true si la ligne est tracée
  */
-private static boolean isLineDrawn(String lineId) {
+public static boolean isLineDrawn(String lineId) {
     Line line = gridLines.get(lineId);
     if (line != null && line.getStroke() instanceof Color) {
         Color lineColor = (Color) line.getStroke();

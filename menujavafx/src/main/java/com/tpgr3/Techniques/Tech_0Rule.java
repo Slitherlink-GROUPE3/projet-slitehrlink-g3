@@ -133,11 +133,6 @@ public class Tech_0Rule implements Techniques {
         return false;
     }
 
-    /**
-     * Applique la technique en mettant en surbrillance les segments qui peuvent être marqués d'une croix.
-     *
-     * @param grille La grille de jeu Slitherlink
-     */
     @Override
     public void appliquer(Grille grille) {
         // Si la technique n'est pas applicable, ne rien faire
@@ -145,31 +140,68 @@ public class Tech_0Rule implements Techniques {
             return;
         }
         
+        // Liste pour suivre les croix créées (pour les animations et la suppression)
+        List<Line> allCrossLines = new ArrayList<>();
+        
         // Pour chaque segment à marquer
         for (String lineId : segmentsAMarquer) {
             Line line = gridLines.get(lineId);
             if (line != null) {
-                // Appliquer un effet de surbrillance
+                // Créer des croix rouges (couleur spécifique pour les techniques)
+                Line cross1, cross2;
+                
+                if (line.getStartX() == line.getEndX()) { // Ligne verticale
+                    cross1 = new Line(
+                            line.getStartX() - 10, line.getStartY() + 20,
+                            line.getEndX() + 10, line.getEndY() - 20);
+                    cross2 = new Line(
+                            line.getStartX() - 10, line.getEndY() - 20,
+                            line.getEndX() + 10, line.getStartY() + 20);
+                } else { // Ligne horizontale
+                    cross1 = new Line(
+                            line.getStartX() + 20, line.getStartY() - 10,
+                            line.getEndX() - 20, line.getEndY() + 10);
+                    cross2 = new Line(
+                            line.getStartX() + 20, line.getEndY() + 10,
+                            line.getEndX() - 20, line.getStartY() - 10);
+                }
+                
+                // Configuration des croix
+                cross1.setStrokeWidth(3);
+                cross1.setUserData(line);
+                cross1.setStroke(Color.RED); // Rouge pour la technique
+                
+                cross2.setStrokeWidth(3);
+                cross2.setUserData(line);
+                cross2.setStroke(Color.RED); // Rouge pour la technique
+                
+                // Ajouter un effet visuel
                 Glow glow = new Glow(0.8);
-                line.setEffect(glow);
-                line.setStroke(Color.RED);
-                line.setOpacity(0.7);
+                cross1.setEffect(glow);
+                cross2.setEffect(glow);
                 
-                // Animation de surbrillance
-                FadeTransition fadeIn = new FadeTransition(Duration.millis(500), line);
-                fadeIn.setFromValue(0.3);
-                fadeIn.setToValue(0.9);
-                fadeIn.setCycleCount(3);
-                fadeIn.setAutoReverse(true);
-                fadeIn.play();
+                // Ajouter les croix à la grille
+                slitherlinkGrid.getChildren().addAll(cross1, cross2);
                 
-                // Remettre l'état original après l'animation
-                fadeIn.setOnFinished(event -> {
-                    line.setEffect(null);
-                    line.setStroke(Color.TRANSPARENT);
-                    line.setOpacity(1.0);
-                });
+                // Garder une référence pour l'animation
+                allCrossLines.add(cross1);
+                allCrossLines.add(cross2);
             }
+        }
+        
+        // Animation de mise en évidence pour toutes les croix créées
+        for (Line crossLine : allCrossLines) {
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(500), crossLine);
+            fadeIn.setFromValue(0.3);
+            fadeIn.setToValue(0.9);
+            fadeIn.setCycleCount(3);
+            fadeIn.setAutoReverse(true);
+            fadeIn.play();
+            
+            // Supprimer la croix après l'animation
+            fadeIn.setOnFinished(event -> {
+                slitherlinkGrid.getChildren().remove(crossLine);
+            });
         }
     }
 }
