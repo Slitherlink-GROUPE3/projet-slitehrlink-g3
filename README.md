@@ -3,12 +3,12 @@
 ## Table des matières
 
 - [Introduction](#introduction)
-- [Se connecter / Charger une partie](#Se-connecter-/-Charger-une-partie)
-- [Chapitre 2](#chapitre-2)
-- [Conclusion](#conclusion)
-
+- [Se connecter / Charger une partie](#se-connecter--charger-une-partie)
+- [Menu d'accueil](#menu-daccueil)
+- [Jouer une partie](#jouer-une-partie)
+- [Tutoriel](#tutoriel)
 ## Introduction
-Lorem ipsum...
+Le Slitherlink est un jeu de puzzle logique où l'objectif est de tracer une boucle fermée unique sur une grille de points. Les règles sont simples : vous devez relier les points adjacents horizontalement ou verticalement pour former une seule boucle continue qui ne se croise jamais. Les chiffres placés dans certaines cases indiquent exactement combien de segments doivent être tracés autour de cette case (entre 0 et 4). Par exemple, une case avec un "3" doit avoir trois de ses quatre côtés inclus dans la boucle, tandis qu'une case avec un "0" ne doit avoir aucun segment tracé autour d'elle. Les cases vides n'imposent aucune contrainte.
 
 ## Se connecter / Charger une partie
 Lorseque vous ouvrez le jeu, vous arrivez sur l'interface ci-dessous : 
@@ -61,7 +61,32 @@ Une fois le nveau lancé vous arrivez sur l'interface ,principale d'une partie d
 <img src="doc/assets/game.png" alt="Texte alternatif" width="600">
 </p>
 
+Vous pouvez alors  : 
 
-## Conclusion
-Lorem ipsum...
+- Placer les traits / croix sur la grille
+    - **trait** : clic gauche
+    - **croix** : clic droit
+- Demander une aide, ce qui vous affichera une technique réalisable 
+
+<p align="center">
+<img src="doc/assets/tech.png" alt="Texte alternatif" width="300">
+</p>
+
+- Demander si notre tracé est correct pour le moment (boutton `hypothèse` )
+- sauveguarder la partie
+- Réessayer le niveau 
+- Accéder au menu pause
+
+
+<p align="center">
+<img src="doc/assets/pause.png" alt="Texte alternatif" width="400">
+</p>
+
+## Tutoriel 
+
+A partir du menu principal vous avez la possibilité de lancer le tutoriel. Ce dernier va vous expliquer de manière interactive comment réaliser votre première partie de slitherlink. 
+
+<p align="center">
+<img src="doc/assets/tuto.png" alt="Texte alternatif" width="600">
+</p>
 
