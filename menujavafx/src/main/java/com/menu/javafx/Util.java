@@ -132,7 +132,7 @@ public class Util {
         return button;
     }
 
-    public static void showWinMessage() {
+    public static void showWinMessage(int score, Stage primaryStage) {
         // Créer une fenêtre personnalisée au lieu d'une Alert standard
         Stage winStage = new Stage();
         winStage.initModality(Modality.APPLICATION_MODAL);
@@ -165,12 +165,23 @@ public class Util {
         winMessage.setFont(Font.font("Calibri", 18));
         winMessage.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
 
+        Label scoreMessage = new Label("Score: " + score);
+        scoreMessage.setFont(Font.font("Calibri", 18));
+        scoreMessage.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+
         // Bouton OK
-        Button okButton = Util.createStyledButton("OK", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+        Button okButton = Util.createStyledButton("MENU", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         okButton.setPrefWidth(120);
+
+
 
         okButton.setOnAction(e -> {
             Util.animateButtonClick(okButton);
+            if(GameState.choixScene == 0){
+                GridScene.show(primaryStage);
+            } else{
+                FreeModeScene.show(primaryStage);
+            }
 
             // Animation de fermeture
             FadeTransition fadeOut = new FadeTransition(Duration.millis(400), winStage.getScene().getRoot());
@@ -178,10 +189,11 @@ public class Util {
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(event -> winStage.close());
             fadeOut.play();
+
         });
 
         // Organisation des éléments
-        VBox winBox = new VBox(20, winTitle, winMessage, okButton);
+        VBox winBox = new VBox(20, winTitle, winMessage, scoreMessage, okButton);
         winBox.setAlignment(Pos.CENTER);
         winBox.setPadding(new Insets(30));
         winBox.setStyle(

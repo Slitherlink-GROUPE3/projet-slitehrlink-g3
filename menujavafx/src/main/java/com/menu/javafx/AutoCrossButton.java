@@ -35,7 +35,7 @@ public class AutoCrossButton {
      */
     public static Button createAutoCrossButton(SlitherGrid slitherGrid, VBox mainLayer, StackPane gridContainer) {
         // Initialisation avec l'état "OFF" puisque autoCrossEnabled est false par défaut
-        Button crossAutoButton = Util.createStyledButton("Croix Auto: OFF", false, SlitherGrid.ACCENT_COLOR,
+        Button crossAutoButton = Util.createStyledButton("Croix Auto: ON", false, SlitherGrid.ACCENT_COLOR,
                 SlitherGrid.ACCENT_COLOR, SlitherGrid.SECONDARY_COLOR);
 
         // Style initial pour le bouton OFF

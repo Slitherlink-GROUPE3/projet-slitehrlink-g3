@@ -29,3 +29,5 @@ slitherlink-gr3/target
 .idea
 .DS_Store
 **/pom.xml
+menujavafx/pom.xml
+menujavafx/users
