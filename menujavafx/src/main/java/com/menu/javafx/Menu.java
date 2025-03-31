@@ -74,6 +74,7 @@ public class Menu extends Application {
             try {
                 // Vérifier si nous sommes dans une partie en cours (GameScene active)
                 if (GameScene.isGameActive()) {
+                    System.out.println("Partie en cours, sauvegarde automatique avant fermeture.");
                     // Extraire les minutes et secondes du chronoLabel
                     int elapsedTimeSeconds = GameScene.getElapsedTime();
                     String timeText = String.format("%d:%02d", elapsedTimeSeconds / 60, elapsedTimeSeconds % 60);

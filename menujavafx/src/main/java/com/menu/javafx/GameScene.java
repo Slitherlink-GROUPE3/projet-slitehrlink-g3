@@ -213,9 +213,11 @@ public class GameScene {
         String username = UserManager.getCurrentUser();
         System.out.println("Logged in as: " + username);
 
+        String initialScore = "0";  // Score initial à 0
+
         String level = getLevelFromGridId(gridId);
         String difficulty = getDifficultyFromLevel(level); // Voir la fonction ci-dessous
-        TopBar topBar = new TopBar(primaryStage, username, level, difficulty, slitherGrid);
+        TopBar topBar = new TopBar(primaryStage, username, level, initialScore, slitherGrid);
 
         // Créer un nouveau timer
         gameTimer = new java.util.Timer();
@@ -300,12 +302,6 @@ public class GameScene {
         gridShadow.setRadius(10);
         gridShadow.setOffsetY(5);
         gridContainer.setEffect(gridShadow);
-    
-        // Créer la barre supérieure
-        String username = UserManager.getCurrentUser();
-        String level = getLevelFromGridId(gridId);
-        String initialScore = "0";  // Score initial à 0
-        TopBar topBar = new TopBar(primaryStage, username, level, initialScore, slitherGrid);
     
         // Créer les boutons et contrôles
         VBox buttonBox = new VBox(20);
@@ -665,31 +661,7 @@ public class GameScene {
         HBox topBarComponent = topBar.createTopBar(scene);
         mainLayer.getChildren().add(0, topBarComponent);
     
-        // Timer et callback APRÈS avoir configuré la topBar
-        gameTimer = new java.util.Timer();
-        final int[] secondsElapsed = { savedElapsedTime > 0 ? savedElapsedTime : 0 };
-    
-        gameTimer.scheduleAtFixedRate(new java.util.TimerTask() {
-            @Override
-            public void run() {
-                // Vérifier si le jeu est en pause
-                if (!PauseMenu.isGamePaused()) {
-                    secondsElapsed[0]++;
-                    int minutes = secondsElapsed[0] / 60;
-                    int seconds = secondsElapsed[0] % 60;
-                    
-                    // Calculer le score (temps en secondes * 2)
-                    int scoreValue = secondsElapsed[0] * 2;
-    
-                    javafx.application.Platform.runLater(() -> {
-                        topBar.updateChronometer(minutes, seconds);
-                        topBar.updateScore(scoreValue);  // Mettre à jour le score
-                    });
-                }
-                // Si en pause, ne rien faire - le temps ne s'incrémente pas
-            }
-        }, 0, 1000);
-    
+        
         // Configuration du callback de réinitialisation du chronomètre
         topBar.setChronoResetCallback(() -> {
             // Réinitialiser le compteur de secondes
@@ -720,20 +692,6 @@ public class GameScene {
                 topBar.updateScore(0);
             });
         });
-    
-        // Si un état sauvegardé est disponible, l'appliquer à la grille
-        if (savedGridState != null) {
-            Platform.runLater(() -> {
-                try {
-                    System.out.println("Applying saved state from GameScene.show()");
-                    SaveGameLoader.applyGridState(savedGridState);
-                    savedGridState = null; // Clear the saved state to avoid reapplying
-                } catch (Exception e) {
-                    System.err.println("Error applying saved state: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            });
-        }
     
         // Mettre à jour le chronomètre si un temps sauvegardé est disponible
         if (savedElapsedTime > 0) {
