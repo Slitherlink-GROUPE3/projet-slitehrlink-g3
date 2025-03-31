@@ -322,16 +322,28 @@ public static void show(Stage primaryStage, String... newGridId) {
                     // Désactiver le bouton Appliquer si pas de techniques disponibles OU compteur à zéro
                     applyButton.setDisable(!techniqueSuggere.isPresent() || techniqueCounter <= 0);
         
+
+                    content.setAlignment(Pos.CENTER); // Centrer complètement le contenu du VBox
+
+                    details.setAlignment(Pos.CENTER); // Centrer les détails
+                    details.setPadding(Insets.EMPTY); // Supprimer tout padding
+
                     if (techniqueSuggere.isPresent()) {
                         String nomTechnique = techniqueSuggere.get().getSimpleName();
-        
+
                         Label description = new Label(TechniqueDescriptions.getDescription(nomTechnique));
                         description.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
                         description.setWrapText(true);
-        
+                        description.setMaxWidth(500);
+                        description.setAlignment(Pos.CENTER);
+                        description.setStyle(
+                            "-fx-font-size: 14px;" +
+                            "-fx-text-alignment: center;" +
+                            "-fx-alignment: center;"
+                        );
+
                         details.getChildren().add(description);
                     }
-        
                     applyButton.setOnAction(event -> {
                         Util.animateButtonClick(applyButton);
                         
@@ -411,7 +423,7 @@ public static void show(Stage primaryStage, String... newGridId) {
         
                     content.getChildren().addAll(titre, counterLabel, details, buttonsBox);
         
-                    Scene scene = new Scene(content, 400, 250);
+                    Scene scene = new Scene(content, 600, 400);
                     suggestionStage.setScene(scene);
                     suggestionStage.show();
                 });
