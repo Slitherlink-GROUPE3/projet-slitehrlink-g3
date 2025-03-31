@@ -79,6 +79,9 @@ public class GameScene {
     private static int techniqueCounter = 3; // Compteur de techniques limité à 3
     private static Text techniqueCountDisplay;
 
+    private static boolean gameActive = false; // Indicateur pour savoir si le jeu est actif
+    private static int elapsedTimeSeconds = 0;
+
     private static java.util.Timer gameTimer;
 
     private static String currentGridId = "001"; // Store the current grid ID for saving/loading
@@ -179,6 +182,10 @@ public class GameScene {
     }
 
     public static void show(Stage primaryStage, String... newGridId) {
+
+        // Le jeu est actif
+        gameActive = true;
+
         applyTheme();
         PauseMenu.setGamePaused(false);
     
@@ -194,11 +201,91 @@ public class GameScene {
         int[][] gridNumbers = loadGridFromJson("grids/" + gridIdForLoading + ".json");
         slitherGrid = new SlitherGrid(gridNumbers);
         gameMatrix = slitherGrid.getGameMatrix();
-    
+
+
+        if (newGridId != null && newGridId.length > 0 && "-1".equals(newGridId[0])) {
+            slitherGrid.reset();
+        }
+
+        mainLayer = new VBox();
+        mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
+
+        String username = UserManager.getCurrentUser();
+        System.out.println("Logged in as: " + username);
+
+        String level = getLevelFromGridId(gridId);
+        String difficulty = getDifficultyFromLevel(level); // Voir la fonction ci-dessous
+        TopBar topBar = new TopBar(primaryStage, username, level, difficulty, slitherGrid);
+
+        // Créer un nouveau timer
+        gameTimer = new java.util.Timer();
+        final int[] secondsElapsed = { savedElapsedTime > 0 ? savedElapsedTime : 0 };
+
+        gameTimer.scheduleAtFixedRate(new java.util.TimerTask() {
+            @Override
+            public void run() {
+                // Vérifier si le jeu est en pause
+                if (!PauseMenu.isGamePaused()) {
+                    secondsElapsed[0]++;
+                    elapsedTimeSeconds = secondsElapsed[0];
+                    int minutes = secondsElapsed[0] / 60;
+                    int seconds = secondsElapsed[0] % 60;
+
+                    javafx.application.Platform.runLater(() -> {
+                        topBar.updateChronometer(minutes, seconds);
+                    });
+                }
+                // Si en pause, ne rien faire - le temps ne s'incrémente pas
+            }
+        }, 0, 1000);
+
+        // Configuration du callback de réinitialisation du chronomètre
+        topBar.setChronoResetCallback(() -> {
+            // Réinitialiser le compteur de secondes
+            secondsElapsed[0] = 0;
+
+            // Réinitialiser l'affichage du chronomètre (optionnel car sera mis à jour au
+            // prochain tick)
+            javafx.application.Platform.runLater(() -> {
+                topBar.updateChronometer(0, 0);
+            });
+        });
+
+        // Configuration du callback pour réinitialiser la grille
+        topBar.setGridResetCallback(() -> {
+
+            savedGridState = null;
+
+            // Recréer la grille de jeu
+            slitherGrid.getSlitherlinkGrid().getChildren()
+                    .removeIf(node -> node instanceof Line);
+            System.out.println(slitherGrid.getSlitherlinkGrid());
+
+            // Reconstruire la grille
+            slitherGrid.updateGrid(root.getScene().getWidth(), root.getScene().getHeight());
+
+            // Mettre à jour les boutons d'historique
+            slitherGrid.updateHistoryButtons();
+        });
+
+        // Si un état sauvegardé est disponible, l'appliquer à la grille
+        if (savedGridState != null) {
+            Platform.runLater(() -> {
+                try {
+                    System.out.println("Applying saved state from GameScene.show()");
+                    SaveGameLoader.applyGridState(savedGridState);
+                    savedGridState = null; // Clear the saved state to avoid reapplying
+                } catch (Exception e) {
+                    System.err.println("Error applying saved state: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        }
+
         // Créer les composants principaux
         mainLayer = new VBox();
         mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
-    
+
         root = new HBox();
         slitherGrid.setSlitherlinkGrid(new Pane());
         gridContainer = new StackPane(slitherGrid.getSlitherlinkGrid());
@@ -961,6 +1048,15 @@ public class GameScene {
     }
 
     /**
+     * Vérifie si une partie est active
+     * 
+     * @return true si une partie est en cours, false sinon
+     */
+    public static boolean isGameActive() {
+        return gameActive;
+    }
+
+    /**
      * Nettoie les ressources du jeu (à appeler avant de quitter)
      */
     public static void cleanup() {
@@ -985,5 +1081,15 @@ public class GameScene {
         savedElapsedTime = 0;
     }
 
-  
+    /**
+     * Récupère le temps écoulé du chronomètre en secondes
+     * 
+     * @return Le temps écoulé en secondes, ou 0 si aucun jeu n'est actif
+     */
+    public static int getElapsedTime() {
+        if (!gameActive) {
+            return 0;
+        }
+        return elapsedTimeSeconds > 0 ? elapsedTimeSeconds : savedElapsedTime;
+    }
 }

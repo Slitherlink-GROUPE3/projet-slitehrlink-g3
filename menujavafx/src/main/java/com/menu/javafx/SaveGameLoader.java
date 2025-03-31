@@ -355,17 +355,34 @@ public static void applySegmentState(Line line, int state, SlitherGrid slitherGr
                 // Animation simple du bouton
                 newGameButton.setScaleX(0.95);
                 newGameButton.setScaleY(0.95);
-
+            
                 // Restaurer après animation
                 javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(
                         javafx.util.Duration.millis(100));
                 pause.setOnFinished(event -> {
                     newGameButton.setScaleX(1);
                     newGameButton.setScaleY(1);
-
+            
+                    // Récupérer le nom d'utilisateur actuel
+                    String currentUser = UserManager.getCurrentUser();
+                    
+                    // Supprimer toutes les sauvegardes de l'utilisateur
+                    List<GameSaveManager.SaveMetadata> saves3 = GameSaveManager.listSaves();
+                    for (GameSaveManager.SaveMetadata save : saves3) {
+                        GameSaveManager.deleteSave(save.getFilePath());
+                        System.out.println("Suppression de la sauvegarde: " + save.getFilePath());
+                    }
+                    
+                    // Réinitialiser la progression de l'utilisateur
+                    UserManager.resetUserProgress(currentUser);
+                    System.out.println("Progression réinitialisée pour l'utilisateur: " + currentUser);
+                    
+                    // Afficher un message de confirmation
+                    System.out.println("Nouvelle partie initialisée avec succès");
+            
                     // Fermer la dialogue
                     dialog.close();
-
+            
                     // Afficher le menu principal
                     com.menu.javafx.Menu.show(primaryStage);
                 });

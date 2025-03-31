@@ -70,6 +70,38 @@ public class Menu extends Application {
         primaryStage.setMinHeight(700);
         primaryStage.setTitle("Slither Link - Puzzle Game");
 
+        primaryStage.setOnCloseRequest(event -> {
+            try {
+                // Vérifier si nous sommes dans une partie en cours (GameScene active)
+                if (GameScene.isGameActive()) {
+                    // Extraire les minutes et secondes du chronoLabel
+                    int elapsedTimeSeconds = GameScene.getElapsedTime();
+                    String timeText = String.format("%d:%02d", elapsedTimeSeconds / 60, elapsedTimeSeconds % 60);
+                    if (timeText != null) {
+                        String[] parts = timeText.split(":");
+                        int minutes = Integer.parseInt(parts[0]);
+                        int seconds = Integer.parseInt(parts[1]);
+                        
+                        // Calculer le nombre total de secondes écoulées
+                        int totalSeconds = minutes * 60 + seconds;
+                        
+                        // Récupérer l'ID de la grille et le compteur de techniques
+                        String gridId = GameScene.getCurrentGridId();
+                        int techniqueCount = GameScene.getTechniqueCounter();
+                        
+                        // Sauvegarder l'état du jeu avec le paramètre autoSave à true
+                        if (gridId != null && !gridId.isEmpty()) {
+                            GameSaveManager.saveGame("grid-" + gridId, totalSeconds, techniqueCount, true);
+                            System.out.println("Sauvegarde automatique effectuée avant fermeture: " + 
+                                              gridId + ", Temps: " + totalSeconds + "s");
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Erreur lors de la sauvegarde à la fermeture: " + e.getMessage());
+            }
+        });
+
         // Démarrer avec l'écran de connexion au lieu du menu principal
         LoginScene.show(primaryStage);
     }
