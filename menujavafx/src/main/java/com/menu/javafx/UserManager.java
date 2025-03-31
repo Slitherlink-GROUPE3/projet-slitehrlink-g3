@@ -271,4 +271,55 @@ public class UserManager {
             return false;
         }
     }
+
+    /**
+ * Réinitialise la progression d'un utilisateur (marque toutes les grilles comme non complétées)
+ * 
+ * @param username Nom d'utilisateur
+ * @return true si la réinitialisation a réussi, false sinon
+ */
+public static boolean resetUserProgress(String username) {
+    if (username == null || username.trim().isEmpty()) {
+        System.err.println("Impossible de réinitialiser la progression: nom d'utilisateur invalide");
+        return false;
+    }
+    
+    try {
+        File userDir = new File(USER_DIRECTORY, username);
+        File progressFile = new File(userDir, PROGRESS_FILE);
+        
+        if (!progressFile.exists()) {
+            System.err.println("Fichier de progression non trouvé pour l'utilisateur: " + username);
+            return false;
+        }
+        
+        // Charger les données de progression actuelles
+        JSONParser parser = new JSONParser();
+        JSONObject userData = (JSONObject) parser.parse(new FileReader(progressFile));
+        
+        // Récupérer le tableau des grilles
+        JSONObject grids = (JSONObject) userData.get("grids");
+        
+        // Réinitialiser le statut "completed" de chaque grille à false
+        for (Object key : grids.keySet()) {
+            String gridId = (String) key;
+            JSONObject grid = (JSONObject) grids.get(gridId);
+            grid.put("completed", false);
+        }
+        
+        // Sauvegarder les modifications
+        try (FileWriter fileWriter = new FileWriter(progressFile)) {
+            fileWriter.write(userData.toJSONString());
+            System.out.println("Progression réinitialisée pour l'utilisateur: " + username);
+            return true;
+        }
+        
+    } catch (IOException | ParseException e) {
+        System.err.println("Erreur lors de la réinitialisation de la progression: " + e.getMessage());
+        e.printStackTrace();
+        return false;
+    }
+}
+
+    
 }
