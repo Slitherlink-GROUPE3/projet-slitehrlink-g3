@@ -28,4 +28,4 @@ menujavafx/target
 slitherlink-gr3/target
 .idea
 .DS_Store
-
+**/pom.xml
