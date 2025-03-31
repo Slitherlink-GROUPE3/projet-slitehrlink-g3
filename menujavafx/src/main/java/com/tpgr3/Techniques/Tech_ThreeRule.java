@@ -188,4 +188,7 @@ public class Tech_ThreeRule implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "Règle du 3 : Exactement trois segments doivent entourer une case contenant un 3.";
+    }
 }

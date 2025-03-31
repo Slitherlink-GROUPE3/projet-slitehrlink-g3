@@ -174,4 +174,8 @@ public class Tech_0And3Diagonal implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "0 et 3 en diagonale : Placez des croix autour du 0 et placez des bâtons sur deux " +
+                "côtés spécifiques du 3.";
+    }
 }

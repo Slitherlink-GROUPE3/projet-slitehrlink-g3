@@ -44,6 +44,7 @@ import javafx.geometry.Insets;
 import java.util.Map;
 import java.lang.reflect.Constructor;
 import javafx.animation.PauseTransition;
+import java.lang.reflect.Method;
 
 public class GameScene {
     // Add at the top of the GameScene class, replacing your current color
@@ -75,7 +76,7 @@ public class GameScene {
     private static int savedElapsedTime = 0;
     private static SlitherGrid slitherGrid;
     private static GameMatrix gameMatrix;
-    private static int checkCounter;
+    //private static int checkCounter;
     private static int techniqueCounter = 3; // Compteur de techniques limité à 3
     private static Text techniqueCountDisplay;
 
@@ -383,18 +384,28 @@ public class GameScene {
                     if (techniqueSuggere.isPresent()) {
                         String nomTechnique = techniqueSuggere.get().getSimpleName();
 
-                        Label description = new Label(TechniqueDescriptions.getDescription(nomTechnique));
-                        description.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
-                        description.setWrapText(true);
-                        description.setMaxWidth(500);
-                        description.setAlignment(Pos.CENTER);
-                        description.setStyle(
+                        // Récupérer la description de la classe de technique
+                        String description = "";
+                        try {
+                            // Utiliser la réflexion pour appeler la méthode getDescription()
+                            Method getDescriptionMethod = techniqueSuggere.get().getMethod("getDescription");
+                            description = (String) getDescriptionMethod.invoke(null);
+                        } catch (Exception e) {
+                            description = "Description non disponible pour cette technique.";
+                        }
+
+                        Label descriptionLabel = new Label(description);
+                        descriptionLabel.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+                        descriptionLabel.setWrapText(true);
+                        descriptionLabel.setMaxWidth(500);
+                        descriptionLabel.setAlignment(Pos.CENTER);
+                        descriptionLabel.setStyle(
                             "-fx-font-size: 14px;" +
                             "-fx-text-alignment: center;" +
                             "-fx-alignment: center;"
                         );
 
-                        details.getChildren().add(description);
+                        details.getChildren().add(descriptionLabel);
                     }
                     applyButton.setOnAction(event -> {
                         Util.animateButtonClick(applyButton);
@@ -484,7 +495,7 @@ public class GameScene {
                 HBox helpContainer = new HBox(15, helpButton, techniqueCountContainer);
                 helpContainer.setAlignment(Pos.CENTER);
                 
-                Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
+                /*Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
                         SlitherGrid.SECONDARY_COLOR);
         
                 Text checkCount = new Text(String.valueOf(checkCounter));
@@ -514,8 +525,8 @@ public class GameScene {
                     }
                 });
         
-                HBox checkContainer = new HBox(15, checkButton, countContainer);
-                checkContainer.setAlignment(Pos.CENTER);
+                /*HBox checkContainer = new HBox(15, checkButton, countContainer);
+                checkContainer.setAlignment(Pos.CENTER);*/
         
                 Button hypothesisButton = Util.createStyledButton("Hypothèse", false, SlitherGrid.MAIN_COLOR,
                         SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
@@ -634,7 +645,7 @@ public class GameScene {
         HBox historyContainer = new HBox(15, slitherGrid.getPrevButton(), slitherGrid.getNextButton());
         historyContainer.setAlignment(Pos.CENTER);
 
-        buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpContainer, checkContainer, hypothesisButton,
+        buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpContainer, hypothesisButton,
                 crossAutoButton, saveButton, createSeparator(), historyContainer);
 
         gridContainer.setPadding(new Insets(20));

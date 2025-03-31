@@ -271,4 +271,9 @@ public class Tech_2And1InCorner implements Techniques {
             }
         }
     }
+
+    public static String getDescription() {
+        return "2 et 1 dans un angle : Utilisez la règle du 2 dans l'angle pour placer deux bâtons, " +
+                "puis placez un bâton supplémentaire à côté du 1.";
+    }
 }

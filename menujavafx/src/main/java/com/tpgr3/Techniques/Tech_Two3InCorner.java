@@ -270,4 +270,9 @@ public class Tech_Two3InCorner implements Techniques {
             }
         }
     }
+
+    public static String getDescription() {
+        return "Deux 3 dans un angle : Combinez les techniques des 3 côte à côte et du 3 dans l'angle " +
+                "pour déduire des placements obligatoires.";
+    }
 }

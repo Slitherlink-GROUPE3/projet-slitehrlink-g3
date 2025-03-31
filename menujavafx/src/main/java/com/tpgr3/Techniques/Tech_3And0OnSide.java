@@ -262,4 +262,8 @@ public class Tech_3And0OnSide implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "3 et 0 sur un côté : Placez deux bâtons - un contre le côté de la grille et " +
+                "un du côté opposé au 0.";
+    }
 }

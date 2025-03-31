@@ -177,4 +177,7 @@ public class Tech_2InCorner implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "2 dans un angle : Lorsqu'un 2 est dans un coin, placez deux bâtons à l'opposé de l'angle.";
+    }
 }

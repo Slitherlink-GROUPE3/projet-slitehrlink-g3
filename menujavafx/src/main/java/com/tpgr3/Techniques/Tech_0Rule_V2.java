@@ -177,4 +177,8 @@ public class Tech_0Rule_V2 implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "Règle du 0 : Aucun segment ne doit entourer une case contenant un 0. " +
+               "Marquez tous les segments adjacents avec une croix.";
+    }
 }

@@ -179,4 +179,8 @@ public class Tech_3InCorner implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "3 dans un angle : Lorsqu'un 3 est dans un coin, il faut tracer les deux segments " +
+                "dans l'angle plus un troisième.";
+    }
 }

@@ -240,4 +240,9 @@ public class Tech_2InAngle implements Techniques {
             }
         }
     }
+
+    public static String getDescription() {
+        return "Détection de 2 dans un angle de chemin : Analyse les contraintes autour des cases à 2 " +
+                "pour déterminer les segments manquants.";
+    }
 }
