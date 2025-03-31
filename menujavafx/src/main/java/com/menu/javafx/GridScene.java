@@ -207,13 +207,15 @@ public class GridScene {
             // Étoiles de difficulté
             HBox starContainer = new HBox(5);
             starContainer.setAlignment(Pos.CENTER);
-            for (int i = 0; i < 3; i++) {
+            
+            for (int j = 0; j < (Math.min(difficulty, 4)); j++) {
                 Label star = new Label ("💀");
                 star.setFont(Font.font(20));
                 star.setTextFill(Color.web(MAIN_COLOR));
 
                 starContainer.getChildren().add(star);
             }
+
 
             content.getChildren().addAll(levelLabel, starContainer);
 
