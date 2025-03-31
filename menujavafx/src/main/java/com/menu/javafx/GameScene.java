@@ -204,8 +204,6 @@ public class GameScene {
         String difficulty = getDifficultyFromLevel(level); // Voir la fonction ci-dessous
         TopBar topBar = new TopBar(primaryStage, username, level, difficulty, slitherGrid);
 
-        cleanup();
-
         // Créer un nouveau timer
         gameTimer = new java.util.Timer();
         final int[] secondsElapsed = { savedElapsedTime > 0 ? savedElapsedTime : 0 };
