@@ -33,9 +33,9 @@ Ce document présente l'analyse de la réalisation du projet Slitherlink par rap
 
 | Fonctionnalité | Statut | Commentaires |
 |----------------|--------|-------------|
-| BF 03.1 : Grilles par difficulté |🟡️ partiellement implémenté | Seulement les 2 premières lignes sont jouables, le reste est implémenté mais pas encore fonctionnel |
-| BF 03.11 : Mode libre | 🟢️ Implémenté | (mode aventure) |
-| BF 03.12 : Mode histoire | 🔴️ Non implémenté | Il n'y avait pas besoin d'un mode histoire, qui aurait été trop redondant avec le mode aventure |
+| BF 03.1 : Grilles par difficulté |🟢️ Implémenté | Seulement les 2 premières lignes sont jouables, le reste est implémenté mais pas encore fonctionnel |
+| BF 03.11 : Mode histoire | 🟢️ Implémenté | (mode aventure) |
+| BF 03.12 : Mode libre | 🔴️ Non implémenté | A faire |
 
 **Fonctionnement**: Les grilles sont stockées dans des fichiers JSON dans le dossier "grids/". La classe `GameScene` charge ces grilles à l'aide de la méthode `loadGridFromJson()`. Les grilles sont identifiées par des noms standardisés (ex: "grid-001.json"). La sélection des grilles est gérée dans une interface utilisateur qui permet de choisir parmi les grilles disponibles. Le chargement est effectué dans `GameScene.show(Stage primaryStage, String gridId)` qui initialise la scène de jeu avec la grille correspondant à l'ID fourni.
 
@@ -46,7 +46,7 @@ Ce document présente l'analyse de la réalisation du projet Slitherlink par rap
 | BF 04.1 : Sauvegarde par utilisateur | 🟢️ Implémenté  | La classe `GameSaveManager` permet des sauvegardes par utilisateur,  |
 | BF 04.2 : Sauvegarde après chaque coup | implémenté |La grille est sauvegardé a chaque coup avec la fonction `saveGame()` |
 | BF 04.3 : Sauvegarde globale | 🟢️ Implémenté | Le système de sauvegarde conserve l'état global du jeu |
-| BF 04.4 : Sauvegarde des grilles | 🟡️ partiellement implémenté | Des sauvegardes spécifiques aux grilles sont possibles mais ne sauvegarde pas si on recommence la partie (garde la grille finie) |
+| BF 04.4 : Sauvegarde des grilles | 🟢️ Implémenté | Des sauvegardes spécifiques aux grilles sont possibles mais ne sauvegarde pas si on recommence la partie (garde la grille finie) |
 
 **Fonctionnement**: Les sauvegardes sont organisées dans des dossiers par utilisateur `(saves/username/)`. remplace par Les sauvegardes sont organisées dans les dossiers des utilisateurs `(users/username/saves/)`. Fonctionnement: La gestion des utilisateurs est implémentée dans `UserManager.java` qui utilise un fichier texte simple `slitherlink_users.txt` pour stocker les noms d’utilisateurs. Remplace par Fonctionnement: La gestion des utilisateurs est implémentée dans `UserManager`.java lorsque un nouvel utilisateur se connecte un dossier contenant sa progression ainsi que ses futurs sauvegardes est crée dans le dossier `users/`
 
@@ -82,7 +82,7 @@ Le système de vérification est bien implémenté mais les fonctionnalités d'a
 
 | Fonctionnalité | Statut | Commentaires |
 |----------------|--------|-------------|
-| Connexion pour sauvegardes | 🟡️ Partiellement implémenté | Marche, mais pas pour tous les niveaux |
+| Connexion pour sauvegardes | 🟢️ Implémenté | Sauveguarde la progression de tous les niveaux |
 
 **Fonctionnement**: La gestion des utilisateurs est implémentée dans `UserManager.java` qui utilise un fichier texte simple "slitherlink_users.txt" pour stocker les noms d'utilisateurs. La classe fournit des méthodes pour ajouter un nouvel utilisateur (`addUser(String username)`), définir l'utilisateur actuel (`setCurrentUser(String username)`) et récupérer l'utilisateur actuel (`getCurrentUser()`). Lors du démarrage de l'application, le système vérifie si un utilisateur a déjà été créé et propose soit de se connecter avec un utilisateur existant, soit d'en créer un nouveau. 
 

@@ -30,8 +30,10 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -384,7 +386,7 @@ public class TechniquesScene {
                 break;
                 
             case 4:
-                showBottomRightThree();
+                showTechniqueTwoTop();
                 break;
                 
             case 5:
@@ -462,14 +464,15 @@ public class TechniquesScene {
     }
 
     /**
-     * Étape 4: Technique du 3 en bas à droite
+     * Étape 4: Technique du 2 en haut de la grille
      */
-    private static void showBottomRightThree() {
+    private static void showTechniqueTwoTop() {
         stepTitle.setText("On fait le 2");
         
-        addInstructionParagraph("Le 3 en bas à droite doit également avoir exactement trois segments autour de lui.");
-        addInstructionParagraph("Dans un coin, ces segments doivent nécessairement être placés sur les trois côtés disponibles.");
-        addInstructionHighlight("Tracez les trois segments autour du 3 en bas à droite.");
+        addInstructionParagraph("Le chiffre 2 en haut au centre doit avoir exactement deux segments autour de lui.");
+        addInstructionParagraph("Pour former la boucle correctement, ces segments doivent être placés en haut et à droite du 2, ce qui permettra de faire la liaison avec le 1 à sa droite.");
+        addInstructionParagraph("Ce 2 partage son côté gauche avec le 3 en haut à gauche. Si ce segment était tracé pour les deux cases, cela créerait des configurations impossibles.");
+        addInstructionHighlight("Tracez les segments en haut et à droite du 2 pour continuer le circuit.");
         
         // Mettre en évidence les lignes à tracer
         highlightLine("H_0_1"); // Haut du 3 en bas à droite
@@ -477,15 +480,15 @@ public class TechniquesScene {
     }
     
     /**
-     * Étape 5: Contraintes sur le chiffre 2
+     * Étape 5: Terminer la grille
      */
     private static void showTwoConstraints() {
         stepTitle.setText("On fini le tracé");
-        
-        addInstructionParagraph("Examinons maintenant le 2 en haut au centre. Une case avec un 2 doit avoir exactement deux segments autour d'elle.");
-        addInstructionParagraph("Ce 2 partage son côté gauche avec le 3 en haut à gauche. Si ce segment était tracé pour les deux cases, cela créerait des configurations impossibles.");
-        addInstructionHighlight("Tracez des segments sur les côtés supérieur et droit du 2, et placez une croix sur le segment gauche.");
-        
+
+        addInstructionParagraph("Nous avons maintenant plusieurs segments tracés qui doivent former un circuit unique.");
+        addInstructionParagraph("Pour éviter les boucles isolées et créer un circuit fermé, nous devons connecter les segments existants stratégiquement.");
+        addInstructionHighlight("Tracez les segments manquants pour compléter le circuit unique.");
+
         // Mettre en évidence les actions à effectuer
         highlightLine("V_1_2"); // Haut du 2
         highlightLine("H_2_2"); // Droite du 2
@@ -617,18 +620,26 @@ public class TechniquesScene {
      * @param e Événement de clic
      * @param line Ligne cliquée
      */
+    // Vérifier avant chaque clic
     private static void handleLineClick(MouseEvent e, Line line) {
+        // Bloquer si la ligne n’est pas en surbrillance
+        if (!highlightedLines.contains(line.getId())) {
+            Platform.runLater(() -> {
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("Action non autorisée");
+            alert.setHeaderText(null);
+            alert.setContentText("Seules les lignes en surbrillance peuvent être tracées ou croisées.");
+            alert.showAndWait();
+            });
+            return;
+        }
+        
         if (e.getButton() == MouseButton.PRIMARY) {
-            // Tracer une ligne
             drawLine(line);
-            //vérifier la progression
-            System.out.println("Progression step " + currentStep);
             if(checkProgress() > 0){
-                System.out.println("Progression step " + currentStep);
                 nextStepButton.setDisable(false);
             }
         } else if (e.getButton() == MouseButton.SECONDARY) {
-            // Placer une croix
             placeCross(line);
         }
     }
@@ -779,13 +790,12 @@ public class TechniquesScene {
      * Met en évidence une ligne pour guider l'utilisateur
      * @param lineId Identifiant de la ligne
      */
+    private static final Set<String> highlightedLines = new HashSet<>();    // Conserver la liste des lignes en surbrillance
     private static void highlightLine(String lineId) {
         Line line = gridLines.get(lineId);
         if (line != null && line.getStroke() != Color.web(DARK_COLOR)) {
-            // Colorer la ligne
             line.setStroke(Color.LIGHTGRAY);
             
-            // Animation de pulsation
             FadeTransition fadeTransition = new FadeTransition(Duration.millis(800), line);
             fadeTransition.setFromValue(0.3);
             fadeTransition.setToValue(0.8);
@@ -793,8 +803,10 @@ public class TechniquesScene {
             fadeTransition.setAutoReverse(true);
             fadeTransition.play();
             
-            // Stocker l'animation pour pouvoir l'arrêter plus tard
             line.getProperties().put("fadeTransition", fadeTransition);
+
+            // Ajouter l'ID à la liste autorisée
+            highlightedLines.add(lineId);
         }
     }
     
@@ -893,7 +905,7 @@ public class TechniquesScene {
                 return checkOneConstraintsProgress();
                 
             case 7: // 3 du milieu
-                return checkMiddleThreeProgress();
+                return checkTwoMiddleTopisOver();
                 
             case 8: // Compléter le circuit
                 return checkCompletionProgress();
@@ -958,18 +970,13 @@ public class TechniquesScene {
         return 0;
     }
     
-    /**
-     * Vérifie la progression pour l'étape des contraintes sur le 2
-     * @return 
-     */
+    //Vérifie qu'on a bien fermé les batons
     private static int checkTwoConstraintsProgress() {
-        boolean linesDrawn = isLineDrawn("V_1_2") && isLineDrawn("H_2_2") && isLineDrawn("H_3_1");
-        
+        boolean linesDrawn = isLineDrawn("V_1_2") && isLineDrawn("H_2_2") && isLineDrawn("H_3_1");        
         if (linesDrawn) {
             nextStepButton.setDisable(false);
-            highlightInstructions("Excellent! Vous avez correctement appliqué les contraintes sur le 2.", Color.web(MAIN_COLOR));
+            highlightInstructions("Excellent! Vous avez correctement fermé la boucle.", Color.web(MAIN_COLOR));
         }
-        // a changer
         return 0;
     }
     
@@ -992,13 +999,13 @@ public class TechniquesScene {
     }
     
     /**
-     * Vérifie la progression pour l'étape du 3 du milieu
+     * Verifie que les deux segments autour du 2 sont tracés
      * @return 
      */
-    private static int checkMiddleThreeProgress() {
+    private static int checkTwoMiddleTopisOver() {
         if (isLineDrawn("H_1_0") && isLineDrawn("V_1_1")) {
             nextStepButton.setDisable(false);
-            highlightInstructions("Très bien! Vous avez complété les segments autour du 3 du milieu.", Color.web(MAIN_COLOR));
+            highlightInstructions("Super, vous avez placé correctement les batons !", Color.web(MAIN_COLOR));
         }
         // a changer
         return 0;
@@ -1027,7 +1034,7 @@ public class TechniquesScene {
  * @param lineId Identifiant de la ligne
  * @return true si la ligne est tracée
  */
-private static boolean isLineDrawn(String lineId) {
+public static boolean isLineDrawn(String lineId) {
     Line line = gridLines.get(lineId);
     if (line != null && line.getStroke() instanceof Color) {
         Color lineColor = (Color) line.getStroke();

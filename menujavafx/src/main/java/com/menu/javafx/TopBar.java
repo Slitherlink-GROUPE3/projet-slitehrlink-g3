@@ -13,9 +13,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
 import javafx.stage.Stage;
+import javafx.scene.Node;
 
 /**
  * Une barre responsive à mettre dans les scenes de jeu
@@ -25,7 +27,7 @@ public class TopBar {
     private final Stage primaryStage;
     private final String pseudoJoueur;
     private final String niveau;
-    private final String difficulte;
+    public int score;
     private HBox topBarContainer;
     private Label chronoLabel;
     private Runnable chronoResetCallback;
@@ -50,13 +52,13 @@ public class TopBar {
      * @param primaryStage Le stage de l'application
      * @param pseudoJoueur Le pseudo du joueur
      * @param niveau       Le niveau du jeu
-     * @param difficulte   La difficulté du jeu
+     * @param score        La difficulté du jeu
      */
-    public TopBar(Stage primaryStage, String pseudoJoueur, String niveau, String difficulte, SlitherGrid slitherGrid) {
+    public TopBar(Stage primaryStage, String pseudoJoueur, String niveau, String score, SlitherGrid slitherGrid) {
         this.primaryStage = primaryStage;
         this.pseudoJoueur = pseudoJoueur;
         this.niveau = niveau;
-        this.difficulte = difficulte;
+        this.score = Integer.parseInt(score);
         this.slitherGrid = slitherGrid;
     }
 
@@ -78,8 +80,8 @@ public class TopBar {
         return this.niveau;
     }
 
-    public String getDifficulte() {
-        return this.difficulte;
+    public String getscore() {
+        return String.valueOf(this.score); // Convertir l'entier en String pour l'affichage
     }
 
     public HBox getTopBar() {
@@ -139,10 +141,9 @@ public class TopBar {
         playerInfoBox.setSpacing(20);
         playerInfoBox.setAlignment(Pos.CENTER_LEFT);
 
-        // Create info labels with icons
         VBox usernameBox = createInfoLabel("Joueur", pseudoJoueur);
         VBox levelBox = createInfoLabel("Niveau", niveau);
-        VBox difficultyBox = createInfoLabel("Difficulté", difficulte);
+        VBox difficultyBox = createInfoLabel("Score", String.valueOf(score));
 
         // Ajout d'un conteneur pour chaque VBox avec HGrow
         HBox usernameContainer = new HBox(usernameBox);
@@ -157,6 +158,41 @@ public class TopBar {
         playerInfoBox.getChildren().addAll(usernameContainer, levelContainer, difficultyContainer);
 
         return playerInfoBox;
+    }
+
+    public void updateScore(int value) {
+        int aidesUtilisees = 3 - GameScene.getTechniqueCounter(); // on commence avec 3 aides 
+        double scoreReduction = 1.0 - (aidesUtilisees * 0.1); // Réduction de 10% par aide utilisée
+        this.score = (int) (((10.0 / Math.sqrt(value) + 0.5)) * 1000 * scoreReduction);
+
+        for (Node child : topBarContainer.getChildren()) {
+            if (child instanceof HBox) {
+                HBox hbox = (HBox) child;
+                for (Node hboxChild : hbox.getChildren()) {
+                    if (hboxChild instanceof HBox && ((HBox) hboxChild).getChildren().size() > 0) {
+                        HBox container = (HBox) hboxChild;
+                        if (container.getChildren().get(0) instanceof VBox) {
+                            VBox vbox = (VBox) container.getChildren().get(0);
+                            for (Node vboxChild : vbox.getChildren()) {
+                                if (vboxChild instanceof Label) {
+                                    Label label = (Label) vboxChild;
+                                    if (label.getText().equals("Score")) {
+                                        // C'est le label du titre "Score", chercher le label de valeur
+                                        for (Node valueNode : vbox.getChildren()) {
+                                            if (valueNode instanceof Label && valueNode != label) {
+                                                // Mettre à jour le texte du label avec this.score et non value
+                                                ((Label) valueNode).setText(String.valueOf(this.score));
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -362,8 +398,6 @@ public class TopBar {
             Scene dialogScene = new Scene(dialogVBox, 400, 250);
             dialog.setScene(dialogScene);
 
-            // Button actions
-            // In TopBar.java, modify the yesButton.setOnAction handler (around line 290)
             yesButton.setOnAction(event -> {
                 // Animation for button click
                 javafx.animation.ScaleTransition scaleDown = new javafx.animation.ScaleTransition(
@@ -398,13 +432,22 @@ public class TopBar {
                         gridResetCallback.run();
                     }
 
-                    // Close with fade animation
-                    javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
-                            javafx.util.Duration.millis(300), dialogVBox);
-                    fadeOut.setFromValue(1);
-                    fadeOut.setToValue(0);
-                    fadeOut.setOnFinished(ev -> dialog.close());
-                    fadeOut.play();
+                    // Reset le compteur de techniques
+                    GameScene.resetTechniqueCounter();
+
+                    // Fermer la fenêtre après un court délai pour laisser le temps à l'animation de
+                    // se terminer
+                    PauseTransition delay = new PauseTransition(Duration.millis(100));
+                    delay.setOnFinished(ev -> {
+                        // La fenêtre de dialogue se fermera avec l'animation
+                        javafx.animation.FadeTransition fadeOut = new javafx.animation.FadeTransition(
+                                javafx.util.Duration.millis(300), dialogVBox);
+                        fadeOut.setFromValue(1);
+                        fadeOut.setToValue(0);
+                        fadeOut.setOnFinished(e3 -> dialog.close());
+                        fadeOut.play();
+                    });
+                    delay.play();
                 });
                 scaleDown.play();
             });
@@ -456,6 +499,19 @@ public class TopBar {
             String[] parts = timeText.split(":");
             int minutes = Integer.parseInt(parts[0]);
             int seconds = Integer.parseInt(parts[1]);
+
+            // Calculer le nombre total de secondes écoulées
+            int totalSeconds = minutes * 60 + seconds;
+
+            // Sauvegarde automatique avant la mise en pause
+            String gridId = GameScene.getCurrentGridId();
+            int techniqueCount = GameScene.getTechniqueCounter();
+
+            // Sauvegarder l'état du jeu avec le paramètre saveAuto à true
+            GameSaveManager.saveGame("grid-" + gridId, totalSeconds, techniqueCount, true);
+
+            // Afficher une notification de sauvegarde automatique discrète
+            System.out.println("Sauvegarde automatique effectuée: " + gridId + ", Temps: " + totalSeconds + "s");
 
             // Sauvegarder l'état du jeu avant de passer au menu pause
             PauseMenu.saveGameState(primaryStage.getScene(), minutes, seconds, this);
@@ -667,7 +723,9 @@ public class TopBar {
      * @param seconds Seconds elapsed
      */
     public void updateChronometer(int minutes, int seconds) {
-        String formattedTime = String.format("%02d:%02d", minutes, seconds);
-        chronoLabel.setText(formattedTime);
+        if (chronoLabel != null) {
+            String formattedTime = String.format("%02d:%02d", minutes, seconds);
+            chronoLabel.setText(formattedTime);
+        }
     }
 }

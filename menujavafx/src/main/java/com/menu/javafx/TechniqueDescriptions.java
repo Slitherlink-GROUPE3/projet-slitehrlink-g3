@@ -73,6 +73,10 @@ public class TechniqueDescriptions {
                 "Détection de boucle pour 3 : Analyse les contraintes autour des cases à 3 " +
                 "pour déterminer les segments manquants.";
             
+            case "Tech_2InAngle" -> 
+                "Détection de 2 dans un angle de chemin : Analyse les contraintes autour des cases à 2 " +
+                "pour déterminer les segments manquants.";
+            
             default -> 
                 "Technique de résolution qui utilise les contraintes des chiffres pour " +
                 "déduire le placement correct des segments.";

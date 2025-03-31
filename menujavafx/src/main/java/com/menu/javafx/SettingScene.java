@@ -99,7 +99,6 @@ public class SettingScene {
         // Créer les boutons de paramètres
         Button mainMenuButton = Util.createStyledButton("Menu principal", false, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         Button saveButton = Util.createStyledButton("Sauvegarder", true, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
-        Button changeDifficultyButton = Util.createStyledButton("Changer de difficulté", false, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         Button changeAccountButton = Util.createStyledButton("Changer de compte", false, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         
         // Boutons de mode avec état actif/inactif selon le mode courant
@@ -127,10 +126,7 @@ public class SettingScene {
 
         });
         
-        changeDifficultyButton.setOnAction(e -> {
-            Util.animateButtonClick(changeDifficultyButton);
-            // Logique de changement de difficulté à implémenter
-        });
+       
         
         // Dans la section où les actions des boutons sont configurées
         // Modifier l'action du bouton "Changer de compte" :
@@ -177,7 +173,6 @@ public class SettingScene {
                 mainMenuButton,
                 createSeparator(),
                 saveButton,
-                changeDifficultyButton,
                 changeAccountButton,
                 createSeparator(),
                 darkModeButton,
