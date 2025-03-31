@@ -72,34 +72,26 @@ public class Menu extends Application {
 
         primaryStage.setOnCloseRequest(event -> {
             try {
-                // Vérifier si nous sommes dans une partie en cours (GameScene active)
+                // 1. Essayer de sauvegarder si une partie est en cours
                 if (GameScene.isGameActive()) {
                     System.out.println("Partie en cours, sauvegarde automatique avant fermeture.");
-                    // Extraire les minutes et secondes du chronoLabel
                     int elapsedTimeSeconds = GameScene.getElapsedTime();
-                    String timeText = String.format("%d:%02d", elapsedTimeSeconds / 60, elapsedTimeSeconds % 60);
-                    if (timeText != null) {
-                        String[] parts = timeText.split(":");
-                        int minutes = Integer.parseInt(parts[0]);
-                        int seconds = Integer.parseInt(parts[1]);
-                        
-                        // Calculer le nombre total de secondes écoulées
-                        int totalSeconds = minutes * 60 + seconds;
-                        
-                        // Récupérer l'ID de la grille et le compteur de techniques
-                        String gridId = GameScene.getCurrentGridId();
-                        int techniqueCount = GameScene.getTechniqueCounter();
-                        
-                        // Sauvegarder l'état du jeu avec le paramètre autoSave à true
-                        if (gridId != null && !gridId.isEmpty()) {
-                            GameSaveManager.saveGame("grid-" + gridId, totalSeconds, techniqueCount, true);
-                            System.out.println("Sauvegarde automatique effectuée avant fermeture: " + 
-                                              gridId + ", Temps: " + totalSeconds + "s");
-                        }
+                    String gridId = GameScene.getCurrentGridId();
+                    int techniqueCount = GameScene.getTechniqueCounter();
+                    
+                    if (gridId != null && !gridId.isEmpty()) {
+                        GameSaveManager.saveGame("grid-" + gridId, elapsedTimeSeconds, techniqueCount, true);
+                        System.out.println("Sauvegarde automatique effectuée: " + gridId);
                     }
                 }
             } catch (Exception e) {
-                System.err.println("Erreur lors de la sauvegarde à la fermeture: " + e.getMessage());
+                System.err.println("Erreur lors de la sauvegarde: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                // 2. Nettoyer les ressources et terminer l'application
+                GameScene.cleanup();
+                Platform.exit();
+                System.exit(0);
             }
         });
 
@@ -230,12 +222,6 @@ public class Menu extends Application {
             fadeOut.setToValue(0.0);
             fadeOut.setOnFinished(event -> primaryStage.close());
             fadeOut.play();
-        });
-
-        primaryStage.setOnCloseRequest(event -> {
-            GameScene.cleanup();
-            Platform.exit();
-            System.exit(0);
         });
 
         VBox menuBox = new VBox(18,
