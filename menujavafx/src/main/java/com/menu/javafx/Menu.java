@@ -175,6 +175,7 @@ public class Menu extends Application {
 
         freeModeButton.setOnAction(e -> {
             Util.animateButtonClick(freeModeButton);
+            FreeModeScene.show(primaryStage);
         });
 
         settingsButton.setOnAction(e -> {
