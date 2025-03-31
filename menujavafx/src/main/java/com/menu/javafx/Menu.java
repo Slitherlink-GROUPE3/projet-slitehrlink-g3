@@ -1,34 +1,35 @@
 package com.menu.javafx;
 
-import javafx.scene.control.Label;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.Stop;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import java.io.InputStream;
 import java.util.Stack;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
-import javafx.scene.shape.Rectangle;
-import javafx.geometry.Pos;
-import javafx.geometry.Insets;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
-import javafx.util.Duration;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.Tooltip;
-import java.io.InputStream;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Menu extends Application {
     private static final Stack<Scene> sceneHistory = new Stack<>();
@@ -58,7 +59,7 @@ public class Menu extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Image icon = loadImage("/logo.jpeg");
+        Image icon = loadImage("/vrailogo.png");
         if (icon != null) {
             primaryStage.getIcons().add(icon);
         } else {
@@ -88,7 +89,7 @@ public class Menu extends Application {
             saveCheckPerformed = true;
         }
         if (primaryStage.getIcons().isEmpty()) {
-            Image icon = loadImage("/logo.jpeg");
+            Image icon = loadImage("/vrailogo.png");
             if (icon != null) {
                 primaryStage.getIcons().add(icon);
             }
@@ -121,10 +122,10 @@ public class Menu extends Application {
         titleBox.setAlignment(Pos.CENTER);
 
         ImageView logoView = null;
-        Image logo = loadImage("/logo.jpeg");
+        Image logo = loadImage("/vrailogo.png");
         if (logo != null) {
             logoView = new ImageView(logo);
-            logoView.setFitHeight(60);
+            logoView.setFitHeight(120);
             logoView.setPreserveRatio(true);
         } else {
             Rectangle logoPlaceholder = new Rectangle(60, 60);
