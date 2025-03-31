@@ -136,7 +136,7 @@ public class FreeModeScene {
      * Charge une grille de jeu spécifique
      */
     private static void loadGameGrid(Stage primaryStage, String gridId) {
-        System.out.println("Chargement de la grille: " + gridId);
+        //System.out.println("Chargement de la grille: " + gridId);
         
         // Vérifier si une sauvegarde existe pour cette grille
         if (GameSaveManager.hasSavedGame(gridId)) {

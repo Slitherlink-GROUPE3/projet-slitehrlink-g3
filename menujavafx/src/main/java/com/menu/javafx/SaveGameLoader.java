@@ -49,9 +49,7 @@ public class SaveGameLoader {
             int[][][] gridState) {
         // Sauvegarder les données de la partie
         savedGridState = gridState;
-        System.out.println("État chargé depuis la sauvegarde: " +
-                (savedGridState != null ? savedGridState.length + "x" +
-                        savedGridState[0].length + "x" + savedGridState[0][0].length : "null"));
+        //System.out.println("État chargé depuis la sauvegarde: " + (savedGridState != null ? savedGridState.length + "x" + savedGridState[0].length + "x" + savedGridState[0][0].length : "null"));
 
         // Extraire l'ID réel de la grille (enlever le préfixe "grid-" s'il existe)
         String actualGridId = gridId;
@@ -63,12 +61,9 @@ public class SaveGameLoader {
         savedElapsedTime = elapsedTime;
 
         // Afficher la scène de jeu avec les données chargées
-        System.out.println("Affichage de la scène de jeu avec la sauvegarde...");
+        //System.out.println("Affichage de la scène de jeu avec la sauvegarde...");
         // Log gridState details
-        System.out.println("Loading grid state with dimensions: " + 
-                         gridState.length + "x" + 
-                         gridState[0].length + "x" + 
-                         gridState[0][0].length);
+        //System.out.println("Loading grid state with dimensions: " + gridState.length + "x" + gridState[0].length + "x" + gridState[0][0].length);
                          
         // Count different types of elements
         int lines = 0, crosses = 0, hypotheses = 0;
@@ -83,9 +78,7 @@ public class SaveGameLoader {
                 }
             }
         }
-        System.out.println("Grid contains: " + lines + " lines, " + 
-                          crosses + " crosses, " + 
-                          hypotheses + " hypotheses");
+        //System.out.println("Grid contains: " + lines + " lines, " + crosses + " crosses, " + hypotheses + " hypotheses");
         GameScene.showWithSavedState(primaryStage, actualGridId, gridState, elapsedTime);
     }
 
@@ -99,7 +92,7 @@ public class SaveGameLoader {
 public static void applySegmentState(Line line, int state, SlitherGrid slitherGrid) {
     try {
         // Ajouter un log détaillé pour le débogage
-        System.out.println("Application de l'état " + state + " à la ligne: " + line.getId());
+        //System.out.println("Application de l'état " + state + " à la ligne: " + line.getId());
         
         // D'abord supprimer les croix si elles existent
         slitherGrid.getSlitherlinkGrid().getChildren()
@@ -122,7 +115,7 @@ public static void applySegmentState(Line line, int state, SlitherGrid slitherGr
                     line.setStrokeWidth(3.0);
                 }
                 // Vérifier après l'application
-                System.out.println(" -> Ligne activée: " + slitherGrid.isLineActive(line));
+                //System.out.println(" -> Ligne activée: " + slitherGrid.isLineActive(line));
                 break;
             case CROSS:
                 // Rendre la ligne transparente et ajouter une croix
@@ -188,9 +181,9 @@ public static void applySegmentState(Line line, int state, SlitherGrid slitherGr
                 String topLineKey = "H_" + i + "_" + j;
                 Line topLine = gridLines.get(topLineKey);
                 if (topLine != null) {
-                    if (state[i][j][1] != 0) {
+                    /*if (state[i][j][1] != 0) {
                         System.out.println("Segment haut trouvé: [" + i + "][" + j + "][1] = " + state[i][j][1]);
-                    }
+                    }*/
                     applySegmentState(topLine, state[i][j][1], slitherGrid);
                     foundLines++;
                 }
@@ -199,9 +192,9 @@ public static void applySegmentState(Line line, int state, SlitherGrid slitherGr
                 String rightLineKey = "V_" + i + "_" + (j + 1);
                 Line rightLine = gridLines.get(rightLineKey);
                 if (rightLine != null) {
-                    if (state[i][j][2] != 0) {
+                    /*if (state[i][j][2] != 0) {
                         System.out.println("Segment droit trouvé: [" + i + "][" + j + "][2] = " + state[i][j][2]);
-                    }
+                    }*/
                     applySegmentState(rightLine, state[i][j][2], slitherGrid);
                     foundLines++;
                 }
@@ -210,9 +203,9 @@ public static void applySegmentState(Line line, int state, SlitherGrid slitherGr
                 String bottomLineKey = "H_" + (i + 1) + "_" + j;
                 Line bottomLine = gridLines.get(bottomLineKey);
                 if (bottomLine != null) {
-                    if (state[i][j][3] != 0) {
+                    /*if (state[i][j][3] != 0) {
                         System.out.println("Segment bas trouvé: [" + i + "][" + j + "][3] = " + state[i][j][3]);
-                    }
+                    }*/
                     applySegmentState(bottomLine, state[i][j][3], slitherGrid);
                     foundLines++;
                 }
@@ -221,17 +214,17 @@ public static void applySegmentState(Line line, int state, SlitherGrid slitherGr
                 String leftLineKey = "V_" + i + "_" + j;
                 Line leftLine = gridLines.get(leftLineKey);
                 if (leftLine != null) {
-                    if (state[i][j][4] != 0) {
+                    /*if (state[i][j][4] != 0) {
                         System.out.println("Segment gauche trouvé: [" + i + "][" + j + "][4] = " + state[i][j][4]);
-                    }
+                    }*/
                     applySegmentState(leftLine, state[i][j][4], slitherGrid);
                     foundLines++;
                 }
             }
         }
         
-        System.out.println("Application de l'état terminée: " + foundLines + " segments trouvés sur " + totalLines);
-        System.out.println("Nombre de segments non vides dans l'état: " + nonEmptySegments);
+        //System.out.println("Application de l'état terminée: " + foundLines + " segments trouvés sur " + totalLines);
+        //System.out.println("Nombre de segments non vides dans l'état: " + nonEmptySegments);
         
         // Mettre à jour la matrice de jeu après avoir appliqué tous les états
         slitherGrid.getGameMatrix();

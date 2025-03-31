@@ -128,7 +128,7 @@ public class LineMove extends Move {
         for (String segmentId : segments) {
             Line line = gridLines.get(segmentId);
             if (line != null && line.getStroke() == Color.TRANSPARENT && !slitherGrid.hasCross(line)) {
-                System.out.println("Placement automatique d'une croix sur: " + segmentId);
+                //System.out.println("Placement automatique d'une croix sur: " + segmentId);
                 
                 // Créer une croix
                 CreateCrossMove crossMove = new CreateCrossMove(line, "auto_cross", Color.BLACK, slitherGrid);
@@ -191,7 +191,7 @@ public class LineMove extends Move {
             if (col > 0 && !aTrait(gridLines, "H_" + row + "_" + (col-1)) && !slitherGrid.hasCross(gridLines.get("H_" + row + "_" + (col-1)))) {
                 Line line = gridLines.get("H_" + row + "_" + (col-1));
                 if (line != null) {
-                    System.out.println("Placement automatique d'une croix pour éviter un L: H_" + row + "_" + (col-1));
+                    //System.out.println("Placement automatique d'une croix pour éviter un L: H_" + row + "_" + (col-1));
                     CreateCrossMove crossMove = new CreateCrossMove(line, "auto_cross_L", Color.BLACK, slitherGrid);
                     slitherGrid.addMove(crossMove);
                 }
@@ -204,7 +204,7 @@ public class LineMove extends Move {
             if (col < slitherGrid.getGridCols()-1 && !aTrait(gridLines, "H_" + row + "_" + (col+1)) && !slitherGrid.hasCross(gridLines.get("H_" + row + "_" + (col+1)))) {
                 Line line = gridLines.get("H_" + row + "_" + (col+1));
                 if (line != null) {
-                    System.out.println("Placement automatique d'une croix pour éviter un L: H_" + row + "_" + (col+1));
+                    //System.out.println("Placement automatique d'une croix pour éviter un L: H_" + row + "_" + (col+1));
                     CreateCrossMove crossMove = new CreateCrossMove(line, "auto_cross_L", Color.BLACK, slitherGrid);
                     slitherGrid.addMove(crossMove);
                 }
@@ -224,7 +224,7 @@ public class LineMove extends Move {
             if (row > 0 && !aTrait(gridLines, "V_" + (row-1) + "_" + col) && !slitherGrid.hasCross(gridLines.get("V_" + (row-1) + "_" + col))) {
                 Line line = gridLines.get("V_" + (row-1) + "_" + col);
                 if (line != null) {
-                    System.out.println("Placement automatique d'une croix pour éviter un L: V_" + (row-1) + "_" + col);
+                    //System.out.println("Placement automatique d'une croix pour éviter un L: V_" + (row-1) + "_" + col);
                     CreateCrossMove crossMove = new CreateCrossMove(line, "auto_cross_L", Color.BLACK, slitherGrid);
                     slitherGrid.addMove(crossMove);
                 }
@@ -237,7 +237,7 @@ public class LineMove extends Move {
             if (row < slitherGrid.getGridRows()-1 && !aTrait(gridLines, "V_" + (row+1) + "_" + col) && !slitherGrid.hasCross(gridLines.get("V_" + (row+1) + "_" + col))) {
                 Line line = gridLines.get("V_" + (row+1) + "_" + col);
                 if (line != null) {
-                    System.out.println("Placement automatique d'une croix pour éviter un L: V_" + (row+1) + "_" + col);
+                    //System.out.println("Placement automatique d'une croix pour éviter un L: V_" + (row+1) + "_" + col);
                     CreateCrossMove crossMove = new CreateCrossMove(line, "auto_cross_L", Color.BLACK, slitherGrid);
                     slitherGrid.addMove(crossMove);
                 }

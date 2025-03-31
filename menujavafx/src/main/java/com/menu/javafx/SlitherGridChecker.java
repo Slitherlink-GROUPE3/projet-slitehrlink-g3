@@ -42,22 +42,22 @@ public class SlitherGridChecker {
         }
 
         // Debug: Imprimer le nombre de lignes actives et leurs couleurs
-        System.out.println("Nombre de lignes actives : " + activeLines.size());
+        /*System.out.println("Nombre de lignes actives : " + activeLines.size());
         for (Line line : activeLines) {
             System.out.println("Ligne active : " + line.getId() + " - Couleur : " + line.getStroke());
-        }
+        }*/
 
         // Vérifier les nombres de cellules
         boolean numbersCheck = checkNumbers();
-        System.out.println("Vérification des nombres : " + numbersCheck);
+        //System.out.println("Vérification des nombres : " + numbersCheck);
 
         // Vérifier le circuit fermé
         boolean singleLoopCheck = checkSingleClosedLoop(activeLines);
-        System.out.println("Vérification du circuit fermé : " + singleLoopCheck);
+        //System.out.println("Vérification du circuit fermé : " + singleLoopCheck);
 
         // Vérifier la connexité des cellules
         boolean cellsCheck = areCellsFullyConnected(activeLines);
-        System.out.println("Vérification des cellules : " + cellsCheck);
+        //System.out.println("Vérification des cellules : " + cellsCheck);
 
         // Debug: Vérifier chaque cellule individuellement
         for (int i = 0; i < slitherGrid.gridRows; i++) {
@@ -65,7 +65,7 @@ public class SlitherGridChecker {
                 int number = slitherGrid.gridNumbers[i][j];
                 if (number != -1) {
                     int lineCount = countAdjacentLines(i, j);
-                    System.out.println("Cellule [" + i + "," + j + "] : nombre attendu = " + number + ", lignes actuelles = " + lineCount);
+                    //System.out.println("Cellule [" + i + "," + j + "] : nombre attendu = " + number + ", lignes actuelles = " + lineCount);
                 }
             }
         }
@@ -101,7 +101,7 @@ public class SlitherGridChecker {
         Line topLine = slitherGrid.gridLines.get(topLineKey);
         if (topLine != null && topLine.getStroke() != null && !topLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
-            System.out.println("Ligne du haut [" + topLineKey + "] est active");
+            //System.out.println("Ligne du haut [" + topLineKey + "] est active");
         }
 
         // Vérifier la ligne du bas
@@ -109,7 +109,7 @@ public class SlitherGridChecker {
         Line bottomLine = slitherGrid.gridLines.get(bottomLineKey);
         if (bottomLine != null && bottomLine.getStroke() != null && !bottomLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
-            System.out.println("Ligne du bas [" + bottomLineKey + "] est active");
+            //System.out.println("Ligne du bas [" + bottomLineKey + "] est active");
         }
 
         // Vérifier la ligne de gauche
@@ -117,7 +117,7 @@ public class SlitherGridChecker {
         Line leftLine = slitherGrid.gridLines.get(leftLineKey);
         if (leftLine != null && leftLine.getStroke() != null && !leftLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
-            System.out.println("Ligne de gauche [" + leftLineKey + "] est active");
+            //System.out.println("Ligne de gauche [" + leftLineKey + "] est active");
         }
 
         // Vérifier la ligne de droite
@@ -125,7 +125,7 @@ public class SlitherGridChecker {
         Line rightLine = slitherGrid.gridLines.get(rightLineKey);
         if (rightLine != null && rightLine.getStroke() != null && !rightLine.getStroke().equals(Color.TRANSPARENT)) {
             count++;
-            System.out.println("Ligne de droite [" + rightLineKey + "] est active");
+            //System.out.println("Ligne de droite [" + rightLineKey + "] est active");
         }
 
         return count;

@@ -16,13 +16,13 @@ public class HypothesisConfirmMove extends Move{
 
     @Override
     public void redoMove() {
-        System.out.println(" Redo Hypothesis ");
+        //System.out.println(" Redo Hypothesis ");
         this.slitherGridChecker.checkGridAutomatically();
     }
 
     @Override
     public void undoMove() {
-        System.out.println(" Undo Hypothesis ");
+        //System.out.println(" Undo Hypothesis ");
 
         slitherGrid.getSlitherlinkGrid().getChildren()
                 .removeIf(node -> node instanceof Line && "hypothesis".equals(((Line) node).getUserData()));

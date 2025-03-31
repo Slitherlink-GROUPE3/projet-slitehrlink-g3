@@ -155,7 +155,7 @@ public class SlitherGrid {
 
     public void cancelHypothesis(){
         removeHypothesisFromHistory();
-        System.out.println("moveHistory = " + moveHistory);
+        //System.out.println("moveHistory = " + moveHistory);
         for (Map.Entry<Line, Color> entry : originalLineStates.entrySet()) {
             entry.getKey().setStroke(entry.getValue());
         }
@@ -228,7 +228,7 @@ public class SlitherGrid {
                         
                         if (placeTraitInterdit) {
                             // Si le trait n'est pas autorisé, placer une croix à la place
-                            System.out.println("Trait non autorisé, placement d'une croix à la place");
+                            //System.out.println("Trait non autorisé, placement d'une croix à la place");
                             CreateCrossMove crossMove = new CreateCrossMove(line, "auto_cross", Color.BLACK, this);
                             
                             // Ajouter le mouvement à l'historique

@@ -62,9 +62,9 @@ public class Menu extends Application {
         Image icon = loadImage("/vrailogo.png");
         if (icon != null) {
             primaryStage.getIcons().add(icon);
-        } else {
+        } /*else {
             System.out.println("Impossible de charger l'icône");
-        }
+        }*/
 
         primaryStage.setMinWidth(900);
         primaryStage.setMinHeight(700);
@@ -74,14 +74,14 @@ public class Menu extends Application {
             try {
                 // 1. Essayer de sauvegarder si une partie est en cours
                 if (GameScene.isGameActive()) {
-                    System.out.println("Partie en cours, sauvegarde automatique avant fermeture.");
+                    //System.out.println("Partie en cours, sauvegarde automatique avant fermeture.");
                     int elapsedTimeSeconds = GameScene.getElapsedTime();
                     String gridId = GameScene.getCurrentGridId();
                     int techniqueCount = GameScene.getTechniqueCounter();
                     
                     if (gridId != null && !gridId.isEmpty()) {
                         GameSaveManager.saveGame("grid-" + gridId, elapsedTimeSeconds, techniqueCount, true);
-                        System.out.println("Sauvegarde automatique effectuée: " + gridId);
+                        //System.out.println("Sauvegarde automatique effectuée: " + gridId);
                     }
                 }
             } catch (Exception e) {
@@ -107,10 +107,9 @@ public class Menu extends Application {
 
         // Only check for saves if we haven't done it already since login
         if (!saveCheckPerformed && username != null) {
-            System.out.println("Vérification des sauvegardes pour " + username);
+            //System.out.println("Vérification des sauvegardes pour " + username);
             boolean saveLoaded = com.menu.javafx.SaveGameLoader.loadUserSave(primaryStage);
-            System.out.println(
-                    "Résultat de la vérification: " + (saveLoaded ? "Sauvegarde chargée" : "Pas de sauvegarde chargée"));
+            //System.out.println("Résultat de la vérification: " + (saveLoaded ? "Sauvegarde chargée" : "Pas de sauvegarde chargée"));
             saveCheckPerformed = true;
         }
         if (primaryStage.getIcons().isEmpty()) {
@@ -158,7 +157,7 @@ public class Menu extends Application {
             logoPlaceholder.setArcWidth(15);
             logoPlaceholder.setArcHeight(15);
             logoView = new ImageView();
-            System.out.println("Impossible de charger le logo");
+            //System.out.println("Impossible de charger le logo");
         }
 
         HBox headerBox = new HBox(20, logoView, titleBox);

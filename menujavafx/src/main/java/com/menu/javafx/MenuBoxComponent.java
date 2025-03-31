@@ -29,7 +29,7 @@ public class MenuBoxComponent {
                         hintScene.show(stage);
                         break;
                     default:
-                        System.out.println("Aucune scène assignée pour " + item);
+                        //System.out.println("Aucune scène assignée pour " + item);
                 }
             });
 

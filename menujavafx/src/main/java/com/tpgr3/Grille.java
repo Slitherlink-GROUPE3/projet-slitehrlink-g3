@@ -69,10 +69,10 @@ public class Grille {
         }
 
         // Affichage des statistiques d'initialisation
-        System.out.println("\n\nGrille initialisée");
+        /*System.out.println("\n\nGrille initialisée");
         System.out.println("Nombre de cases créées: " + nbCase);
         System.out.println("Nombre de slots créés: " + nbSlot);
-        System.out.println("Nombre de cases vides créées: " + nbVide);
+        System.out.println("Nombre de cases vides créées: " + nbVide);*/
     }
 
     /**
@@ -80,7 +80,7 @@ public class Grille {
      */
     public void reinitialiser() {
         initialiserGrille(valeurs);
-        System.out.println("Grille réinitialisée aux valeurs par défaut");
+        //System.out.println("Grille réinitialisée aux valeurs par défaut");
     }
 
     /**

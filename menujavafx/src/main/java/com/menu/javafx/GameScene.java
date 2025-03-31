@@ -167,11 +167,9 @@ public class GameScene {
      * @param elapsedTime  Le temps écoulé à restaurer
      */
     public static void showWithSavedState(Stage primaryStage, String gridId, int[][][] gridState, int elapsedTime) {
-        System.out.println("Chargement avec état sauvegardé - Grille: " + gridId);
-        System.out.println("État: "
-                + (gridState != null ? gridState.length + "x" + gridState[0].length + "x" + gridState[0][0].length
-                        : "null"));
-        System.out.println("Temps écoulé: " + elapsedTime + " secondes");
+        //System.out.println("Chargement avec état sauvegardé - Grille: " + gridId);
+        //System.out.println("État: " + (gridState != null ? gridState.length + "x" + gridState[0].length + "x" + gridState[0][0].length : "null"));
+        //System.out.println("Temps écoulé: " + elapsedTime + " secondes");
 
         // Charger la grille depuis le fichier JSON
         savedGridState = gridState;
@@ -635,7 +633,7 @@ public class GameScene {
                 SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
         saveButton.setOnAction(e -> {
             Util.animateButtonClick(saveButton);
-            System.out.println("Nombre de techniqueCounter" + techniqueCounter);
+            //System.out.println("Nombre de techniqueCounter" + techniqueCounter);
             if (GameSaveManager.saveGame("grid-" + gridId, savedElapsedTime > 0 ? savedElapsedTime : 0, techniqueCounter, false)) {
                 GameSaveManager.showSaveNotification(slitherGrid.getSlitherlinkGrid());
             }
@@ -699,7 +697,7 @@ public class GameScene {
             // Recréer la grille de jeu
             slitherGrid.getSlitherlinkGrid().getChildren()
                     .removeIf(node -> node instanceof Line);
-            System.out.println(slitherGrid.getSlitherlinkGrid());
+            //System.out.println(slitherGrid.getSlitherlinkGrid());
     
             // Reconstruire la grille
             slitherGrid.updateGrid(scene.getWidth(), scene.getHeight());
