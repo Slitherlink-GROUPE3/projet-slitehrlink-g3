@@ -199,7 +199,7 @@ public class GameScene {
     
         // Charger la grille depuis le fichier JSON
         int[][] gridNumbers = loadGridFromJson("grids/" + gridIdForLoading + ".json");
-        slitherGrid = new SlitherGrid(gridNumbers, primaryStage);
+        slitherGrid = new SlitherGrid(gridNumbers);
         gameMatrix = slitherGrid.getGameMatrix();
 
 
@@ -233,12 +233,10 @@ public class GameScene {
                     
                     // Calculer le score (temps en secondes * 2)
                     int scoreValue = secondsElapsed[0] * 2;
-
+    
                     javafx.application.Platform.runLater(() -> {
                         topBar.updateChronometer(minutes, seconds);
                         topBar.updateScore(scoreValue);  // Mettre à jour le score
-                        slitherGrid.getSlitherGridChecker().setScore(topBar.score);
-
                     });
                 }
                 // Si en pause, ne rien faire - le temps ne s'incrémente pas
@@ -261,24 +259,16 @@ public class GameScene {
 
         // Créer les composants principaux
         mainLayer = new VBox();
-        mainLayer.setStyle(
-            "-fx-background-color: linear-gradient(to bottom right, " + 
-            LIGHT_SECONDARY_COLOR + ", " + LIGHT_LIGHT_COLOR + " 70%);"
-        );
+        mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
 
         root = new HBox();
         slitherGrid.setSlitherlinkGrid(new Pane());
         gridContainer = new StackPane(slitherGrid.getSlitherlinkGrid());
     
         gridContainer.setStyle(
-            "-fx-background-color: white;" +
-            "-fx-background-radius: 15;" +
-            "-fx-border-color: " + LIGHT_MAIN_COLOR + ";" + // Vert principal
-            "-fx-border-width: 2;" +
-            "-fx-border-radius: 15;" +
-            "-fx-padding: 40;" +
-            "-fx-alignment: center;"
-        );
+                "-fx-background-color: rgba(255, 255, 255, 0.9);" +
+                "-fx-background-radius: 15;" +
+                "-fx-padding: 20;");
     
         DropShadow gridShadow = new DropShadow();
         gridShadow.setColor(Color.web("#000000", 0.2));
@@ -292,14 +282,9 @@ public class GameScene {
         buttonBox.setPadding(new Insets(30));
         buttonBox.setMaxWidth(350);
         buttonBox.setStyle(
-            "-fx-background-color: rgba(58, 125, 68, 0.1);" + // Translucent main color
-            "-fx-background-radius: 15;" +
-            "-fx-border-color: " + LIGHT_DARK_COLOR + ";" + // Vert foncé
-            "-fx-border-width: 1;" +
-            "-fx-border-radius: 15;" +
-            "-fx-padding: 20;" +
-            "-fx-effect: dropshadow(gaussian, rgba(56, 102, 65, 0.2), 5, 0, 0, 2);"
-        );
+                "-fx-background-color: rgba(255, 255, 255, 0.8);" +
+                "-fx-background-radius: 15;" +
+                "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);");
     
         Label controlsTitle = new Label("Contrôles");
         controlsTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
@@ -626,28 +611,20 @@ public class GameScene {
                 crossAutoButton, saveButton, createSeparator(), historyContainer);
 
         gridContainer.setPadding(new Insets(20));
-        gridContainer.setAlignment(Pos.CENTER);
         gridContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.65));
-        buttonBox.prefWidthProperty().bind(root.widthProperty().multiply(0.3));
-
-        HBox contentContainer = new HBox(30);
-        contentContainer.setAlignment(Pos.CENTER);
-        contentContainer.setPadding(new Insets(40, 20, 20, 20));
     
-        root.setSpacing(50);
+        root.setSpacing(30);
         root.setPadding(new Insets(20));
-        root.setAlignment(Pos.CENTER);
-        root.getChildren().clear();
-        contentContainer.getChildren().addAll(gridContainer, buttonBox);
-        root.getChildren().add(contentContainer);
+        root.getChildren().addAll(gridContainer, buttonBox);
     
         root.setStyle(
-            "-fx-background-color: " + LIGHT_SECONDARY_COLOR + ";" + // Beige clair
-            "-fx-padding: 20;"
-        );
+                "-fx-background-color: linear-gradient(to bottom right, " + SlitherGrid.SECONDARY_COLOR + ", "
+                        + SlitherGrid.LIGHT_COLOR
+                        + " 70%);" +
+                "-fx-background-radius: 0;" +
+                "-fx-padding: 20px;");
     
         mainLayer.getChildren().add(root);
-
     
         // Créer la scène APRÈS avoir configuré tous les composants principaux
         Scene scene = new Scene(mainLayer, Screen.getPrimary().getVisualBounds().getWidth(),
