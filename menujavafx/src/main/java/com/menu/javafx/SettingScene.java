@@ -102,15 +102,15 @@ public class SettingScene {
         Button changeAccountButton = Util.createStyledButton("Changer de compte", false, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         
         // Boutons de mode avec état actif/inactif selon le mode courant
-        Button darkModeButton = Util.createStyledButton("Mode sombre", isDarkMode, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
-        Button lightModeButton = Util.createStyledButton("Mode clair", !isDarkMode, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
+        //Button darkModeButton = Util.createStyledButton("Mode sombre", isDarkMode, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
+        //Button lightModeButton = Util.createStyledButton("Mode clair", !isDarkMode, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         
         // Désactiver le bouton du mode actif
-        if (isDarkMode) {
+        /*if (isDarkMode) {
             darkModeButton.setDisable(true);
         } else {
             lightModeButton.setDisable(true);
-        }
+        }*/
         
         Button quitButton = Util.createStyledButton("Quitter", true, MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         
@@ -141,7 +141,8 @@ public class SettingScene {
             // première connexion, par exemple :
             // LoginScene.show(primaryStage, true); // true indique un changement de compte
         });
-        
+
+        /* 
         // Action pour activer le mode sombre
         darkModeButton.setOnAction(e -> {
             Util.animateButtonClick(darkModeButton);
@@ -161,7 +162,7 @@ public class SettingScene {
             isDarkMode = false;
             saveThemePreference(false); // Sauvegarde la préférence
             show(primaryStage); // Rafraîchit l'interface avec le nouveau thème
-        });
+        });*/
         
         quitButton.setOnAction(e -> {
             Util.animateButtonClick(quitButton);
@@ -174,9 +175,9 @@ public class SettingScene {
                 createSeparator(),
                 saveButton,
                 changeAccountButton,
-                createSeparator(),
-                darkModeButton,
-                lightModeButton,
+                //createSeparator(),
+                //darkModeButton,
+                //lightModeButton,
                 createSeparator(),
                 quitButton
         );
@@ -260,7 +261,7 @@ public class SettingScene {
         separator.setArcHeight(2);
         return separator;
     }
-
+    
     /**
      * Vérifie si le mode sombre est actif (peut être appelé par d'autres classes)
      * @return true si le mode sombre est actif, false sinon
