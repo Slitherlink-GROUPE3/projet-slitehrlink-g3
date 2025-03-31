@@ -38,6 +38,7 @@ import javafx.application.Platform;
 import javafx.util.Duration;
 import com.tpgr3.Techniques.Techniques;
 import com.menu.javafx.TechniqueDescriptions;
+import com.menu.javafx.AutoCrossButton;
 import javafx.scene.effect.DropShadow;
 import javafx.geometry.Insets;
 import java.util.Map;
@@ -232,7 +233,9 @@ public class GameScene {
         Label controlsTitle = new Label("Contrôles");
         controlsTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
         controlsTitle.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
-    
+
+        Button crossAutoButton = AutoCrossButton.createAutoCrossButton(slitherGrid, mainLayer, gridContainer);
+      
         Button helpButton = Util.createStyledButton("   AIDE   ?  ", false, SlitherGrid.MAIN_COLOR,
                 SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
     
@@ -547,10 +550,10 @@ public class GameScene {
         // Conteneur pour les boutons de navigation
         HBox historyContainer = new HBox(15, slitherGrid.getPrevButton(), slitherGrid.getNextButton());
         historyContainer.setAlignment(Pos.CENTER);
-    
-        buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpContainer,
-                hypothesisButton, saveButton, createSeparator(), historyContainer);
-    
+
+        buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpContainer, checkContainer, hypothesisButton,
+                crossAutoButton, saveButton, createSeparator(), historyContainer);
+
         gridContainer.setPadding(new Insets(20));
         gridContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.65));
     
