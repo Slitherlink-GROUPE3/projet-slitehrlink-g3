@@ -95,7 +95,7 @@ public class AutoCrossButton {
                 applyTech0Rule(slitherGrid, mainLayer, gridContainer);
                 applyMaxValueRule(slitherGrid, mainLayer, gridContainer);
                 
-                showNotification(mainLayer, gridContainer, "Mode croix automatiques activé", 
+                showNotification(mainLayer, gridContainer, "Mode croix automatiques désactivé", 
                         SlitherGrid.MAIN_COLOR);
             }
         });
