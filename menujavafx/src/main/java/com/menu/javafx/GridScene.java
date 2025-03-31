@@ -123,7 +123,7 @@ public class GridScene {
                         GameSaveManager.loadGame(primaryStage, gridId);
                     } else {
                         // Start new level
-                        GameScene.show(primaryStage, "-1");
+                        GameScene.show(primaryStage, levelString);
                     }
                 });
             } else {

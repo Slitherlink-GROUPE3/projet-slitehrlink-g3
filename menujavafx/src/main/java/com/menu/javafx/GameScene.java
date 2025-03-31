@@ -77,6 +77,9 @@ public class GameScene {
     private static int techniqueCounter = 3; // Compteur de techniques limité à 3
     private static Text techniqueCountDisplay;
 
+    private static boolean gameActive = false; // Indicateur pour savoir si le jeu est actif
+    private static int elapsedTimeSeconds = 0;
+
     private static java.util.Timer gameTimer;
 
     private static String currentGridId = "001"; // Store the current grid ID for saving/loading
@@ -177,6 +180,10 @@ public class GameScene {
     }
 
     public static void show(Stage primaryStage, String... newGridId) {
+
+        // Le jeu est actif
+        gameActive = true;
+
         applyTheme();
 
         PauseMenu.setGamePaused(false);
@@ -194,7 +201,7 @@ public class GameScene {
         slitherGrid = new SlitherGrid(gridNumbers);
         gameMatrix = slitherGrid.getGameMatrix();
 
-        if(newGridId != null && newGridId.length > 0 && "-1".equals(newGridId[0])) {
+        if (newGridId != null && newGridId.length > 0 && "-1".equals(newGridId[0])) {
             slitherGrid.reset();
         }
 
@@ -218,6 +225,7 @@ public class GameScene {
                 // Vérifier si le jeu est en pause
                 if (!PauseMenu.isGamePaused()) {
                     secondsElapsed[0]++;
+                    elapsedTimeSeconds = secondsElapsed[0];
                     int minutes = secondsElapsed[0] / 60;
                     int seconds = secondsElapsed[0] % 60;
 
@@ -782,6 +790,15 @@ public class GameScene {
     }
 
     /**
+     * Vérifie si une partie est active
+     * 
+     * @return true si une partie est en cours, false sinon
+     */
+    public static boolean isGameActive() {
+        return gameActive;
+    }
+
+    /**
      * Nettoie les ressources du jeu (à appeler avant de quitter)
      */
     public static void cleanup() {
@@ -804,5 +821,17 @@ public class GameScene {
 
         // Réinitialiser l'état sauvegardé
         savedElapsedTime = 0;
+    }
+
+    /**
+     * Récupère le temps écoulé du chronomètre en secondes
+     * 
+     * @return Le temps écoulé en secondes, ou 0 si aucun jeu n'est actif
+     */
+    public static int getElapsedTime() {
+        if (!gameActive) {
+            return 0;
+        }
+        return elapsedTimeSeconds > 0 ? elapsedTimeSeconds : savedElapsedTime;
     }
 }
