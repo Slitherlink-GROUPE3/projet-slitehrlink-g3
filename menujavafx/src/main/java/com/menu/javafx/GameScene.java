@@ -194,6 +194,10 @@ public class GameScene {
         slitherGrid = new SlitherGrid(gridNumbers);
         gameMatrix = slitherGrid.getGameMatrix();
 
+        if(newGridId != null && newGridId.length > 0 && "-1".equals(newGridId[0])) {
+            slitherGrid.reset();
+        }
+
         mainLayer = new VBox();
         mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
 
