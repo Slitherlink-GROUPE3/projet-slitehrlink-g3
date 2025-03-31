@@ -10,7 +10,7 @@ Ce document présente l'analyse de la réalisation du projet Slitherlink par rap
 
 | Fonctionnalité | Statut | Commentaires |
 |----------------|--------|-------------|
-| BF 01.1 : Aide par pop-up |  🟢️Implémenté | Des instructions textuelles sont affichées dans le panneau d'instructions via les méthodes `addInstructionParagraph` et `addInstructionHighlight` |
+| BF 01.1 : Aide par pop-up |  🟢️ Implémenté | Des instructions textuelles sont affichées dans le panneau d'instructions via les méthodes `addInstructionParagraph` et `addInstructionHighlight` |
 | BF 01.2 : Aide par surlignage | 🔴️ Non implémenté | La méthode `highlightLine` permet de mettre en évidence des segments spécifiques de la grille |
 | BF 01.3 : Aide visuelle | 🟡️ Implémenté uniquement dans le tutoriel | Des animations sont utilisées pour attirer l'attention (clignotement des lignes via `FadeTransition`) |
 | BF 01.4 : Limite d'aide | 🟢️ Implémentée | Le nombre d'aides est compté avec la fonction checkCounter |
@@ -23,8 +23,8 @@ Ce document présente l'analyse de la réalisation du projet Slitherlink par rap
 
 | Fonctionnalité | Statut | Commentaires |
 |----------------|--------|-------------|
-| BF 02.1 : Calcul du score | 🔴️ Non implémenté | le score n'est pas calculé |
-| BF 02.2 : Chronomètre | 🟡️ Partiellement implémenté | Le temps est enregistré dans les sauvegardes (`SaveMetadata.elapsedTime`) mais n'est pas utilisé pour le score |
+| BF 02.1 : Calcul du score | 🟢️ Implémenté | Formule calculant le score : $$score = \frac{10}{\sqrt{temps + 0.5}} \times 1000 \times \left( 1 - (aides \times 0.1) \right)$$ |
+| BF 02.2 : Chronomètre | 🟢️ Implémenté | Le temps est enregistré dans les sauvegardes (`SaveMetadata.elapsedTime`) |
 
 **Fonctionnement**: Le chronomètre est implémenté via un timer dans `GameScene.java`. Le temps écoulé est stocké dans une variable et mis à jour régulièrement. Lors d'une sauvegarde, ce temps est enregistré dans l'objet JSON via `saveData.put("elapsedTime", seconds)` dans `GameSaveManager.saveGame()`. Ce temps est ensuite stocké dans les métadonnées de sauvegarde (`SaveMetadata.elapsedTime`). Il est également formaté pour affichage via la méthode `getFormattedTime()` qui convertit les secondes en format "MM:SS". Cependant, ce temps n'est pas utilisé pour calculer un score comme prévu dans le cahier des charges.
 
@@ -34,21 +34,21 @@ Ce document présente l'analyse de la réalisation du projet Slitherlink par rap
 | Fonctionnalité | Statut | Commentaires |
 |----------------|--------|-------------|
 | BF 03.1 : Grilles par difficulté |🟢️ Implémenté | Seulement les 2 premières lignes sont jouables, le reste est implémenté mais pas encore fonctionnel |
-| BF 03.11 : Mode histoire | 🟢️ Implémenté | (mode aventure) |
-| BF 03.12 : Mode libre | 🔴️ Non implémenté | A faire |
+| BF 03.11 : Mode histoire | 🟢️ Implémenté | Mode histoire gérée par le fichier progression.json de chaque joueur |
+| BF 03.12 : Mode libre | 🟢️ Implémenté | Choix d'une grille entre facile, moyen ou difficile |
 
-**Fonctionnement**: Les grilles sont stockées dans des fichiers JSON dans le dossier "grids/". La classe `GameScene` charge ces grilles à l'aide de la méthode `loadGridFromJson()`. Les grilles sont identifiées par des noms standardisés (ex: "grid-001.json"). La sélection des grilles est gérée dans une interface utilisateur qui permet de choisir parmi les grilles disponibles. Le chargement est effectué dans `GameScene.show(Stage primaryStage, String gridId)` qui initialise la scène de jeu avec la grille correspondant à l'ID fourni.
+**Fonctionnement**: Les modes de jeu sont implémentés via une architecture modulaire. Les grilles sont classées par difficulté (facile, moyen, difficile) et stockées dans le dossier "grids/" au format JSON. Le mode histoire suit une progression linéaire gérée par le fichier `progression.json` propre à chaque utilisateur, qui enregistre les niveaux complétés. Ce système permet de débloquer progressivement de nouvelles grilles à mesure que le joueur avance. Le mode libre, accessible depuis le menu principal, offre au joueur la possibilité de sélectionner n'importe quelle grille disponible parmi les différentes catégories de difficulté. La classe `GameScene` est responsable du chargement des grilles via la méthode `loadGridFromJson()`.
 
 ### BF 04 : Système de sauvegarde
 
 | Fonctionnalité | Statut | Commentaires |
 |----------------|--------|-------------|
-| BF 04.1 : Sauvegarde par utilisateur | 🟢️ Implémenté  | La classe `GameSaveManager` permet des sauvegardes par utilisateur,  |
-| BF 04.2 : Sauvegarde après chaque coup | implémenté |La grille est sauvegardé a chaque coup avec la fonction `saveGame()` |
+| BF 04.1 : Sauvegarde par utilisateur | 🟢️ Implémenté  | La classe `GameSaveManager` permet des sauvegardes par utilisateur, stockées dans le dossier de chaque utilisateur |
+| BF 04.2 : Sauvegarde automatique | 🟢️ Implémenté | Sauvegarde automatique en revenant au menu ou en quittant le jeu via les méthodes `saveGame()` et `autoSave()` |
 | BF 04.3 : Sauvegarde globale | 🟢️ Implémenté | Le système de sauvegarde conserve l'état global du jeu |
 | BF 04.4 : Sauvegarde des grilles | 🟢️ Implémenté | Des sauvegardes spécifiques aux grilles sont possibles mais ne sauvegarde pas si on recommence la partie (garde la grille finie) |
 
-**Fonctionnement**: Les sauvegardes sont organisées dans des dossiers par utilisateur `(saves/username/)`. remplace par Les sauvegardes sont organisées dans les dossiers des utilisateurs `(users/username/saves/)`. Fonctionnement: La gestion des utilisateurs est implémentée dans `UserManager.java` qui utilise un fichier texte simple `slitherlink_users.txt` pour stocker les noms d’utilisateurs. Remplace par Fonctionnement: La gestion des utilisateurs est implémentée dans `UserManager`.java lorsque un nouvel utilisateur se connecte un dossier contenant sa progression ainsi que ses futurs sauvegardes est crée dans le dossier `users/`
+**Fonctionnement**: Les sauvegardes sont gérées par la classe `GameSaveManager.java` qui stocke les données dans le dossier propre à chaque utilisateur (`users/username/saves/`). Chaque sauvegarde contient l'état complet de la grille (lignes placées, croix) et les métadonnées (temps écoulé, nombre d'aides utilisées). Le système utilise le format JSON pour stocker ces informations avec une structure claire: les segments sont identifiés par leurs coordonnées, et leur état (ligne, croix ou vide) est enregistré. La sauvegarde automatique se déclenche lors du retour au menu ou à la fermeture du jeu via la méthode `autoSave()`. Le chargement d'une partie sauvegardée est effectué par `loadGame()` qui reconstruit l'état exact de la grille et restaure toutes les interactions précédentes. Le système vérifie également si une grille a été complétée pour éviter de charger des grilles terminées comme parties en cours.
 
 ### BF 05 : Vérification et retour
 
@@ -71,7 +71,7 @@ Le système de vérification est bien implémenté mais les fonctionnalités d'a
 | BF 06.1 : Poser des bâtons | 🟢️ Implémenté | Via `drawLine` |
 | BF 06.2 : Poser des croix | 🟢️ Implémenté | Via `placeCross` |
 | BF 06.3 : Afficher l'aide | 🟢️ Implémenté | Les techniques d'aide sont accessibles |
-| BF 06.4 : Placement auto de croix | 🔴️ Non implémenté | Pas de placement automatique de croix |
+| BF 06.4 : Placement auto de croix | 🟢️ Implémenté | Les croix sont automatiquement placées sur les segments inutilisables |
 | BF 06.5 : Système d'hypothèses | 🔴️ Non implémenté | Pas de fonctionnalité de checkpoint |
 | BF 06.7 : Recommencer la grille | 🟢️ Implémenté | Via la méthode `reinitialiser` de la classe `Grille` |
 
@@ -100,7 +100,7 @@ Le système de vérification est bien implémenté mais les fonctionnalités d'a
 
 | Fonctionnalité | Statut | Commentaires |
 |----------------|--------|-------------|
-| Options du jeu | 🟡️ Partiellement implémenté | la page de parametres permet de regler la difficulté, le mode de couleur (sombre ou clair),de sauveguarder,de quitter et d'aller au menu principal. On ne peut cependant pas changer la difficulté, et le mode sombre ne dure pas après la page de parametres |
+| Options du jeu | 🟡️ Partiellement implémenté | La page des paramètres permet de changer le mode de couleur (sombre ou clair), de sauvegarder, de changer de compte et de quitter et d'aller au menu principal. Cependant le mode sombre ne dure pas après la page des paramètres |
 
-**Fonctionnement**: La page des paramètres est implémentée dans `SettingScene.java` qui offre plusieurs fonctionnalités importantes: la gestion des thèmes avec un mode clair et sombre via `applyTheme(boolean darkMode)`, chacun définissant un jeu complet de couleurs pour l'interface; la navigation entre les différentes sections de l'application (menu principal, changement de compte, etc.); Les autres classes devraient pouvoir utiliser  `isDarkModeEnabled()` et `setDarkMode(boolean)` pour maintenir une cohérence visuelle dans toute l'application, mais l'implémentation de ces fonctions n'est pas terminée.
+**Fonctionnement**: La page des paramètres est implémentée dans `SettingScene.java` qui offre plusieurs fonctionnalités importantes: le changement de compte utilisateur via un bouton dédié qui renvoie l'utilisateur à l'écran de connexion, permettant ainsi la gestion de plusieurs profils avec leurs sauvegardes respectives; la gestion des thèmes avec un mode clair et sombre via `applyTheme(boolean darkMode)`, bien que cette fonctionnalité ne persiste pas entre les écrans; et la navigation vers d'autres sections de l'application comme le menu principal. Le système de changement d'utilisateur est directement lié au `UserManager` qui gère les profils et leurs données associées stockées dans le dossier `users/`.
 
