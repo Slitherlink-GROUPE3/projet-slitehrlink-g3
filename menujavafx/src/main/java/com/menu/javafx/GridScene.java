@@ -38,6 +38,8 @@ public class GridScene {
 
     public static void show(Stage primaryStage) {
         // Conteneur principal
+        
+        GameState.choixScene = 0;
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setStyle(

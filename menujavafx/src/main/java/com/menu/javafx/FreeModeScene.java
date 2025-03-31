@@ -32,6 +32,7 @@ public class FreeModeScene {
 
     public static void show(Stage primaryStage) {
         // Conteneur principal
+        GameState.choixScene = 1;
         VBox root = new VBox(40); // Augmenté l'espacement pour un meilleur aspect visuel
         root.setAlignment(Pos.CENTER);
         root.setStyle(

@@ -27,6 +27,7 @@ public class PauseMenu {
     private static int currentSeconds;
     private static TopBar topBar;
     private static boolean isGamePaused = false;
+    private static Button choixGrilleButton;
 
     // Méthode pour sauvegarder l'état actuel
     public static void saveGameState(Scene gameScene, int minutes, int seconds, TopBar gameTopBar) {
@@ -76,11 +77,17 @@ public class PauseMenu {
         });
 
         // Bouton Choix Grille
-        Button choixGrilleButton = createStyledButton("Choix Grille");
+        if(GameState.choixScene == 0)
+            choixGrilleButton = createStyledButton("Choix Niveau");
+        else
+            choixGrilleButton = createStyledButton("Choix Difficulté");
         choixGrilleButton.setTooltip(new javafx.scene.control.Tooltip("Reprendre le jeu"));
         choixGrilleButton.setOnAction(e -> {
             Util.animateButtonClick(choixGrilleButton);
-            GridScene.show(primaryStage);
+            if(GameState.choixScene == 0)
+                GridScene.show(primaryStage);
+            else
+                FreeModeScene.show(primaryStage);
         });
 
         // Bouton "Tutoriel"
