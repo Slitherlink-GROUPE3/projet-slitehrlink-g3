@@ -1,5 +1,7 @@
 package com.tpgr3.Techniques;
 
+import com.menu.javafx.CreateCrossMove;
+import com.menu.javafx.SlitherGrid;
 import com.tpgr3.Grille;
 import javafx.animation.FadeTransition;
 import javafx.scene.effect.Glow;
@@ -15,17 +17,19 @@ import java.util.Map;
 /**
  * Implémentation de la technique de la règle des 0 dans Slitherlink.
  * Quand une cellule contient un 0, aucun segment ne doit être tracé autour de cette cellule.
+ * Cette version place des croix définitives sur la grille.
  */
-public class Tech_0Rule implements Techniques {
+public class Tech_0Rule_V2 implements Techniques {
     private int[][] gridNumbers;
     private Map<String, Line> gridLines;
     private Pane slitherlinkGrid;
     private List<String> segmentsAMarquer;
+    private SlitherGrid slitherGrid;
 
     /**
      * Constructeur par défaut pour l'instanciation réflexive.
      */
-    public Tech_0Rule() {
+    public Tech_0Rule_V2() {
         segmentsAMarquer = new ArrayList<>();
     }
 
@@ -35,11 +39,13 @@ public class Tech_0Rule implements Techniques {
      * @param gridNumbers La grille de nombres
      * @param gridLines Les segments de la grille
      * @param slitherlinkGrid Le panneau contenant la grille
+     * @param slitherGrid La grille de jeu
      */
-    public Tech_0Rule(int[][] gridNumbers, Map<String, Line> gridLines, Pane slitherlinkGrid) {
+    public Tech_0Rule_V2(int[][] gridNumbers, Map<String, Line> gridLines, Pane slitherlinkGrid, SlitherGrid slitherGrid) {
         this.gridNumbers = gridNumbers;
         this.gridLines = gridLines;
         this.slitherlinkGrid = slitherlinkGrid;
+        this.slitherGrid = slitherGrid;
         this.segmentsAMarquer = new ArrayList<>();
     }
 
@@ -140,68 +146,35 @@ public class Tech_0Rule implements Techniques {
             return;
         }
         
-        // Liste pour suivre les croix créées (pour les animations et la suppression)
-        List<Line> allCrossLines = new ArrayList<>();
-        
         // Pour chaque segment à marquer
         for (String lineId : segmentsAMarquer) {
             Line line = gridLines.get(lineId);
             if (line != null) {
-                // Créer des croix rouges (couleur spécifique pour les techniques)
-                Line cross1, cross2;
+                // Utiliser CreateCrossMove pour créer une croix définitive qui peut être retirée
+                new CreateCrossMove(line, "tech_0_rule", Color.BLACK, slitherGrid);
                 
-                if (line.getStartX() == line.getEndX()) { // Ligne verticale
-                    cross1 = new Line(
-                            line.getStartX() - 10, line.getStartY() + 20,
-                            line.getEndX() + 10, line.getEndY() - 20);
-                    cross2 = new Line(
-                            line.getStartX() - 10, line.getEndY() - 20,
-                            line.getEndX() + 10, line.getStartY() + 20);
-                } else { // Ligne horizontale
-                    cross1 = new Line(
-                            line.getStartX() + 20, line.getStartY() - 10,
-                            line.getEndX() - 20, line.getEndY() + 10);
-                    cross2 = new Line(
-                            line.getStartX() + 20, line.getEndY() + 10,
-                            line.getEndX() - 20, line.getStartY() - 10);
-                }
-                
-                // Configuration des croix
-                cross1.setStrokeWidth(3);
-                cross1.setUserData(line);
-                cross1.setStroke(Color.RED); // Rouge pour la technique
-                
-                cross2.setStrokeWidth(3);
-                cross2.setUserData(line);
-                cross2.setStroke(Color.RED); // Rouge pour la technique
-                
-                // Ajouter un effet visuel
-                Glow glow = new Glow(0.8);
-                cross1.setEffect(glow);
-                cross2.setEffect(glow);
-                
-                // Ajouter les croix à la grille
-                slitherlinkGrid.getChildren().addAll(cross1, cross2);
-                
-                // Garder une référence pour l'animation
-                allCrossLines.add(cross1);
-                allCrossLines.add(cross2);
+                // Trouver les croix nouvellement créées pour ajouter l'animation
+                slitherlinkGrid.getChildren().stream()
+                    .filter(node -> node instanceof Line && node.getUserData() == line)
+                    .forEach(cross -> {
+                        // Appliquer un effet temporaire pour mettre en évidence
+                        Glow glow = new Glow(0.8);
+                        cross.setEffect(glow);
+                        
+                        // Animation fade in/out de l'effet
+                        FadeTransition fadeEffect = new FadeTransition(Duration.millis(500), cross);
+                        fadeEffect.setFromValue(0.3);
+                        fadeEffect.setToValue(1.0);
+                        fadeEffect.setCycleCount(3);
+                        fadeEffect.setAutoReverse(true);
+                        fadeEffect.play();
+                        
+                        // Supprimer uniquement l'effet après l'animation
+                        fadeEffect.setOnFinished(event -> {
+                            cross.setEffect(null);
+                        });
+                    });
             }
-        }
-        
-        // Animation de mise en évidence pour toutes les croix créées
-        for (Line crossLine : allCrossLines) {
-            FadeTransition fadeIn = new FadeTransition(Duration.millis(500), crossLine);
-            fadeIn.setFromValue(0.3);
-            fadeIn.setToValue(0.9);
-            fadeIn.setCycleCount(3);
-            fadeIn.setAutoReverse(true);
-            fadeIn.play();
-            
-            // Supprimer la croix après l'animation
-            fadeIn.setOnFinished(event -> {
-                slitherlinkGrid.getChildren().remove(crossLine);
-            });
         }
     }
 }

@@ -208,28 +208,56 @@ public class SlitherGrid {
     public void handleLineClick(MouseEvent e, Line line) {
         if (e.getButton() == MouseButton.PRIMARY) {
             if (!hasCross(line)) { // Vérifie s'il y a une croix
-                toggleLine(line);
-
-                // Si ce n'est pas en mode hypothèse, enregistre le mouvement dans l'historique
-                if (isHypothesisInactive() && !line.getStroke().equals(Color.TRANSPARENT)) {
-
-                    // Vérifier automatiquement si la grille est correcte
-                    slitherGridChecker.checkGridAutomatically();
+                String lineId = line.getId();
+                
+                // Si la ligne est déjà active (a un trait), l'enlever normalement
+                if (isLineActive(line)) {
+                    toggleLine(line); // Enlever le trait
+                    
+                    // Ajouter le mouvement à l'historique
+                    addMove(new LineMove(line, lineId, (Color) line.getStroke(), this));
+                } else {
+                    // Vérifier si le mode des croix automatiques est activé
+                    if (AutoCrossButton.isAutoCrossEnabled()) {
+                        // Si le mode est activé, vérifier si le placement violerait les règles
+                        boolean placeTraitInterdit = traitDepasseValeurCellule(line);
+                        
+                        if (placeTraitInterdit) {
+                            // Si le trait n'est pas autorisé, placer une croix à la place
+                            System.out.println("Trait non autorisé, placement d'une croix à la place");
+                            CreateCrossMove crossMove = new CreateCrossMove(line, "auto_cross", Color.BLACK, this);
+                            
+                            // Ajouter le mouvement à l'historique
+                            addMove(crossMove);
+                            return; // Sortir de la méthode car on a placé une croix
+                        }
+                    }
+                    
+                    // Si le mode est désactivé ou si le trait est autorisé, placer le trait normalement
+                    toggleLine(line);
+                    
+                    // Si ce n'est pas en mode hypothèse, enregistre le mouvement dans l'historique
+                    if (isHypothesisInactive() && !line.getStroke().equals(Color.TRANSPARENT)) {
+                        // Vérifier automatiquement si la grille est correcte
+                        slitherGridChecker.checkGridAutomatically();
+                    }
+                    
+                    // Ajouter le mouvement à l'historique
+                    addMove(new LineMove(line, lineId, (Color) line.getStroke(), this));
                 }
-                addMove(new LineMove(line, "line", (Color) line.getStroke(), this));
             }
         } else if (e.getButton() == MouseButton.SECONDARY) {
             if (!isLineActive(line)) { // Vérifie si une ligne est déjà tracée
                 // Vérifie s'il y a déjà une croix
                 boolean hasCrossAlready = hasCross(line);
-
+    
                 // Si ce n'est pas en mode hypothèse, enregistre le mouvement dans l'historique
                 if (this.isHypothesisInactive()) {
                     // Supprime les mouvements futurs si on était revenu en arrière
                     if (currentMoveIndex < moveHistory.size() - 1) {
                         moveHistory = new ArrayList<>(moveHistory.subList(0, currentMoveIndex + 1));
                     }
-
+    
                     // Ajoute le nouveau mouvement
                     if (hasCrossAlready) {
                         moveHistory.add(new RemoveCrossMove(line, "remove_cross", null, this));
@@ -241,7 +269,101 @@ public class SlitherGrid {
                 }
             }
         }
-
+    }
+    
+    /**
+     * Vérifie si le placement d'un trait dépasserait la valeur d'une cellule adjacente
+     */
+    private boolean traitDepasseValeurCellule(Line line) {
+        String lineId = line.getId();
+        
+        if (lineId == null || lineId.isEmpty()) {
+            return false;
+        }
+        
+        // L'identifiant du segment est de la forme "H_0_0" ou "V_0_0"
+        // Extraire les coordonnées
+        String[] parts = lineId.split("_");
+        if (parts.length != 3) {
+            return false;
+        }
+        
+        try {
+            int row = Integer.parseInt(parts[1]);
+            int col = Integer.parseInt(parts[2]);
+            
+            // Vérifier les cellules adjacentes selon le type de ligne
+            if (lineId.startsWith("H_")) { // Ligne horizontale
+                // Vérifier la cellule au-dessus (si elle existe)
+                if (row > 0 && celluleAtteintValeur(row-1, col)) {
+                    return true;
+                }
+                // Vérifier la cellule en-dessous
+                if (row < gridNumbers.length && celluleAtteintValeur(row, col)) {
+                    return true;
+                }
+            } else if (lineId.startsWith("V_")) { // Ligne verticale
+                // Vérifier la cellule à gauche (si elle existe)
+                if (col > 0 && celluleAtteintValeur(row, col-1)) {
+                    return true;
+                }
+                // Vérifier la cellule à droite
+                if (col < gridNumbers[0].length && celluleAtteintValeur(row, col)) {
+                    return true;
+                }
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Vérifie si une cellule a déjà atteint sa valeur maximale (donc aucun trait supplémentaire ne devrait y être placé)
+     */
+    private boolean celluleAtteintValeur(int row, int col) {
+        // Vérifier si la cellule est valide
+        if (row < 0 || row >= gridNumbers.length || col < 0 || col >= gridNumbers[0].length) {
+            return false;
+        }
+        
+        // Obtenir la valeur de la cellule
+        int valeurCellule = gridNumbers[row][col];
+        if (valeurCellule <= 0) {
+            return false; // Ignorer les cellules sans valeur ou 0
+        }
+        
+        // Compter les traits actuels autour de la cellule
+        int nbTraits = compterTraitsAutourCellule(row, col);
+        
+        // Si le nombre de traits est déjà égal à la valeur, la cellule a atteint sa valeur
+        return nbTraits >= valeurCellule;
+    }
+    
+    /**
+     * Compte le nombre de traits autour d'une cellule
+     */
+    private int compterTraitsAutourCellule(int row, int col) {
+        int count = 0;
+        
+        // Vérifier les 4 segments autour de la cellule
+        if (aTrait("H_" + row + "_" + col)) count++; // Segment du haut
+        if (aTrait("H_" + (row + 1) + "_" + col)) count++; // Segment du bas
+        if (aTrait("V_" + row + "_" + col)) count++; // Segment de gauche
+        if (aTrait("V_" + row + "_" + (col + 1))) count++; // Segment de droite
+        
+        return count;
+    }
+    
+    /**
+     * Vérifie si un segment a un trait.
+     */
+    private boolean aTrait(String lineId) {
+        Line line = gridLines.get(lineId);
+        if (line == null) return false;
+        
+        return line.getStroke() != Color.TRANSPARENT;
     }
 
     public void navigateHistory(int direction) {
