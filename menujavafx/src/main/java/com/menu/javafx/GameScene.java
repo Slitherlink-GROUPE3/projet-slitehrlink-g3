@@ -214,9 +214,7 @@ public class GameScene {
         System.out.println("Logged in as: " + username);
 
         String initialScore = "0";  // Score initial à 0
-
         String level = getLevelFromGridId(gridId);
-        String difficulty = getDifficultyFromLevel(level); // Voir la fonction ci-dessous
         TopBar topBar = new TopBar(primaryStage, username, level, initialScore, slitherGrid);
 
         // Créer un nouveau timer
@@ -232,43 +230,18 @@ public class GameScene {
                     elapsedTimeSeconds = secondsElapsed[0];
                     int minutes = secondsElapsed[0] / 60;
                     int seconds = secondsElapsed[0] % 60;
-
+                    
+                    // Calculer le score (temps en secondes * 2)
+                    int scoreValue = secondsElapsed[0] * 2;
+    
                     javafx.application.Platform.runLater(() -> {
                         topBar.updateChronometer(minutes, seconds);
+                        topBar.updateScore(scoreValue);  // Mettre à jour le score
                     });
                 }
                 // Si en pause, ne rien faire - le temps ne s'incrémente pas
             }
         }, 0, 1000);
-
-        // Configuration du callback de réinitialisation du chronomètre
-        topBar.setChronoResetCallback(() -> {
-            // Réinitialiser le compteur de secondes
-            secondsElapsed[0] = 0;
-
-            // Réinitialiser l'affichage du chronomètre (optionnel car sera mis à jour au
-            // prochain tick)
-            javafx.application.Platform.runLater(() -> {
-                topBar.updateChronometer(0, 0);
-            });
-        });
-
-        // Configuration du callback pour réinitialiser la grille
-        topBar.setGridResetCallback(() -> {
-
-            savedGridState = null;
-
-            // Recréer la grille de jeu
-            slitherGrid.getSlitherlinkGrid().getChildren()
-                    .removeIf(node -> node instanceof Line);
-            System.out.println(slitherGrid.getSlitherlinkGrid());
-
-            // Reconstruire la grille
-            slitherGrid.updateGrid(root.getScene().getWidth(), root.getScene().getHeight());
-
-            // Mettre à jour les boutons d'historique
-            slitherGrid.updateHistoryButtons();
-        });
 
         // Si un état sauvegardé est disponible, l'appliquer à la grille
         if (savedGridState != null) {
@@ -982,27 +955,6 @@ public class GameScene {
         fadeIn.play();
     
         checkStage.show();
-    }
-
-    /**
-     * Détermine la difficulté en fonction du niveau
-     * 
-     * @param level Le niveau sous forme de chaîne
-     * @return Une description de la difficulté
-     */
-    private static String getDifficultyFromLevel(String level) {
-        try {
-            int levelNum = Integer.parseInt(level);
-            if (levelNum <= 5)
-                return "Facile";
-            if (levelNum <= 10)
-                return "Moyen";
-            if (levelNum <= 15)
-                return "Difficile";
-            return "Expert";
-        } catch (NumberFormatException e) {
-            return "Facile"; // Par défaut
-        }
     }
 
     /**
