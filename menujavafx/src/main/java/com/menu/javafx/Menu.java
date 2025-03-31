@@ -8,6 +8,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.Stop;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.util.Stack;
@@ -195,6 +196,13 @@ public class Menu extends Application {
             fadeOut.setToValue(0.0);
             fadeOut.setOnFinished(event -> primaryStage.close());
             fadeOut.play();
+        });
+
+        primaryStage.setOnCloseRequest(event -> {
+            GameScene.cleanup();
+            
+            Platform.exit();
+            System.exit(0);
         });
 
         VBox menuBox = new VBox(18,
