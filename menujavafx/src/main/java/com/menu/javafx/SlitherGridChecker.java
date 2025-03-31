@@ -2,13 +2,15 @@ package com.menu.javafx;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.stage.Stage;
 
 import java.util.*;
 
 public class SlitherGridChecker {
 
     private SlitherGrid slitherGrid;
-    
+    private int score;
+
     SlitherGridChecker(SlitherGrid slitherGrid){
         this.slitherGrid = slitherGrid;
     }
@@ -17,7 +19,7 @@ public class SlitherGridChecker {
         if (slitherGrid.isHypothesisInactive()) {
             boolean isCorrect = checkGrid();
             if (isCorrect) {
-                Util.showWinMessage();
+                Util.showWinMessage(score, slitherGrid.getPrimaryStage());
                 UserManager.setGridCompleted(GameScene.getCurrentGridId());
             }
         }
@@ -219,5 +221,7 @@ public class SlitherGridChecker {
      * Getters & Setters
      */
 
-
+    public void setScore(int score) {
+        this.score = score;
+    }
 }
