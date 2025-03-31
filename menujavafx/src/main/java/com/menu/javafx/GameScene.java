@@ -74,6 +74,7 @@ public class GameScene {
     private static int savedElapsedTime = 0;
     private static SlitherGrid slitherGrid;
     private static GameMatrix gameMatrix;
+    private static int checkCounter;
     private static int techniqueCounter = 3; // Compteur de techniques limité à 3
     private static Text techniqueCountDisplay;
 
@@ -250,24 +251,288 @@ public class GameScene {
                 "-fx-border-width: 2;" +
                 "-fx-border-radius: 20;");
     
-        // Configuration des boutons et handlers
-        helpButton.setOnAction(e1 -> {
-            // (code existant pour le bouton d'aide...)
-            Util.animateButtonClick(helpButton);
-            // ... reste du code pour le bouton d'aide
-        });
-    
-        // Container pour le bouton d'aide et son compteur
-        HBox helpContainer = new HBox(15, helpButton, techniqueCountContainer);
-        helpContainer.setAlignment(Pos.CENTER);
-    
-        Button hypothesisButton = Util.createStyledButton("Hypothèse", false, SlitherGrid.MAIN_COLOR,
-                SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
-        hypothesisButton.setOnAction(e -> {
-            // (code existant pour le bouton d'hypothèse...)
-            Util.animateButtonClick(hypothesisButton);
-            // ... reste du code pour le bouton d'hypothèse
-        });
+                helpButton.setOnAction(e1 -> {
+                    Util.animateButtonClick(helpButton);
+        
+                    SlitherlinkTechniqueDetector detector = new SlitherlinkTechniqueDetector(
+                            slitherGrid.getGridNumbers(),
+                            slitherGrid.gridLines,
+                            slitherGrid.getSlitherlinkGrid());
+        
+                    // Trouver la première technique applicable
+                    Optional<Class<? extends Techniques>> techniqueSuggere = TechniquesPriority.PRIORITY_ORDER.stream()
+                            .filter(detector::estTechniqueApplicable)
+                            .findFirst();
+        
+                    Stage suggestionStage = new Stage();
+                    suggestionStage.initModality(Modality.APPLICATION_MODAL);
+        
+                    VBox content = new VBox(20);
+                    content.setAlignment(Pos.CENTER);
+                    content.setPadding(new Insets(30));
+                    content.setStyle(
+                            "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", "
+                                    + SlitherGrid.LIGHT_COLOR + " 90%);" +
+                                    "-fx-background-radius: 15;" +
+                                    "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
+                                    "-fx-border-width: 2;" +
+                                    "-fx-border-radius: 15;");
+        
+                    Label titre = new Label(techniqueSuggere.isPresent()
+                            ? "Technique de Résolution"
+                            : "Aucune Technique Disponible");
+                    titre.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
+                    titre.setTextFill(Color.web(SlitherGrid.MAIN_COLOR));
+                    
+                    // Afficher le compteur de techniques restantes
+                    Label counterLabel = new Label("Aides restantes : " + techniqueCounter);
+                    counterLabel.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+                    counterLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 14));
+        
+                    VBox details = new VBox(10);
+                    details.setAlignment(Pos.CENTER_LEFT);
+        
+                    // Bouton Appliquer
+                    Button applyButton = Util.createStyledButton("Appliquer", true,
+                            SlitherGrid.ACCENT_COLOR, SlitherGrid.ACCENT_COLOR, SlitherGrid.SECONDARY_COLOR);
+                    applyButton.setPrefWidth(120);
+                    
+                    // Désactiver le bouton Appliquer si pas de techniques disponibles OU compteur à zéro
+                    applyButton.setDisable(!techniqueSuggere.isPresent() || techniqueCounter <= 0);
+        
+                    if (techniqueSuggere.isPresent()) {
+                        String nomTechnique = techniqueSuggere.get().getSimpleName();
+        
+                        Label description = new Label(TechniqueDescriptions.getDescription(nomTechnique));
+                        description.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+                        description.setWrapText(true);
+        
+                        details.getChildren().add(description);
+                    }
+        
+                    applyButton.setOnAction(event -> {
+                        Util.animateButtonClick(applyButton);
+                        
+                        if (techniqueSuggere.isPresent() && techniqueCounter > 0) {
+                            try {
+                                // Décrémenter le compteur lorsqu'une technique est appliquée
+                                techniqueCounter--;
+                                techniqueCount.setText(String.valueOf(techniqueCounter));
+                                
+                                // Mettre à jour l'affichage du compteur
+                                counterLabel.setText("Aides restantes : " + techniqueCounter);
+                                
+                                // Créer une instance de la technique trouvée
+                                Techniques technique = techniqueSuggere.get().getDeclaredConstructor(
+                                    int[][].class, 
+                                    Map.class, 
+                                    Pane.class
+                                ).newInstance(
+                                    slitherGrid.getGridNumbers(),
+                                    slitherGrid.gridLines,
+                                    slitherGrid.getSlitherlinkGrid()
+                                );
+                                
+                                // Créer une instance de Grille à partir des données de SlitherGrid
+                                com.tpgr3.Grille grille = new com.tpgr3.Grille(slitherGrid.getGridNumbers());
+                                
+                                // Appliquer la technique
+                                technique.appliquer(grille);
+                                
+                                // Afficher une confirmation
+                                Label confirmLabel = new Label("Technique appliquée avec succès !");
+                                confirmLabel.setTextFill(Color.web(SlitherGrid.MAIN_COLOR));
+                                confirmLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 16));
+                                
+                                // Désactiver le bouton Appliquer si plus de techniques disponibles
+                                if (techniqueCounter <= 0) {
+                                    applyButton.setDisable(true);
+                                    
+                                    Label warningLabel = new Label("Vous avez utilisé toutes vos aides disponibles.");
+                                    warningLabel.setTextFill(Color.web(SlitherGrid.ACCENT_COLOR));
+                                    warningLabel.setFont(Font.font("Calibri", FontWeight.BOLD, 14));
+                                    
+                                    details.getChildren().clear();
+                                    details.getChildren().addAll(confirmLabel, warningLabel);
+                                } else {
+                                    details.getChildren().clear();
+                                    details.getChildren().add(confirmLabel);
+                                }
+                            } catch (Exception ex) {
+                                System.err.println("Erreur lors de l'application de la technique: " + ex.getMessage());
+                                ex.printStackTrace();
+                                
+                                // Restaurer le compteur en cas d'erreur
+                                techniqueCounter++;
+                                techniqueCount.setText(String.valueOf(techniqueCounter));
+                                counterLabel.setText("Aides restantes : " + techniqueCounter);
+                                
+                                // Afficher une alerte en cas d'erreur
+                                Label errorLabel = new Label("Erreur lors de l'application de la technique");
+                                errorLabel.setTextFill(Color.RED);
+                                details.getChildren().add(errorLabel);
+                            }
+                        }
+                    });
+        
+                    Button okButton = Util.createStyledButton("Compris", true,
+                            SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+                    okButton.setPrefWidth(120);
+                    okButton.setOnAction(event -> {
+                        Util.animateButtonClick(okButton);
+                        suggestionStage.close();
+                    });
+                    
+                    // Mettre les boutons côte à côte dans un HBox
+                    HBox buttonsBox = new HBox(15, okButton, applyButton);
+                    buttonsBox.setAlignment(Pos.CENTER);
+        
+                    content.getChildren().addAll(titre, counterLabel, details, buttonsBox);
+        
+                    Scene scene = new Scene(content, 400, 250);
+                    suggestionStage.setScene(scene);
+                    suggestionStage.show();
+                });
+                
+                // Container pour le bouton d'aide et son compteur
+                HBox helpContainer = new HBox(15, helpButton, techniqueCountContainer);
+                helpContainer.setAlignment(Pos.CENTER);
+                
+                Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
+                        SlitherGrid.SECONDARY_COLOR);
+        
+                Text checkCount = new Text(String.valueOf(checkCounter));
+                checkCount.setFont(Font.font("Montserrat", FontWeight.BOLD, 22));
+                checkCount.setFill(Color.web(SlitherGrid.DARK_COLOR));
+        
+                StackPane countContainer = new StackPane(checkCount);
+                countContainer.setMinSize(40, 40);
+                countContainer.setMaxSize(40, 40);
+                countContainer.setStyle(
+                        "-fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";" +
+                                "-fx-background-radius: 20;" +
+                                "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
+                                "-fx-border-width: 2;" +
+                                "-fx-border-radius: 20;");
+        
+                checkButton.setOnAction(e -> {
+                    Util.animateButtonClick(checkButton);
+                    if (checkCounter > 0) {
+                        checkCounter--;
+                        checkCount.setText(String.valueOf(checkCounter));
+                        if (checkCounter == 0) {
+                            checkButton.setDisable(true);
+                            checkButton.setOpacity(0.7);
+                        }
+                        handleCheckButton();
+                    }
+                });
+        
+                HBox checkContainer = new HBox(15, checkButton, countContainer);
+                checkContainer.setAlignment(Pos.CENTER);
+        
+                Button hypothesisButton = Util.createStyledButton("Hypothèse", false, SlitherGrid.MAIN_COLOR,
+                        SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+                hypothesisButton.setOnAction(e -> {
+                    Util.animateButtonClick(hypothesisButton);
+                    if (slitherGrid.isHypothesisInactive()) {
+                        slitherGrid.prepareHypothesis();
+                        hypothesisButton.setText("Terminer Hypothèse");
+                        hypothesisButton.setStyle(
+                                "-fx-background-color: " + SlitherGrid.ACCENT_COLOR + ";" +
+                                        "-fx-background-radius: 30;" +
+                                        "-fx-text-fill: white;" +
+                                        "-fx-font-weight: bold;" +
+                                        "-fx-font-size: 16px;" +
+                                        "-fx-padding: 10 20;" +
+                                        "-fx-cursor: hand;");
+                    } else {
+                        Stage dialog = new Stage();
+                        dialog.initModality(Modality.APPLICATION_MODAL);
+        
+                        Label dialogTitle = new Label("Confirmer l'hypothèse");
+                        dialogTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 18));
+                        dialogTitle.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+        
+                        Button confirmButton = Util.createStyledButton("Confirmer", true, SlitherGrid.MAIN_COLOR,
+                                SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+                        Button cancelButton = Util.createStyledButton("Annuler", false, SlitherGrid.MAIN_COLOR,
+                                SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+        
+                        VBox dialogVBox = new VBox(20);
+                        dialogVBox.setAlignment(Pos.CENTER);
+                        dialogVBox.setPadding(new Insets(30));
+                        dialogVBox.setStyle("-fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
+        
+                        HBox buttonContainer = new HBox(20, cancelButton, confirmButton);
+                        buttonContainer.setAlignment(Pos.CENTER);
+        
+                        dialogVBox.getChildren().addAll(dialogTitle, buttonContainer);
+        
+                        Scene dialogScene = new Scene(dialogVBox, 350, 180);
+                        dialog.setScene(dialogScene);
+                        dialog.setTitle("Hypothèse");
+        
+                        dialogVBox.setOpacity(0);
+                        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), dialogVBox);
+                        fadeIn.setFromValue(0);
+                        fadeIn.setToValue(1);
+                        fadeIn.play();
+        
+                        confirmButton.setOnAction(event -> {
+                            Util.animateButtonClick(confirmButton);
+        
+                            slitherGrid.confirmerHypothesis();
+        
+                            hypothesisButton.setText("Hypothèse");
+                            hypothesisButton.setStyle(
+                                    "-fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";" +
+                                            "-fx-background-radius: 30;" +
+                                            "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
+                                            "-fx-border-width: 2;" +
+                                            "-fx-border-radius: 30;" +
+                                            "-fx-text-fill: " + SlitherGrid.DARK_COLOR + ";" +
+                                            "-fx-font-weight: bold;" +
+                                            "-fx-font-size: 16px;" +
+                                            "-fx-padding: 10 20;" +
+                                            "-fx-cursor: hand;");
+        
+                            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), dialogVBox);
+                            fadeOut.setFromValue(1);
+                            fadeOut.setToValue(0);
+                            fadeOut.setOnFinished(ev -> dialog.close());
+                            fadeOut.play();
+        
+                        });
+        
+                        cancelButton.setOnAction(event -> {
+                            Util.animateButtonClick(cancelButton);
+        
+                            slitherGrid.cancelHypothesis();
+        
+                            hypothesisButton.setText("Hypothèse");
+                            hypothesisButton.setStyle(
+                                    "-fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";" +
+                                            "-fx-background-radius: 30;" +
+                                            "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
+                                            "-fx-border-width: 2;" +
+                                            "-fx-border-radius: 30;" +
+                                            "-fx-text-fill: " + SlitherGrid.DARK_COLOR + ";" +
+                                            "-fx-font-weight: bold;" +
+                                            "-fx-font-size: 16px;" +
+                                            "-fx-padding: 10 20;" +
+                                            "-fx-cursor: hand;");
+        
+                            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), dialogVBox);
+                            fadeOut.setFromValue(1);
+                            fadeOut.setToValue(0);
+                            fadeOut.setOnFinished(ev -> dialog.close());
+                            fadeOut.play();
+                        });
+        
+                        dialog.show();
+                    }
+                });
     
         Button saveButton = Util.createStyledButton("Sauvegarder", false, SlitherGrid.MAIN_COLOR,
                 SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
@@ -535,6 +800,140 @@ public class GameScene {
             // Si l'ID ne peut pas être analysé comme un nombre, le retourner tel quel
             return cleanId;
         }
+    }
+
+    private static void handleCheckButton() {
+        boolean isCorrect = slitherGrid.checkGrid();
+    
+        // Créer une fenêtre personnalisée au lieu d'une Alert standard
+        Stage checkStage = new Stage();
+        checkStage.initModality(Modality.APPLICATION_MODAL);
+    
+        // Titre stylisé
+        Label checkTitle = new Label(isCorrect ? "Félicitations !" : "Solution incorrecte");
+        checkTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
+    
+        // Couleur du titre selon le résultat
+        checkTitle.setTextFill(isCorrect ? Color.web(SlitherGrid.MAIN_COLOR) : Color.web(SlitherGrid.ACCENT_COLOR));
+    
+        // Effet d'ombre pour le titre
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.web("#000000", 0.3));
+        shadow.setRadius(3);
+        shadow.setOffsetY(2);
+        checkTitle.setEffect(shadow);
+    
+        // Message
+        Label messageLabel;
+        if (isCorrect) {
+            messageLabel = new Label("Votre solution est correcte !");
+            messageLabel.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+            messageLabel.setFont(Font.font("Calibri", 16));
+        } else {
+            // Utiliser un VBox pour formater les points de vérification
+            VBox errorDetails = new VBox(8);
+            errorDetails.setAlignment(Pos.CENTER_LEFT);
+    
+            Label mainError = new Label("Votre solution ne respecte pas les règles du Slitherlink.");
+            mainError.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+            mainError.setFont(Font.font("Calibri", FontWeight.BOLD, 16));
+    
+            Label check1 = new Label("• Les chiffres doivent correspondre exactement au nombre de segments adjacents");
+            Label check2 = new Label("• Toutes les lignes doivent former un circuit unique fermé");
+            Label check3 = new Label("• Il ne doit pas y avoir de branches ou d'intersections");
+    
+            check1.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+            check2.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+            check3.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+    
+            errorDetails.getChildren().addAll(mainError, check1, check2, check3);
+    
+            checkStage.setTitle("Erreur de vérification");
+    
+            // Créer un conteneur pour tout le contenu
+            VBox contentBox = new VBox(20, checkTitle, errorDetails);
+            contentBox.setAlignment(Pos.CENTER);
+            contentBox.setPadding(new Insets(30));
+            contentBox.setStyle(
+                    "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", white);" +
+                            "-fx-background-radius: 15;" +
+                            "-fx-border-color: " + SlitherGrid.ACCENT_COLOR + ";" +
+                            "-fx-border-width: 2;" +
+                            "-fx-border-radius: 15;");
+    
+            // Bouton OK
+            Button okButton = Util.createStyledButton("Continuer", false, SlitherGrid.MAIN_COLOR,
+                    SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+            okButton.setPrefWidth(120);
+    
+            okButton.setOnAction(e -> {
+                Util.animateButtonClick(okButton);
+    
+                // Animation de fermeture
+                FadeTransition fadeOut = new FadeTransition(Duration.millis(300), contentBox);
+                fadeOut.setFromValue(1);
+                fadeOut.setToValue(0);
+                fadeOut.setOnFinished(event -> checkStage.close());
+                fadeOut.play();
+            });
+    
+            contentBox.getChildren().add(okButton);
+    
+            Scene checkScene = new Scene(contentBox, 500, 350);
+            checkStage.setScene(checkScene);
+    
+            // Animation d'entrée
+            contentBox.setOpacity(0);
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), contentBox);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+            fadeIn.play();
+    
+            checkStage.show();
+            return;
+        }
+    
+        checkStage.setTitle("Vérification réussie");
+    
+        // Bouton OK
+        Button okButton = Util.createStyledButton("Super !", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
+                SlitherGrid.SECONDARY_COLOR);
+        okButton.setPrefWidth(120);
+    
+        okButton.setOnAction(e -> {
+            Util.animateButtonClick(okButton);
+    
+            // Animation de fermeture
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), checkStage.getScene().getRoot());
+            fadeOut.setFromValue(1);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(event -> checkStage.close());
+            fadeOut.play();
+        });
+    
+        // Organisation des éléments
+        VBox checkBox = new VBox(20, checkTitle, messageLabel, okButton);
+        checkBox.setAlignment(Pos.CENTER);
+        checkBox.setPadding(new Insets(30));
+        checkBox.setStyle(
+                "-fx-background-color: linear-gradient(to bottom, " + SlitherGrid.SECONDARY_COLOR + ", "
+                        + SlitherGrid.LIGHT_COLOR + " 90%);" +
+                        "-fx-background-radius: 15;" +
+                        "-fx-border-color: " + SlitherGrid.MAIN_COLOR + ";" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 15;");
+    
+        Scene checkScene = new Scene(checkBox, 400, 250);
+        checkStage.setScene(checkScene);
+    
+        // Animation d'entrée
+        checkBox.setOpacity(0);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(300), checkBox);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+    
+        checkStage.show();
     }
 
     /**
