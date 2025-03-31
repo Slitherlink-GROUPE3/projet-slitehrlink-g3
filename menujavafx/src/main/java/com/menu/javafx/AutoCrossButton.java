@@ -22,7 +22,8 @@ import java.util.Map;
  */
 public class AutoCrossButton {
     // Variable statique pour suivre l'état d'activation des croix automatiques
-    private static boolean autoCrossEnabled = true;
+    // Désactivé par défaut (false)
+    private static boolean autoCrossEnabled = false;
 
     /**
      * Crée un bouton qui applique automatiquement la technique des 0.
@@ -33,17 +34,28 @@ public class AutoCrossButton {
      * @return Le bouton configuré
      */
     public static Button createAutoCrossButton(SlitherGrid slitherGrid, VBox mainLayer, StackPane gridContainer) {
-        Button crossAutoButton = Util.createStyledButton("Croix Auto: OFF", false, SlitherGrid.MAIN_COLOR,
-                SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
+        // Initialisation avec l'état "OFF" puisque autoCrossEnabled est false par défaut
+        Button crossAutoButton = Util.createStyledButton("Croix Auto: OFF", false, SlitherGrid.ACCENT_COLOR,
+                SlitherGrid.ACCENT_COLOR, SlitherGrid.SECONDARY_COLOR);
+
+        // Style initial pour le bouton OFF
+        crossAutoButton.setStyle(
+            "-fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";" +
+            "-fx-background-radius: 30;" +
+            "-fx-border-color: " + SlitherGrid.ACCENT_COLOR + ";" +
+            "-fx-border-width: 2;" +
+            "-fx-border-radius: 30;" +
+            "-fx-text-fill: " + SlitherGrid.ACCENT_COLOR + ";" +
+            "-fx-font-weight: bold;" +
+            "-fx-font-size: 16px;" +
+            "-fx-padding: 10 20;" +
+            "-fx-cursor: hand;"
+        );
         
         crossAutoButton.setOnAction(e -> {
             Util.animateButtonClick(crossAutoButton);
             
             if (autoCrossEnabled) {
-                // Appliquer les techniques avant de désactiver
-                applyTech0Rule(slitherGrid, mainLayer, gridContainer);
-                applyMaxValueRule(slitherGrid, mainLayer, gridContainer);
-                
                 // Désactiver les croix automatiques
                 autoCrossEnabled = false;
                 crossAutoButton.setText("Croix Auto: ON");
