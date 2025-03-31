@@ -14,6 +14,7 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,10 +54,13 @@ public class SlitherGrid {
     private SlitherGridChecker slitherGridChecker = new SlitherGridChecker(this);
     private GameMatrix gameMatrix;
 
-    public SlitherGrid(int[][] gridNumbers) {
+    private Stage primaryStage;
+
+    public SlitherGrid(int[][] gridNumbers, Stage primaryStage) {
         this.gridNumbers = gridNumbers;
         gridRows = gridNumbers.length;
         gridCols = gridNumbers[0].length;
+        this.primaryStage = primaryStage;
         prevButton = Util.createNavigationButton("←", MAIN_COLOR, DARK_COLOR, SECONDARY_COLOR);
         prevButton.setDisable(true);
         prevButton.setOnAction(e -> {
@@ -748,4 +752,7 @@ public class SlitherGrid {
         return slitherGridChecker;
     }
 
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
 }

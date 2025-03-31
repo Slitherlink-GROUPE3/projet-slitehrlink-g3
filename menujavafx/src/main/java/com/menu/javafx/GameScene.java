@@ -199,7 +199,7 @@ public class GameScene {
     
         // Charger la grille depuis le fichier JSON
         int[][] gridNumbers = loadGridFromJson("grids/" + gridIdForLoading + ".json");
-        slitherGrid = new SlitherGrid(gridNumbers);
+        slitherGrid = new SlitherGrid(gridNumbers, primaryStage);
         gameMatrix = slitherGrid.getGameMatrix();
 
 
@@ -233,10 +233,12 @@ public class GameScene {
                     
                     // Calculer le score (temps en secondes * 2)
                     int scoreValue = secondsElapsed[0] * 2;
-    
+
                     javafx.application.Platform.runLater(() -> {
                         topBar.updateChronometer(minutes, seconds);
                         topBar.updateScore(scoreValue);  // Mettre à jour le score
+                        slitherGrid.getSlitherGridChecker().setScore(topBar.score);
+
                     });
                 }
                 // Si en pause, ne rien faire - le temps ne s'incrémente pas
