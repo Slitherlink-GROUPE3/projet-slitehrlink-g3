@@ -168,4 +168,9 @@ public class Tech_Two3Diagonal implements Techniques {
             }
         }
     }
+
+    public static String getDescription() {
+        return "Deux 3 en diagonale : Placez quatre bâtons aux positions spécifiques pour éviter " +
+                "de créer des angles entre les deux 3.";
+    }
 }

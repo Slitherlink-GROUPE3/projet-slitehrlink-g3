@@ -41,41 +41,33 @@ public class TechniqueDescriptions {
                 "3 et 0 sur un côté : Placez deux bâtons - un contre le côté de la grille et " +
                 "un du côté opposé au 0.";*/
             
-            case "Tech_Two3Adjacent" -> 
+            /*case "Tech_Two3Adjacent" -> 
                 "Deux 3 adjacents : Placez les segments extérieurs des deux cases 3 et " +
-                "laissez le segment commun vide.";
+                "laissez le segment commun vide.";*/
             
-            case "Tech_Two3Diagonal" -> 
+            /*case "Tech_Two3Diagonal" -> 
                 "Deux 3 en diagonale : Placez quatre bâtons aux positions spécifiques pour éviter " +
-                "de créer des angles entre les deux 3.";
+                "de créer des angles entre les deux 3.";*/
             
-            case "Tech_1And0InCorner" -> 
+            /*case "Tech_1And0InCorner" -> 
                 "1 et 0 dans un angle : Avec un 1 dans l'angle à côté d'un 0, placez un bâton unique " +
-                "dans la direction appropriée et deux autres bâtons en continuité.";
+                "dans la direction appropriée et deux autres bâtons en continuité.";*/
             
-            case "Tech_1And2InCorner" -> 
+            /*case "Tech_1And2InCorner" -> 
                 "1 et 2 dans un angle : Avec un 1 dans l'angle à côté d'un 2, placez des croix " +
-                "dans l'angle car il sera impossible de respecter la condition du 1.";
+                "dans l'angle car il sera impossible de respecter la condition du 1.";*/
             
-            case "Tech_2And1InCorner" -> 
+            /*case "Tech_2And1InCorner" -> 
                 "2 et 1 dans un angle : Utilisez la règle du 2 dans l'angle pour placer deux bâtons, " +
-                "puis placez un bâton supplémentaire à côté du 1.";
+                "puis placez un bâton supplémentaire à côté du 1.";*/
             
-            case "Tech_Two3InCorner" -> 
+            /*case "Tech_Two3InCorner" -> 
                 "Deux 3 dans un angle : Combinez les techniques des 3 côte à côte et du 3 dans l'angle " +
-                "pour déduire des placements obligatoires.";
+                "pour déduire des placements obligatoires.";*/
             
-            case "Tech_LoopReaching1" -> 
-                "Détection de boucle pour 1 : Lorsqu'un bâton est déjà placé à côté d'un 1, " +
-                "les autres segments autour doivent être marqués d'une croix.";
-            
-            case "Tech_LoopReaching3" -> 
-                "Détection de boucle pour 3 : Analyse les contraintes autour des cases à 3 " +
-                "pour déterminer les segments manquants.";
-            
-            case "Tech_2InAngle" -> 
+            /*case "Tech_2InAngle" -> 
                 "Détection de 2 dans un angle de chemin : Analyse les contraintes autour des cases à 2 " +
-                "pour déterminer les segments manquants.";
+                "pour déterminer les segments manquants.";*/
             
             default -> 
                 "Technique de résolution qui utilise les contraintes des chiffres pour " +

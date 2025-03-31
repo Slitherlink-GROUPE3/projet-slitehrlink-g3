@@ -227,4 +227,8 @@ public class Tech_MaxValueCheck implements Techniques {
         
         return false;
     }
+
+    public static String getDescription() {
+        return "";
+    }
 }

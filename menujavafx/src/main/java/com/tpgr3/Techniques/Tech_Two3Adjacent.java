@@ -171,4 +171,9 @@ public class Tech_Two3Adjacent implements Techniques {
             }
         }
     }
+
+    public static String getDescription() {
+        return "Deux 3 adjacents : Placez les segments extérieurs des deux cases 3 et " +
+                "laissez le segment commun vide.";
+    }
 }

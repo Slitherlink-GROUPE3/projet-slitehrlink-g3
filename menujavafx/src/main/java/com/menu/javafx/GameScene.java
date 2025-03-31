@@ -76,7 +76,7 @@ public class GameScene {
     private static int savedElapsedTime = 0;
     private static SlitherGrid slitherGrid;
     private static GameMatrix gameMatrix;
-    private static int checkCounter;
+    //private static int checkCounter;
     private static int techniqueCounter = 3; // Compteur de techniques limité à 3
     private static Text techniqueCountDisplay;
 
@@ -443,7 +443,7 @@ public static void show(Stage primaryStage, String... newGridId) {
                 HBox helpContainer = new HBox(15, helpButton, techniqueCountContainer);
                 helpContainer.setAlignment(Pos.CENTER);
                 
-                Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
+                /*Button checkButton = Util.createStyledButton("Vérifier", true, SlitherGrid.MAIN_COLOR, SlitherGrid.DARK_COLOR,
                         SlitherGrid.SECONDARY_COLOR);
         
                 Text checkCount = new Text(String.valueOf(checkCounter));
@@ -473,8 +473,8 @@ public static void show(Stage primaryStage, String... newGridId) {
                     }
                 });
         
-                HBox checkContainer = new HBox(15, checkButton, countContainer);
-                checkContainer.setAlignment(Pos.CENTER);
+                /*HBox checkContainer = new HBox(15, checkButton, countContainer);
+                checkContainer.setAlignment(Pos.CENTER);*/
         
                 Button hypothesisButton = Util.createStyledButton("Hypothèse", false, SlitherGrid.MAIN_COLOR,
                         SlitherGrid.DARK_COLOR, SlitherGrid.SECONDARY_COLOR);
@@ -593,7 +593,7 @@ public static void show(Stage primaryStage, String... newGridId) {
         HBox historyContainer = new HBox(15, slitherGrid.getPrevButton(), slitherGrid.getNextButton());
         historyContainer.setAlignment(Pos.CENTER);
 
-        buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpContainer, checkContainer, hypothesisButton,
+        buttonBox.getChildren().addAll(controlsTitle, createSeparator(), helpContainer, hypothesisButton,
                 crossAutoButton, saveButton, createSeparator(), historyContainer);
 
         gridContainer.setPadding(new Insets(20));

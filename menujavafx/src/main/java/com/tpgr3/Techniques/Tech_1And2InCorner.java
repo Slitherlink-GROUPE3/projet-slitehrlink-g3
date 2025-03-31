@@ -255,4 +255,9 @@ public class Tech_1And2InCorner implements Techniques {
             }
         }
     }
+
+    public static String getDescription() {
+        return "1 et 2 dans un angle : Avec un 1 dans l'angle à côté d'un 2, placez des croix " +
+                "dans l'angle car il sera impossible de respecter la condition du 1.";
+    }
 }

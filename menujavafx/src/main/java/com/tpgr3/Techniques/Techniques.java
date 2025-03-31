@@ -16,4 +16,8 @@ public interface Techniques {
      */
     boolean estApplicable(Grille grille);
     void appliquer(Grille grille);
+    static String getDescription(){
+        return "Technique de résolution qui utilise les contraintes des chiffres pour " +
+                "déduire le placement correct des segments.";
+    }
 }

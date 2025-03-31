@@ -278,4 +278,9 @@ public class Tech_1And0InCorner implements Techniques {
             }
         }
     }
+
+    public static String getDescription() {
+        return "1 et 0 dans un angle : Avec un 1 dans l'angle à côté d'un 0, placez un bâton unique " +
+                "dans la direction appropriée et deux autres bâtons en continuité.";
+    }
 }
