@@ -201,7 +201,6 @@ public class Menu extends Application {
 
         primaryStage.setOnCloseRequest(event -> {
             GameScene.cleanup();
-            
             Platform.exit();
             System.exit(0);
         });

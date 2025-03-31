@@ -58,7 +58,7 @@ public class AutoCrossButton {
             if (autoCrossEnabled) {
                 // Désactiver les croix automatiques
                 autoCrossEnabled = false;
-                crossAutoButton.setText("Croix Auto: OFF");
+                crossAutoButton.setText("Croix Auto: ON");
                 crossAutoButton.setStyle(
                     "-fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";" +
                     "-fx-background-radius: 30;" +
@@ -72,12 +72,12 @@ public class AutoCrossButton {
                     "-fx-cursor: hand;"
                 );
                 
-                showNotification(mainLayer, gridContainer, "Mode croix automatiques désactivé", 
+                showNotification(mainLayer, gridContainer, "Mode croix automatiques activé", 
                         SlitherGrid.ACCENT_COLOR);
             } else {
                 // Réactiver les croix automatiques
                 autoCrossEnabled = true;
-                crossAutoButton.setText("Croix Auto: ON");
+                crossAutoButton.setText("Croix Auto: OFF");
                 crossAutoButton.setStyle(
                     "-fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";" +
                     "-fx-background-radius: 30;" +
