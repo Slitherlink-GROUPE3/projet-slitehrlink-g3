@@ -181,112 +181,76 @@ public class GameScene {
         show(primaryStage, gridId);
     }
 
-    public static void show(Stage primaryStage, String... newGridId) {
-
-        // Le jeu est actif
-        gameActive = true;
-
-        applyTheme();
-        PauseMenu.setGamePaused(false);
     
-        // Update the current grid ID if provided
-        if (newGridId != null && newGridId.length > 0 && newGridId[0] != null) {
-            currentGridId = newGridId[0];
-            gridId = newGridId[0];
-        }
-    
-        String gridIdForLoading = gridId.startsWith("grid-") ? gridId : "grid-" + gridId;
-    
-        // Charger la grille depuis le fichier JSON
-        int[][] gridNumbers = loadGridFromJson("grids/" + gridIdForLoading + ".json");
-        slitherGrid = new SlitherGrid(gridNumbers, primaryStage);
-        gameMatrix = slitherGrid.getGameMatrix();
+public static void show(Stage primaryStage, String... newGridId) {
+    applyTheme();
+    PauseMenu.setGamePaused(false);
 
+    // Update the current grid ID if provided
+    if (newGridId != null && newGridId.length > 0 && newGridId[0] != null) {
+        currentGridId = newGridId[0];
+        gridId = newGridId[0];
+    }
 
-        if (newGridId != null && newGridId.length > 0 && "-1".equals(newGridId[0])) {
-            slitherGrid.reset();
-        }
+    String gridIdForLoading = gridId.startsWith("grid-") ? gridId : "grid-" + gridId;
 
-        mainLayer = new VBox();
-        mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
+    // Charger la grille depuis le fichier JSON
+    int[][] gridNumbers = loadGridFromJson("grids/" + gridIdForLoading + ".json");
+    slitherGrid = new SlitherGrid(gridNumbers);
+    gameMatrix = slitherGrid.getGameMatrix();
 
-        String username = UserManager.getCurrentUser();
-        System.out.println("Logged in as: " + username);
+    // Créer les composants principaux
+    mainLayer = new VBox();
+    mainLayer.setStyle(
+        "-fx-background-color: linear-gradient(to bottom right, " + 
+        LIGHT_SECONDARY_COLOR + ", " + LIGHT_LIGHT_COLOR + " 70%);"
+    );
 
-        String initialScore = "0";  // Score initial à 0
-        String level = getLevelFromGridId(gridId);
-        TopBar topBar = new TopBar(primaryStage, username, level, initialScore, slitherGrid);
+    root = new HBox();
+    root.setAlignment(Pos.CENTER);  // Centrer le contenu
+    root.setSpacing(50);  // Espace entre la grille et les boutons
+    root.setPadding(new Insets(20));  // Padding autour du contenu
 
-        // Créer un nouveau timer
-        gameTimer = new java.util.Timer();
-        final int[] secondsElapsed = { savedElapsedTime > 0 ? savedElapsedTime : 0 };
+    slitherGrid.setSlitherlinkGrid(new Pane());
+    gridContainer = new StackPane(slitherGrid.getSlitherlinkGrid());
+    gridContainer.setAlignment(Pos.CENTER); 
 
-        gameTimer.scheduleAtFixedRate(new java.util.TimerTask() {
-            @Override
-            public void run() {
-                // Vérifier si le jeu est en pause
-                if (!PauseMenu.isGamePaused()) {
-                    secondsElapsed[0]++;
-                    elapsedTimeSeconds = secondsElapsed[0];
-                    int minutes = secondsElapsed[0] / 60;
-                    int seconds = secondsElapsed[0] % 60;
-                    
-                    // Calculer le score (temps en secondes * 2)
-                    int scoreValue = secondsElapsed[0] * 2;
+    gridContainer.setStyle(
+        "-fx-background-color: white;" +
+        "-fx-background-radius: 15;" +
+        "-fx-border-color: " + LIGHT_MAIN_COLOR + ";" + // Vert principal
+        "-fx-border-width: 2;" +
+        "-fx-border-radius: 15;" +
+        "-fx-padding: 40;" +
+        "-fx-alignment: center;"
+    );
 
-                    javafx.application.Platform.runLater(() -> {
-                        topBar.updateChronometer(minutes, seconds);
-                        topBar.updateScore(scoreValue);  // Mettre à jour le score
-                        slitherGrid.getSlitherGridChecker().setScore(topBar.score);
+    DropShadow gridShadow = new DropShadow();
+    gridShadow.setColor(Color.web("#000000", 0.2));
+    gridShadow.setRadius(10);
+    gridShadow.setOffsetY(5);
+    gridContainer.setEffect(gridShadow);
 
-                    });
-                }
-                // Si en pause, ne rien faire - le temps ne s'incrémente pas
-            }
-        }, 0, 1000);
+    // Créer la barre supérieure
+    String username = UserManager.getCurrentUser();
+    String level = getLevelFromGridId(gridId);
+    String initialScore = "0";  // Score initial à 0
+    TopBar topBar = new TopBar(primaryStage, username, level, initialScore, slitherGrid);
 
-        // Si un état sauvegardé est disponible, l'appliquer à la grille
-        if (savedGridState != null) {
-            Platform.runLater(() -> {
-                try {
-                    System.out.println("Applying saved state from GameScene.show()");
-                    SaveGameLoader.applyGridState(savedGridState);
-                    savedGridState = null; // Clear the saved state to avoid reapplying
-                } catch (Exception e) {
-                    System.err.println("Error applying saved state: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            });
-        }
-
-        // Créer les composants principaux
-        mainLayer = new VBox();
-        mainLayer.setStyle("-fx-padding: 0; -fx-background-color: " + SlitherGrid.SECONDARY_COLOR + ";");
-
-        root = new HBox();
-        slitherGrid.setSlitherlinkGrid(new Pane());
-        gridContainer = new StackPane(slitherGrid.getSlitherlinkGrid());
-    
-        gridContainer.setStyle(
-                "-fx-background-color: rgba(255, 255, 255, 0.9);" +
-                "-fx-background-radius: 15;" +
-                "-fx-padding: 20;");
-    
-        DropShadow gridShadow = new DropShadow();
-        gridShadow.setColor(Color.web("#000000", 0.2));
-        gridShadow.setRadius(10);
-        gridShadow.setOffsetY(5);
-        gridContainer.setEffect(gridShadow);
-    
-        // Créer les boutons et contrôles
-        VBox buttonBox = new VBox(20);
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.setPadding(new Insets(30));
-        buttonBox.setMaxWidth(350);
-        buttonBox.setStyle(
-                "-fx-background-color: rgba(255, 255, 255, 0.8);" +
-                "-fx-background-radius: 15;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);");
+    // Créer les boutons et contrôles
+    VBox buttonBox = new VBox(20);
+    buttonBox.setAlignment(Pos.CENTER);
+    buttonBox.setPadding(new Insets(30));
+    buttonBox.setMaxWidth(350);
+    buttonBox.setStyle(
+        "-fx-background-color: rgba(58, 125, 68, 0.1);" + // Translucent main color
+        "-fx-background-radius: 15;" +
+        "-fx-border-color: " + LIGHT_DARK_COLOR + ";" + // Vert foncé
+        "-fx-border-width: 1;" +
+        "-fx-border-radius: 15;" +
+        "-fx-padding: 20;" +
+        "-fx-effect: dropshadow(gaussian, rgba(56, 102, 65, 0.2), 5, 0, 0, 2);"
+    );
     
         Label controlsTitle = new Label("Contrôles");
         controlsTitle.setFont(Font.font("Montserrat", FontWeight.BOLD, 24));
@@ -613,20 +577,27 @@ public class GameScene {
                 crossAutoButton, saveButton, createSeparator(), historyContainer);
 
         gridContainer.setPadding(new Insets(20));
+        gridContainer.setAlignment(Pos.CENTER);
         gridContainer.prefWidthProperty().bind(root.widthProperty().multiply(0.65));
+        buttonBox.prefWidthProperty().bind(root.widthProperty().multiply(0.3));
+
+        HBox contentContainer = new HBox(30);
+        contentContainer.setAlignment(Pos.CENTER);
+        contentContainer.setPadding(new Insets(40, 20, 20, 20));
     
         root.setSpacing(30);
-        root.setPadding(new Insets(20));
-        root.getChildren().addAll(gridContainer, buttonBox);
+        root.setPadding(new Insets(20, 20, 20, 70));
+        root.getChildren().clear();
+        contentContainer.getChildren().addAll(gridContainer, buttonBox);
+        root.getChildren().add(contentContainer);
     
         root.setStyle(
-                "-fx-background-color: linear-gradient(to bottom right, " + SlitherGrid.SECONDARY_COLOR + ", "
-                        + SlitherGrid.LIGHT_COLOR
-                        + " 70%);" +
-                "-fx-background-radius: 0;" +
-                "-fx-padding: 20px;");
+            "-fx-background-color: " + LIGHT_SECONDARY_COLOR + ";" + // Beige clair
+            "-fx-padding: 20;"
+        );
     
         mainLayer.getChildren().add(root);
+
     
         // Créer la scène APRÈS avoir configuré tous les composants principaux
         Scene scene = new Scene(mainLayer, Screen.getPrimary().getVisualBounds().getWidth(),
