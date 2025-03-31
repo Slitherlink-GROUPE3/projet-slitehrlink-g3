@@ -74,11 +74,7 @@ public class ButtonFactory {
     
         return button;
     }
-    
-    
-    
-    
-    
+
     public static Button createHelpButton() {
         Button button = new Button("AIDE ?");
         button.setFont(Font.font("Arial", 18));
@@ -137,7 +133,6 @@ public class ButtonFactory {
 
         return button;
     }
-
 
     public static Button createSkullButton(String text, int difficulty, String imagePath) {
         Image skullImage = new Image(imagePath);
