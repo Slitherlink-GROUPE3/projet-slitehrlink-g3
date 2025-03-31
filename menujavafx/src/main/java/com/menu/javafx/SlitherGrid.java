@@ -149,7 +149,7 @@ public class SlitherGrid {
                     return move;
                 } )
                 .filter( move -> ( move instanceof LineMove && !isColorEqual(move.getColor(), Color.web(LIGHT_COLOR)) ) )
-                .peek(System.out::println)
+                //.peek(System.out::println)
                 .collect(Collectors.toList());
     }
 
