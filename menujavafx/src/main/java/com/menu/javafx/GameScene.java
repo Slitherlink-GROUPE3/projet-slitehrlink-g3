@@ -44,6 +44,7 @@ import javafx.geometry.Insets;
 import java.util.Map;
 import java.lang.reflect.Constructor;
 import javafx.animation.PauseTransition;
+import java.lang.reflect.Method;
 
 public class GameScene {
     // Add at the top of the GameScene class, replacing your current color
@@ -331,18 +332,28 @@ public static void show(Stage primaryStage, String... newGridId) {
                     if (techniqueSuggere.isPresent()) {
                         String nomTechnique = techniqueSuggere.get().getSimpleName();
 
-                        Label description = new Label(TechniqueDescriptions.getDescription(nomTechnique));
-                        description.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
-                        description.setWrapText(true);
-                        description.setMaxWidth(500);
-                        description.setAlignment(Pos.CENTER);
-                        description.setStyle(
+                        // Récupérer la description de la classe de technique
+                        String description = "";
+                        try {
+                            // Utiliser la réflexion pour appeler la méthode getDescription()
+                            Method getDescriptionMethod = techniqueSuggere.get().getMethod("getDescription");
+                            description = (String) getDescriptionMethod.invoke(null);
+                        } catch (Exception e) {
+                            description = "Description non disponible pour cette technique.";
+                        }
+
+                        Label descriptionLabel = new Label(description);
+                        descriptionLabel.setTextFill(Color.web(SlitherGrid.DARK_COLOR));
+                        descriptionLabel.setWrapText(true);
+                        descriptionLabel.setMaxWidth(500);
+                        descriptionLabel.setAlignment(Pos.CENTER);
+                        descriptionLabel.setStyle(
                             "-fx-font-size: 14px;" +
                             "-fx-text-alignment: center;" +
                             "-fx-alignment: center;"
                         );
 
-                        details.getChildren().add(description);
+                        details.getChildren().add(descriptionLabel);
                     }
                     applyButton.setOnAction(event -> {
                         Util.animateButtonClick(applyButton);

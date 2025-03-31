@@ -258,4 +258,8 @@ public class Tech_1OnSide implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return  "1 sur un côté : Si un bâton est déjà placé sur un bord à côté d'un 1, " +
+                "le segment opposé doit être marqué d'une croix.";
+    }
 }

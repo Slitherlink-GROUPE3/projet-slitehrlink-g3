@@ -280,4 +280,8 @@ public class Tech_0And2OnSide implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "0 et 2 sur un côté : Placez un bâton à l'opposé du bord et un autre à l'opposé du 0, " +
+                "puis ajoutez deux bâtons aux extrémités.";
+    }
 }

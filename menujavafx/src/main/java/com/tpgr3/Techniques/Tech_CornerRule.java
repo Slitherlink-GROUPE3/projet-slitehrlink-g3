@@ -221,4 +221,8 @@ public class Tech_CornerRule implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "Règle des coins : Dans les coins de la grille, le nombre de segments est limité " +
+                "selon la valeur de la case (0, 1, 2 ou 3).";
+    }
 }

@@ -210,4 +210,8 @@ public class Tech_0And3 implements Techniques {
             }
         }
     }
+    public static String getDescription() {
+        return "0 et 3 adjacents : Quand un 0 et un 3 sont côte à côte, placez une croix sur le segment " +
+                "entre eux et trois bâtons autour du 3.";
+    }
 }
